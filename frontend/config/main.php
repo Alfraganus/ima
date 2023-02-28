@@ -12,8 +12,12 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
-        'request' => [
+       /* 'request' => [
             'csrfParam' => '_csrf-frontend',
+        ],*/
+        'response' => [
+            'format' => yii\web\Response::FORMAT_JSON,
+            'charset' => 'UTF-8',
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -36,14 +40,19 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
+
+    ],
+    'modules' => [
+        'api' => [
+            'class' => 'frontend\modules\api\ApiModule',
+        ],
     ],
     'params' => $params,
 ];

@@ -36,6 +36,14 @@ AppAsset::register($this);
     ]);
     $menuItems = [
         ['label' => 'Home', 'url' => ['/site/index']],
+        ['label' => 'app applications', 'items' => [
+            ['label' => 'applications', 'url' => '/admin/application'],
+            ['label' => 'application wizard', 'url' => '/admin/application-wizard'],
+            ['label' => 'application wizard form field', 'url' => '/admin/wizard-form-field'],
+            ['label' => 'application form', 'url' => '/admin/application-form'],
+            ['label' => 'application form field', 'url' => '/admin/application-form-field'],
+        ]
+        ],
     ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
