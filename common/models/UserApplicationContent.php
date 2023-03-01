@@ -36,7 +36,7 @@ class UserApplicationContent extends \yii\db\ActiveRecord
     {
         return [
             [['user_application_id', 'user_application_wizard_id', 'user_application_form_id', 'user_application_form_field_id'], 'integer'],
-            [['user_application_form_field_value'], 'string'],
+            [['user_application_form_field_value'], 'safe'],
             [['user_application_form_field_key'], 'string', 'max' => 255],
             [['user_application_form_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationFormField::class, 'targetAttribute' => ['user_application_form_id' => 'id']],
             [['user_application_form_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationForm::class, 'targetAttribute' => ['user_application_form_id' => 'id']],
