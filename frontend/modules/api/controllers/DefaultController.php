@@ -3,8 +3,10 @@
 namespace frontend\modules\api\controllers;
 
 
+use common\models\AuthorApplication;
 use common\models\UserApplicationContent;
 use common\models\UserApplications;
+use frontend\modules\api\service\ApiService;
 use Yii;
 use yii\rest\Controller;
 use yii\web\Response;
@@ -20,61 +22,50 @@ class DefaultController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $request = Yii::$app->request;
-
-        // Get the JSON data as a string
         $dataString = $request->getRawBody();
-
-        // Convert the JSON data string to a PHP array
         $data = json_decode($dataString, true);
-        $user_id = 1;
-        $this->saveData($user_id=1,$data);
-        // Return the JSON data as a JSON object
+        (new ApiService())->saveData($user_id=1,$data);
 //        return $data;
     }
 
-
-    private function saveData($user_id,$postContent)
+    public function actionGet()
     {
-        $application = UserApplications::findOne([
-            'user_id'=>$user_id,
-            'application_id'=>$postContent['application_id']
-        ]);
-        if(!$application) {
-            $application = new UserApplications();
-            $application->application_id = $postContent['application_id'];
-            $application->user_id = $user_id;
-            $application->save();
-        }
+        $application_id = 1;
+        $user_id = 1;
+        $wizard_id = 1;
+        return (new ApiService())->getWizardContent(1);
+    }
 
-        $i= 1;
-        foreach ($postContent['forms'] as $key => $form) {
-            foreach ($form as $field => $field_value) {
-               /* echo "<pre>";
-                echo var_dump(print_r($keya));
-                echo var_dump(print_r($f));*/
-                $applicationContent = UserApplicationContent::findOne([
-                    'user_application_id'=>$postContent['application_id'],
-                    'user_application_wizard_id'=>$postContent['wizard_id'],
-                    'user_application_form_field_key'=>$field,
-                    'user_application_form_field_value'=>$field_value,
 
-                ]);
-                if(!$applicationContent) {
-                    $applicationContent = new UserApplicationContent();
-                    $applicationContent->user_application_id = $postContent['application_id'];
-                    $applicationContent->user_application_wizard_id = $postContent['wizard_id'];
-                }
-                $applicationContent->user_application_form_id = $form['form_id'];
+
+
+
+
+
+    private function saveForms($application_id,$wizard_id,$form_id,$form_contents)
+    {
+
+
+        /*echo "<pre>";
+        echo var_dump(print_r($field_value));
+        die;*/
+        foreach ($form_contents as $field_value) {
+
+            foreach ($field_value as $key => $field) {
+
+                $applicationContent = new UserApplicationContent();
+                $applicationContent->user_application_id = $application_id;
+                $applicationContent->user_application_wizard_id = $wizard_id;
+                $applicationContent->user_application_form_id = $field_value['form_id'];
                 $applicationContent->user_application_form_field_id = 111;
-                $applicationContent->user_application_form_field_key = $field;
-                $applicationContent->user_application_form_field_value =$field_value;
+                $applicationContent->user_application_form_field_key = $key;
+                $applicationContent->user_application_form_field_value =$field;
                 if(!$applicationContent->save()) {
                     throw new \Exception(json_encode($applicationContent->errors));
                 }
             }
 
         }
-
     }
 
 

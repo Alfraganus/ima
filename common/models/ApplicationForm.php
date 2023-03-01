@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property string|null $form_name
+ * @property string|null $form_class
  * @property int|null $can_be_multiple
  *
  * @property WizardFormField[] $wizardFormFields
@@ -31,6 +32,7 @@ class ApplicationForm extends \yii\db\ActiveRecord
         return [
             [['can_be_multiple'], 'integer'],
             [['form_name'], 'string', 'max' => 150],
+            [['form_class'], 'string', 'max' => 200],
         ];
     }
 
