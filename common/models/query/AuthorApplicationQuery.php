@@ -3,9 +3,9 @@
 namespace common\models\query;
 
 /**
- * This is the ActiveQuery class for [[\common\models\AuthorApplication]].
+ * This is the ActiveQuery class for [[\common\models\FormAuthor]].
  *
- * @see \common\models\AuthorApplication
+ * @see \common\models\forms\FormAuthor
  */
 class AuthorApplicationQuery extends \yii\db\ActiveQuery
 {
@@ -16,7 +16,7 @@ class AuthorApplicationQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return \common\models\AuthorApplication[]|array
+     * @return \common\models\forms\FormAuthor[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class AuthorApplicationQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return \common\models\AuthorApplication|array|null
+     * @return \common\models\forms\FormAuthor|array|null
      */
     public function one($db = null)
     {

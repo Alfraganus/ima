@@ -3,14 +3,11 @@
 namespace frontend\modules\api\controllers;
 
 
-use common\models\AuthorApplication;
-use common\models\UserApplicationContent;
-use common\models\UserApplications;
 use frontend\modules\api\service\ApiService;
+use frontend\modules\api\service\UpdateFormService;
 use Yii;
 use yii\rest\Controller;
 use yii\web\Response;
-use yii\web\UploadedFile;
 
 /**
  * Default controller for the `api` module
@@ -25,8 +22,15 @@ class DefaultController extends Controller
 
         $request = Yii::$app->request;
         $post =  $request->post();
-        (new ApiService())->saveData($user_id=1,$post,$_FILES);
+//        return $post;
+      return  (new ApiService())->saveData($user_id=1,$post,$_FILES);
 
+    }
+
+    public function actionUpdateApplication()
+    {
+         $post = Yii::$app->request->post();
+        return  (new UpdateFormService())->updateWizard($user_id=1,$post,$_FILES);
     }
 
 
@@ -36,18 +40,15 @@ class DefaultController extends Controller
 
         $request = Yii::$app->request;
         $dataString = $request->getRawBody();
-        $data = json_decode($dataString, true);
+      return  $data = json_decode($dataString, true);
 
         (new ApiService())->saveData($user_id=1,$data);
 //        return $data;
     }
 
-    public function actionGet()
+    public function actionGetApplicationData()
     {
-        $application_id = 1;
-        $user_id = 1;
-        $wizard_id = 1;
-        return (new ApiService())->getWizardContent(1);
+        return (new ApiService())->getWizardContent(1,1,1);
     }
 
 

@@ -3,9 +3,9 @@
 namespace common\models\query;
 
 /**
- * This is the ActiveQuery class for [[\common\models\Requester]].
+ * This is the ActiveQuery class for [[\common\models\FormRequester]].
  *
- * @see \common\models\Requester
+ * @see \common\models\forms\FormRequester
  */
 class RequesterQuery extends \yii\db\ActiveQuery
 {
@@ -16,7 +16,7 @@ class RequesterQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return \common\models\Requester[]|array
+     * @return \common\models\forms\FormRequester[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class RequesterQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return \common\models\Requester|array|null
+     * @return \common\models\forms\FormRequester|array|null
      */
     public function one($db = null)
     {

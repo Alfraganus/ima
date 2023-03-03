@@ -12,7 +12,7 @@ class m230301_171830_create_requester_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('{{%requester}}', [
+        $this->createTable('{{%form_requester}}', [
             'id' => $this->primaryKey(),
             'user_id' => $this->integer(),
             'user_application_id' => $this->integer(),
@@ -35,6 +35,6 @@ class m230301_171830_create_requester_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%requester}}');
+        $this->dropTable('{{%form_requester}}');
     }
 }

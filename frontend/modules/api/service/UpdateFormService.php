@@ -10,7 +10,7 @@ use common\models\UserApplications;
 use common\models\WizardFormField;
 use Yii;
 
-class ApiService
+class UpdateFormService
 {
 
     public $setForm;
@@ -22,6 +22,57 @@ class ApiService
             2 => new FormAuthor(),
         ];
 
+    }
+
+    private function getFormClass($form_id)
+    {
+        $form = ApplicationForm::findOne($form_id);
+        return $form->form_class;
+    }
+
+    public function updateWizard($user_id,$postContent, $files = null)
+    {
+        foreach ($postContent['forms'] as $form) {
+             $formClass = $this->getFormClass($form['form_id']);
+             $model = $formClass::findOne($form['id']);
+             unset($form['form_id']);
+             $model->updateAttributes($form);
+        }
+     return  $this->updateFiles($files,$postContent,$user_id);
+        return [
+            'success' => true,
+            'message' => 'Operation is successfull'
+        ];
+    }
+
+    public function updateFiles($files, $postContent, $user_id)
+    {
+        $fileNames = $files['forms']['name'];
+        $tempNames2 = $files['forms']['tmp_name'];
+        $fileTypes = $files['forms']['type'];
+        for ($i = 0; $i < sizeof($fileNames); $i++) {
+            /*validatsiya yozish kerak file nomi form id bolishini tekshirgani*/
+            $fileIndentification = array_keys($fileNames[$i])[0];
+            $fileName = 'form_uploads/' . $fileNames[$i][$fileIndentification];
+            move_uploaded_file($tempNames2[$i][$fileIndentification], $fileName);
+             ApplicationFormMedia::deleteAll([
+                'application_id' => $postContent['application_id'],
+                'wizard_id' => $postContent['wizard_id'],
+                'form_id' =>$fileIndentification,
+                'user_id' => $user_id,
+            ]);
+            $mediaContent = new ApplicationFormMedia();
+            $mediaContent->application_id = $postContent['application_id'];
+            $mediaContent->wizard_id = $postContent['wizard_id'];
+            $mediaContent->form_id = $fileIndentification;
+            $mediaContent->user_id = $user_id;
+            $mediaContent->file_path = Yii::$app->request->hostInfo . '/' . $fileName;
+            $mediaContent->file_name = $fileNames[$i][$fileIndentification];
+            $mediaContent->file_extension = $fileTypes[$i][$fileIndentification];
+            if (!$mediaContent->save()) {
+                throw new  \Exception(json_encode($mediaContent->errors));
+            }
+        }
     }
 
     public function saveData($user_id, $postContent, $files = null)
@@ -106,7 +157,6 @@ class ApiService
 
     public function getWizardContent($application_id,$wizard_id,$user_id)
     {
-        $result = [];
         $wizardForms = WizardFormField::findAll(['wizard_id' => $wizard_id]);
         foreach ($wizardForms as $form) {
             $result[$form->form->form_name] = $this->getUserFormData(

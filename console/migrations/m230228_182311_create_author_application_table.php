@@ -12,7 +12,7 @@ class m230228_182311_create_author_application_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('{{%author_application}}', [
+        $this->createTable('{{%form_author}}', [
             'id' => $this->primaryKey(),
             'user_id' => $this->integer(),
             'user_application_id' => $this->integer(),
@@ -28,52 +28,52 @@ class m230228_182311_create_author_application_table extends Migration
             'academic_degree' => $this->string(150),
 
         ]);
-    }
-/*
         $this->addForeignKey(
-            'fk-user_application_content-wizard_id',
-            'user_application_content',
+            'fk-form_author_application_id',
+            'form_author',
+            'user_application_id',
+            'application',
+            'id',
+            'CASCADE'
+        );
+        $this->addForeignKey(
+            'fk-form_author_wizard_id',
+            'form_author',
             'user_application_wizard_id',
             'application_wizard',
             'id',
             'CASCADE'
         );
+
         $this->addForeignKey(
-            'fk-user_application_content-form_id',
-            'user_application_content',
-            'user_application_form_id',
-            'application_form',
+            'fk-form_author-user_id',
+            'form_author',
+            'user_id',
+            'user',
             'id',
             'CASCADE'
         );
-
-        $this->addForeignKey(
-            'fk-user_application_content-form_field_id',
-            'user_application_content',
-            'user_application_form_id',
-            'application_form_field',
-            'id',
-            'CASCADE'*/
-
+    }
 
     /**
      * {@inheritdoc}
      */
     public function safeDown()
     {
-      /*  $this->dropForeignKey(
-            'fk-user_application_content-wizard_id',
-            'user_application_content'
-        );
         $this->dropForeignKey(
-            'fk-user_application_content-form_id',
-            'user_application_content'
+            'fk-form_author_application_id',
+            'form_author'
         );
 
         $this->dropForeignKey(
-            'fk-user_application_content-form_field_id',
-            'user_application_content'
+            'fk-form_author_wizard_id',
+            'form_author'
         );
-        $this->dropTable('{{%user_application_content}}');*/
+
+        $this->dropForeignKey(
+            'fk-form_author-user_id',
+            'form_author'
+        );
+        $this->dropTable('{{%form_author}}');
     }
 }
