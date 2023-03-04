@@ -30,7 +30,7 @@ class FormAuthor extends \yii\db\ActiveRecord
     {
         return 'form_author';
     }
-
+    const CLASS_FORM_ID = 2;
     /**
      * {@inheritdoc}
      */
@@ -62,6 +62,28 @@ class FormAuthor extends \yii\db\ActiveRecord
             'workplace' => Yii::t('app', 'Workplace'),
             'position' => Yii::t('app', 'Position'),
             'academic_degree' => Yii::t('app', 'Academic Degree'),
+        ];
+    }
+
+    public function fields()
+    {
+        return [
+            'form_id' => function () {
+                return self::CLASS_FORM_ID;
+            },
+            'id',
+            'user_id',
+            'user_application_id',
+            'user_application_wizard_id',
+            'author_country_code',
+            'jshshir',
+            'full_name',
+            'region',
+            'district',
+            'address',
+            'workplace',
+            'position',
+            'academic_degree',
         ];
     }
 

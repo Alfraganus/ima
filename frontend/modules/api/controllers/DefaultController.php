@@ -16,7 +16,7 @@ class DefaultController extends Controller
 {
 
 
-    public function actionIndex2()
+    public function actionSaveApplication()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
@@ -46,9 +46,16 @@ class DefaultController extends Controller
 //        return $data;
     }
 
-    public function actionGetApplicationData()
+    public function actionGetApplicationData($application_id,$wizard_id,$user_id)
     {
-        return (new ApiService())->getWizardContent(1,1,1);
+        return (new ApiService())->getWizardContent($application_id,$wizard_id,$user_id);
+    }
+
+    public function actionGetApplicationSummary($application_id)
+    {
+        $user_id = 1;
+        return (new ApiService())->getApplicationContent($application_id,$user_id);
+
     }
 
 

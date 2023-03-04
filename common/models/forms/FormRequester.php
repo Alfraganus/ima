@@ -30,6 +30,7 @@ class FormRequester extends \yii\db\ActiveRecord
     {
         return 'form_requester';
     }
+    const CLASS_FORM_ID = 1;
 
     /**
      * {@inheritdoc}
@@ -61,6 +62,28 @@ class FormRequester extends \yii\db\ActiveRecord
             'receiver_name' => Yii::t('app', 'Receiver Name'),
             'sms_notification_number' => Yii::t('app', 'Sms Notification Number'),
             'role_id' => Yii::t('app', 'Role ID'),
+        ];
+    }
+
+    public function fields()
+    {
+        return [
+            'form_id' => function () {
+                return self::CLASS_FORM_ID;
+            },
+            'id',
+            'user_id',
+            'user_application_id',
+            'user_application_wizard_id',
+            'individual_type',
+            'jshshir',
+            'full_name',
+            'region',
+            'district',
+            'submitting_address',
+            'receiver_name',
+            'sms_notification_number',
+            'role_id',
         ];
     }
 

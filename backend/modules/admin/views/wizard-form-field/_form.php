@@ -12,6 +12,10 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <?= $form->field($model, 'application_id')->dropDownList(\yii\helpers\ArrayHelper::map(
+        \common\models\ApplicationForm::find()->all(),'id','form_name'
+    )) ?>
+
     <?= $form->field($model, 'wizard_id')->dropDownList(\yii\helpers\ArrayHelper::map(
             \common\models\ApplicationWizard::find()->all(),'id','wizard_name'
     )) ?>

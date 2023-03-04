@@ -2,9 +2,13 @@
 
 namespace frontend\modules\api\service;
 
+use common\models\Application;
 use common\models\ApplicationForm;
 use common\models\ApplicationFormMedia;
+use common\models\ApplicationWizard;
 use common\models\forms\FormAuthor;
+use common\models\forms\FormIndustryDocument;
+use common\models\forms\FormIndustryExample;
 use common\models\forms\FormRequester;
 use common\models\UserApplications;
 use common\models\WizardFormField;
@@ -13,13 +17,15 @@ use Yii;
 class ApiService
 {
 
-    public $setForm;
+    private $setForm;
 
     public function __construct()
     {
         $this->setForm = [
             1 => new FormRequester(),
             2 => new FormAuthor(),
+            3 => new FormIndustryExample(),
+            4 => new FormIndustryDocument(),
         ];
 
     }
@@ -39,20 +45,22 @@ class ApiService
                 $application->save();
             }
 
-            foreach ($postContent['forms'] as $form) {
-                if (!in_array($form['form_id'], array_keys($this->setForm))) {
-                    throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
-                }
-                $formModel = new $this->setForm[$form['form_id']];
-                $formModel->user_application_id = $postContent['application_id'];
-                $formModel->user_application_wizard_id = $postContent['wizard_id'];
-                $formModel->user_id = 1;
-                $formModel->setAttributes($form);
-                if (!$formModel->save()) {
-                    throw new \Exception(json_encode($formModel->errors));
+            if ($postContent['forms']) {
+                foreach ($postContent['forms'] as $form) {
+                    if (!in_array($form['form_id'], array_keys($this->setForm))) {
+                        throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
+                    }
+                    $formModel = new $this->setForm[$form['form_id']];
+                    $formModel->user_application_id = $postContent['application_id'];
+                    $formModel->user_application_wizard_id = $postContent['wizard_id'];
+                    $formModel->user_id = 1;
+                    $formModel->setAttributes($form);
+                    if (!$formModel->save()) {
+                        throw new \Exception(json_encode($formModel->errors));
+                    }
                 }
             }
-            if ($files) $this->saveFiles($files, $postContent, $user_id);
+            if ($files)  $this->saveFiles($files, $postContent, $user_id);
             $transaction->commit();
 
             return [
@@ -71,6 +79,7 @@ class ApiService
 
     public function saveFiles($files, $postContent, $user_id)
     {
+//        return $postContent;
         $fileNames = $files['forms']['name'];
         $tempNames2 = $files['forms']['tmp_name'];
         $fileTypes = $files['forms']['type'];
@@ -108,16 +117,48 @@ class ApiService
     {
         $result = [];
         $wizardForms = WizardFormField::findAll(['wizard_id' => $wizard_id]);
-        foreach ($wizardForms as $form) {
-            $result[$form->form->form_name] = $this->getUserFormData(
+        foreach ($wizardForms as $form) { // $form->form->form_name
+            $result[] =[
+                'form_name'=>$form->form->form_name,
+                'form_id'=>$form->form->id,
+                'form_content'=>$this->getUserFormData(
+                    $user_id,
+                    $application_id,
+                    $form->form_id,
+                    $form->wizard_id
+                )
+            ];
+        }
+        return $result;
+
+    }
+
+
+    public function getApplicationContent($application_id,$user_id)
+    {
+        $applicationWizard = ApplicationWizard::findAll(['application_id'=>$application_id]);
+        foreach ($applicationWizard as $wizard) {
+            $result[] = [
+              'wizard_id'=>$wizard->id,
+              'wizard_name'=>$wizard->wizard_name,
+              'wizard_forms'=>$this->getForms($wizard->application_id,$wizard->id,$user_id)
+            ];
+        }
+        return $result;
+    }
+
+    private function getForms($application_id,$wizard_id,$user_id)
+    {
+        $getWizardForms = WizardFormField::findAll(['wizard_id'=>$wizard_id]);
+        foreach ($getWizardForms as $form) {
+            $forms[] = $this->getUserFormData(
                 $user_id,
                 $application_id,
                 $form->form_id,
                 $form->wizard_id
             );
         }
-        return $result;
-
+        return $forms;
     }
 
 
