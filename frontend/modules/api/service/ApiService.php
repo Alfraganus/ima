@@ -2,7 +2,7 @@
 
 namespace frontend\modules\api\service;
 
-use common\models\Application;
+use Yii;
 use common\models\ApplicationForm;
 use common\models\ApplicationFormMedia;
 use common\models\ApplicationWizard;
@@ -12,7 +12,7 @@ use common\models\forms\FormIndustryExample;
 use common\models\forms\FormRequester;
 use common\models\UserApplications;
 use common\models\WizardFormField;
-use Yii;
+use common\models\forms\FormProductSymbol;
 
 class ApiService
 {
@@ -26,6 +26,7 @@ class ApiService
             2 => new FormAuthor(),
             3 => new FormIndustryExample(),
             4 => new FormIndustryDocument(),
+            5 => new FormProductSymbol(),
         ];
 
     }
@@ -150,6 +151,7 @@ class ApiService
     private function getForms($application_id,$wizard_id,$user_id)
     {
         $getWizardForms = WizardFormField::findAll(['wizard_id'=>$wizard_id]);
+        $forms = [];
         foreach ($getWizardForms as $form) {
             $forms[] = $this->getUserFormData(
                 $user_id,

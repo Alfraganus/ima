@@ -35,6 +35,19 @@ class m230301_171830_create_requester_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropForeignKey(
+            'fk-form_requester_application_id',
+            'form_requester'
+        );
+        $this->dropForeignKey(
+            'fk-form_requester_wizard_id',
+            'form_requester'
+        );
+
+        $this->dropForeignKey(
+            'fk-form_requester-user_id',
+            'form_requester'
+        );
         $this->dropTable('{{%form_requester}}');
     }
 }
