@@ -37,7 +37,6 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-
         $request = Yii::$app->request;
         $dataString = $request->getRawBody();
       return  $data = json_decode($dataString, true);
