@@ -38,7 +38,7 @@ class UpdateFormService
              unset($form['form_id']);
              $model->updateAttributes($form);
         }
-     return  $this->updateFiles($files,$postContent,$user_id);
+        $this->updateFiles($files,$postContent,$user_id);
         return [
             'success' => true,
             'message' => 'Operation is successfull'
@@ -117,7 +117,6 @@ class UpdateFormService
                 'message' => $exception->getMessage()
             ];
         }
-
     }
 
     public function saveFiles($files, $postContent, $user_id)
@@ -145,30 +144,6 @@ class UpdateFormService
     }
 
 
-    public static function getUserFormData($user_id, $application_id, $form_id, $wizard_id)
-    {
-        $form = ApplicationForm::findOne($form_id);
-        return $form->form_class::findAll([
-            'user_application_id' => $application_id,
-            'user_id' => $user_id,
-            'user_application_wizard_id' => $wizard_id
-        ]);
-    }
-
-    public function getWizardContent($application_id,$wizard_id,$user_id)
-    {
-        $wizardForms = WizardFormField::findAll(['wizard_id' => $wizard_id]);
-        foreach ($wizardForms as $form) {
-            $result[$form->form->form_name] = $this->getUserFormData(
-                $user_id,
-                $application_id,
-                $form->form_id,
-                $form->wizard_id
-            );
-        }
-        return $result;
-
-    }
 
 
 }
