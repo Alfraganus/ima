@@ -50,8 +50,8 @@ return [
 
     ],
     'modules' => [
-        'api' => [
-            'class' => \frontend\modules\api\ApiModule::class,
+        'v1' => [
+            'class' => \expert\modules\v1\ApiModule::class,
         ],
     ],
     'params' => $params,

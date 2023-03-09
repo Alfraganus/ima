@@ -15,7 +15,6 @@ class m230228_081932_create_application_form_table extends Migration
         $this->createTable('{{%application_form}}', [
             'id' => $this->primaryKey(),
             'form_name'=>$this->string(150),
-            'form_class'=>$this->string(150),
             'can_be_multiple'=>$this->boolean()
         ]);
     }

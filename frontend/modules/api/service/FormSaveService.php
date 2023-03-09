@@ -2,19 +2,18 @@
 
 namespace frontend\modules\api\service;
 
+use Yii;
+use common\models\forms\FormConfirmation;
 use common\models\forms\FormMktu;
+use common\models\forms\FormPayment;
 use common\models\forms\FormPriority;
 use common\models\forms\mktu\FormMktuChildren;
-use Yii;
-use common\models\ApplicationForm;
 use common\models\ApplicationFormMedia;
-use common\models\ApplicationWizard;
 use common\models\forms\FormAuthor;
 use common\models\forms\FormIndustryDocument;
 use common\models\forms\FormIndustryExample;
 use common\models\forms\FormRequester;
 use common\models\UserApplications;
-use common\models\WizardFormField;
 use common\models\forms\FormProductSymbol;
 
 class FormSaveService
@@ -31,6 +30,8 @@ class FormSaveService
             5 => new FormProductSymbol(),
             6 => new FormMktu(),
             7 => new FormPriority(),
+            8 => new FormConfirmation(),
+            9 => new FormPayment(),
         ];
     }
 

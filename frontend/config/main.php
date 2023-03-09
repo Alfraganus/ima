@@ -12,6 +12,17 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
+        'oneId' => [
+            'class' => 'frontend\components\OneId',
+            'authorizationUrl' => 'https://sso.egov.uz/sso/oauth/Authorization.do',
+            'clientId' => 'ima_uz',
+            'clientSecret' => '590yRG+aflfeBMnR0/jvkg==',
+            'scope' => 'ima_uz',
+            'responseType' => 'one_code',
+            'state' => 'eyJtZXRob2QiOiJJRFBXIn0=',
+            'grantType' => 'one_authorization_code',
+            'redirectUrl' => 'http://ima.api/api/auth/test',
+        ],
        /* 'request' => [
             'csrfParam' => '_csrf-frontend',
         ],*/
@@ -20,8 +31,7 @@ return [
             'charset' => 'UTF-8',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
+            'identityClass' => 'frontend\models\ImaUsers',
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
         ],
         'session' => [

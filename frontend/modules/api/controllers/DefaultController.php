@@ -3,19 +3,34 @@
 namespace frontend\modules\api\controllers;
 
 
-use frontend\modules\api\service\ApiService;
 use frontend\modules\api\service\FormReadService;
 use frontend\modules\api\service\FormSaveService;
 use frontend\modules\api\service\UpdateFormService;
 use Yii;
 use yii\rest\Controller;
 use yii\web\Response;
-
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\HttpBearerAuth;
 /**
  * Default controller for the `api` module
  */
 class DefaultController extends Controller
 {
+
+    public function behaviors() : array
+    {
+        $behaviors = parent::behaviors();
+
+        unset($behaviors['authenticator']);
+        $behaviors['authenticator'] = [
+            'class' => CompositeAuth::class,
+            'authMethods' => [
+                HttpBearerAuth::class,
+            ],
+        ];
+
+        return $behaviors;
+    }
 
 
     public function actionSaveApplication()
