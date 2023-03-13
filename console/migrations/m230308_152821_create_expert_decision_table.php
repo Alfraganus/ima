@@ -20,9 +20,10 @@ class m230308_152821_create_expert_decision_table extends Migration
             'module_id'=>$this->integer(),
             'tab_id'=>$this->integer(),
             'decision_type'=>$this->integer(),
-            'application_identification'=>$this->string(150),
-            'accepted_date'=>$this->date(),
-            'sent_date'=>$this->date(),
+            'application_identification'=>$this->string(150)->null(),
+            'accepted_date'=>$this->date()->null(),
+            'sent_date'=>$this->date()->null(),
+            'expert_fullname'=>$this->string(255)->null(),
         ]);
 
         $this->addForeignKey(

@@ -53,13 +53,13 @@ class ExpertUser extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function rules()
+/*    public function rules()
     {
         return [
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
         ];
-    }
+    }*/
 
     /**
      * {@inheritdoc}
@@ -209,18 +209,9 @@ class ExpertUser extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = null;
     }
 
-    public function toArray(array $fields = [], array $expand = [], $recursive = true)
-    {
-        // TODO: Implement toArray() method.
-    }
 
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        // TODO: Implement findIdentityByAccessToken() method.
-    }
-
-    public static function instance($refresh = false)
-    {
-        // TODO: Implement instance() method.
+        return static::findOne(['auth_key' => $token]);
     }
 }

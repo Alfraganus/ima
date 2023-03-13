@@ -13,7 +13,7 @@ use frontend\models\ImaUsers;
 use Yii;
 
 /**
- * This is the model class for table "expert_form_decision".
+ * This is the model class for table "expert_form_payment".
  *
  * @property int $id
  * @property int|null $expert_id
@@ -22,26 +22,26 @@ use Yii;
  * @property int|null $user_application_id
  * @property int|null $module_id
  * @property int|null $tab_id
- * @property int|null $decision_type
- * @property string|null $application_identification
- * @property string|null $accepted_date
- * @property string|null $sent_date
- * @property string|null $expert_fullname
+ * @property int|null $payment_purpose_id
+ * @property string|null $payment_date
+ * @property string|null $currency
+ * @property string|null $amount
  *
  * @property Application $application
  * @property ExpertUser $expert
  * @property ExpertModules $module
  * @property ExpertTabs $tab
  * @property ImaUsers $user
+ * @property UserApplications $userApplication
  */
-class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
+class ExpertFormPayment extends \yii\db\ActiveRecord implements FormInterface
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'expert_form_decision';
+        return 'expert_form_payment';
     }
 
     /**
@@ -50,13 +50,12 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
     public function rules()
     {
         return [
-            [['expert_id', 'user_id', 'application_id', 'module_id', 'tab_id', 'decision_type', 'user_application_id'], 'integer'],
-            [['accepted_date', 'sent_date'], 'safe'],
-            [['application_identification'], 'string', 'max' => 150],
-            [['expert_fullname'], 'string', 'max' => 255],
+            [['expert_id', 'user_id', 'application_id', 'user_application_id', 'module_id', 'tab_id', 'payment_purpose_id'], 'integer'],
+            [['currency', 'amount'], 'safe'],
+            [['payment_date'], 'string', 'max' => 150],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],
-            [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['user_application_id' => 'id']],
             [['expert_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertUser::class, 'targetAttribute' => ['expert_id' => 'id']],
+            [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['user_application_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => ImaUsers::class, 'targetAttribute' => ['user_id' => 'id']],
             [['module_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertModules::class, 'targetAttribute' => ['module_id' => 'id']],
             [['tab_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertTabs::class, 'targetAttribute' => ['tab_id' => 'id']],
@@ -73,15 +72,15 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
             'expert_id' => Yii::t('app', 'Expert ID'),
             'user_id' => Yii::t('app', 'User ID'),
             'application_id' => Yii::t('app', 'Application ID'),
+            'user_application_id' => Yii::t('app', 'User Application ID'),
             'module_id' => Yii::t('app', 'Module ID'),
             'tab_id' => Yii::t('app', 'Tab ID'),
-            'decision_type' => Yii::t('app', 'Decision Type'),
-            'application_identification' => Yii::t('app', 'Application Identification'),
-            'accepted_date' => Yii::t('app', 'Accepted Date'),
-            'sent_date' => Yii::t('app', 'Sent Date'),
+            'payment_purpose_id' => Yii::t('app', 'Payment Purpose ID'),
+            'payment_date' => Yii::t('app', 'Payment Date'),
+            'currency' => Yii::t('app', 'Currency'),
+            'amount' => Yii::t('app', 'Amount'),
         ];
     }
-
     public function fields()
     {
         return [
@@ -91,14 +90,16 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
             'application_id',
             'module_id',
             'tab_id',
-            'decision_type',
-            'application_identification',
-            'accepted_date'=> function() {
-                return date('d-m-Y',strtotime($this->accepted_date));
+            'payment_purpose_id'=>  function() {
+                return self::paymentPurposeList($this->payment_purpose_id);
             },
-            'sent_date'=> function() {
-                return date('d-m-Y',strtotime($this->sent_date));
+            'payment_date'=> function() {
+             return date('d-m-Y',strtotime($this->payment_date));
             },
+            'currency' => function() {
+                return self::currencyList($this->currency);
+            },
+            'amount',
             'file' => function () {
                 return FormComponent::getExpertFiles(
                     $this->user_id,
@@ -123,6 +124,27 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
         return $query->all();
     }
 
+
+    public static function currencyList($currency_id = null)
+    {
+        $currencies = [
+            1 => 'UZS',
+            2 => 'USD',
+            3 => 'Rubl',
+        ];
+     return  $currency_id ? $currencies[$currency_id] : $currencies;
+    }
+
+    public static function paymentPurposeList($payment_id)
+    {
+        $paymentTypes  = [
+            1 => 'Za podachu zayavki',
+            2 => 'Za vneseniya izmeneniya',
+            3 => 'Dobpata za podachu zayavki',
+        ];
+        return  $payment_id ? $paymentTypes[$payment_id] : $paymentTypes;
+    }
+
     /**
      * Gets query for [[Application]].
      *
@@ -131,11 +153,6 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
     public function getApplication()
     {
         return $this->hasOne(Application::class, ['id' => 'application_id']);
-    }
-
-    public function getUserApplication()
-    {
-        return $this->hasOne(UserApplications::class, ['id' => 'user_application_id']);
     }
 
     /**
@@ -178,5 +195,13 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
         return $this->hasOne(ImaUsers::class, ['id' => 'user_id']);
     }
 
-
+    /**
+     * Gets query for [[UserApplication]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserApplication()
+    {
+        return $this->hasOne(UserApplications::class, ['id' => 'user_application_id']);
+    }
 }

@@ -20,7 +20,7 @@ return [
             'charset' => 'UTF-8',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => \expert\models\ExpertUser::class,
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-expert', 'httpOnly' => true],
         ],

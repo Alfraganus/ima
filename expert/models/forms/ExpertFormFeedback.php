@@ -12,8 +12,9 @@ use expert\models\ExpertUser;
 use frontend\models\ImaUsers;
 use Yii;
 
+
 /**
- * This is the model class for table "expert_form_decision".
+ * This is the model class for table "expert_form_feedback".
  *
  * @property int $id
  * @property int|null $expert_id
@@ -22,26 +23,27 @@ use Yii;
  * @property int|null $user_application_id
  * @property int|null $module_id
  * @property int|null $tab_id
- * @property int|null $decision_type
+ * @property int|null $department
+ * @property string|null $feedback_date
+ * @property string|null $date_recovery
  * @property string|null $application_identification
- * @property string|null $accepted_date
- * @property string|null $sent_date
- * @property string|null $expert_fullname
+ * @property int|null $feedback_type
  *
  * @property Application $application
  * @property ExpertUser $expert
  * @property ExpertModules $module
  * @property ExpertTabs $tab
  * @property ImaUsers $user
+ * @property UserApplications $userApplication
  */
-class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
+class ExpertFormFeedback extends \yii\db\ActiveRecord implements FormInterface
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'expert_form_decision';
+        return 'expert_form_feedback';
     }
 
     /**
@@ -50,13 +52,12 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
     public function rules()
     {
         return [
-            [['expert_id', 'user_id', 'application_id', 'module_id', 'tab_id', 'decision_type', 'user_application_id'], 'integer'],
-            [['accepted_date', 'sent_date'], 'safe'],
+            [['expert_id', 'user_id', 'application_id', 'user_application_id', 'module_id', 'tab_id', 'department', 'feedback_type'], 'integer'],
+            [['feedback_date', 'date_recovery'], 'safe'],
             [['application_identification'], 'string', 'max' => 150],
-            [['expert_fullname'], 'string', 'max' => 255],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],
-            [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['user_application_id' => 'id']],
             [['expert_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertUser::class, 'targetAttribute' => ['expert_id' => 'id']],
+            [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['user_application_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => ImaUsers::class, 'targetAttribute' => ['user_id' => 'id']],
             [['module_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertModules::class, 'targetAttribute' => ['module_id' => 'id']],
             [['tab_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertTabs::class, 'targetAttribute' => ['tab_id' => 'id']],
@@ -73,12 +74,14 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
             'expert_id' => Yii::t('app', 'Expert ID'),
             'user_id' => Yii::t('app', 'User ID'),
             'application_id' => Yii::t('app', 'Application ID'),
+            'user_application_id' => Yii::t('app', 'User Application ID'),
             'module_id' => Yii::t('app', 'Module ID'),
             'tab_id' => Yii::t('app', 'Tab ID'),
-            'decision_type' => Yii::t('app', 'Decision Type'),
+            'department' => Yii::t('app', 'Department'),
+            'feedback_date' => Yii::t('app', 'Feedback Date'),
+            'date_recovery' => Yii::t('app', 'Date Recovery'),
             'application_identification' => Yii::t('app', 'Application Identification'),
-            'accepted_date' => Yii::t('app', 'Accepted Date'),
-            'sent_date' => Yii::t('app', 'Sent Date'),
+            'feedback_type' => Yii::t('app', 'Feedback Type'),
         ];
     }
 
@@ -91,14 +94,20 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
             'application_id',
             'module_id',
             'tab_id',
-            'decision_type',
+
+            'department'=> function() {
+                return self::departmentList($this->department);
+            },
+            'feedback_date' => function() {
+                return date('d-m-Y',strtotime($this->feedback_date));
+            },
+            'date_recovery' => function() {
+                return date('d-m-Y',strtotime($this->date_recovery));
+            },
+            'feedback_type'=> function() {
+                return self::feedbackTypeList($this->feedback_type);
+            },
             'application_identification',
-            'accepted_date'=> function() {
-                return date('d-m-Y',strtotime($this->accepted_date));
-            },
-            'sent_date'=> function() {
-                return date('d-m-Y',strtotime($this->sent_date));
-            },
             'file' => function () {
                 return FormComponent::getExpertFiles(
                     $this->user_id,
@@ -123,6 +132,25 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
         return $query->all();
     }
 
+    public function departmentList($data_id)
+    {
+        $data = [
+            1 => 'Otdek ekspertiza',
+            2 => 'Gosrestr',
+        ];
+        return  $data_id ? $data[$data_id] : $data;
+    }
+
+    public function feedbackTypeList($data_id)
+    {
+        $data = [
+            1 => 'Feedback type 1',
+            2 => 'Feedback type 2',
+        ];
+        return  $data_id ? $data[$data_id] : $data;
+    }
+
+
     /**
      * Gets query for [[Application]].
      *
@@ -131,11 +159,6 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
     public function getApplication()
     {
         return $this->hasOne(Application::class, ['id' => 'application_id']);
-    }
-
-    public function getUserApplication()
-    {
-        return $this->hasOne(UserApplications::class, ['id' => 'user_application_id']);
     }
 
     /**
@@ -178,5 +201,13 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
         return $this->hasOne(ImaUsers::class, ['id' => 'user_id']);
     }
 
-
+    /**
+     * Gets query for [[UserApplication]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserApplication()
+    {
+        return $this->hasOne(UserApplications::class, ['id' => 'user_application_id']);
+    }
 }
