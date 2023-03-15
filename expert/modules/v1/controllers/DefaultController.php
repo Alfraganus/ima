@@ -18,10 +18,9 @@ use yii\web\UploadedFile;
  */
 class DefaultController extends Controller
 {
-    public function behaviors() : array
+    public function behaviors()
     {
         $behaviors = parent::behaviors();
-
         unset($behaviors['authenticator']);
         $behaviors['authenticator'] = [
             'class' => CompositeAuth::class,
@@ -29,8 +28,14 @@ class DefaultController extends Controller
                 HttpBearerAuth::class,
             ],
         ];
-
-        return $behaviors;
+        $behaviors['verbs'] = [
+            'class' => \yii\filters\VerbFilter::class,
+            'actions' => [
+                'save-form' => ['POST'],
+                'send-message' => ['POST'],
+            ],
+        ];
+        return  $behaviors;
     }
 
     public function actionIndex()

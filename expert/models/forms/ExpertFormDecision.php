@@ -123,6 +123,14 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
         return $query->all();
     }
 
+    public static function decisionTypeTabOne($data_id)
+    {
+        $data = [
+
+        ];
+        return  $data_id ? $data[$data_id] : $data;
+    }
+
     /**
      * Gets query for [[Application]].
      *
