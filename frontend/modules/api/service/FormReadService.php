@@ -20,7 +20,6 @@ class FormReadService
 
     public static function getUserFormData($user_id, $application_id, $form_id, $wizard_id)
     {
-//        throw new \Exception($application_id);
         $form = ApplicationForm::findOne($form_id);
         return $form->form_class::findAll([
             'user_application_id' => $application_id,
@@ -46,7 +45,6 @@ class FormReadService
             ];
         }
         return $result;
-
     }
 
     public function getApplicationContent($application_id)

@@ -13,7 +13,6 @@ use yii\web\UploadedFile;
 
 class ApplicationChatService extends Model
 {
-
     public function sendMessage($expert_id, $data)
     {
         $model = new ApplicationChat();
