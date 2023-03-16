@@ -54,12 +54,12 @@ class FormPayment extends \yii\db\ActiveRecord
         $maxApplicationNumber = UserApplications::find()->max('application_number');
         $model = UserApplications::findOne([
             'user_id'=>$this->user_id,
-//            'id'=>$this->user_application_id
+            'id'=>$this->user_application_id
         ]);
-        if (empty($maxApplicationNumber)) {
+        if ($maxApplicationNumber < 1) {
             $model->application_number = 1;
         } else {
-            $model->application_number++;
+            $model->application_number = $maxApplicationNumber + 1;
         }
         $model->generated_id = $this->formatOrderNumber('MGU',$model->application_number);
         $model->save(false);

@@ -20,6 +20,7 @@ class FormReadService
 
     public static function getUserFormData($user_id, $application_id, $form_id, $wizard_id)
     {
+//        throw new \Exception($application_id);
         $form = ApplicationForm::findOne($form_id);
         return $form->form_class::findAll([
             'user_application_id' => $application_id,
@@ -48,14 +49,15 @@ class FormReadService
 
     }
 
-    public function getApplicationContent($application_id,$user_id)
+    public function getApplicationContent($application_id)
     {
-        $applicationWizard = ApplicationWizard::findAll(['application_id'=>$application_id]);
+        $getUserApplication = UserApplications::findOne($application_id);
+        $applicationWizard = ApplicationWizard::findAll(['application_id'=>$getUserApplication->application_id]);
         foreach ($applicationWizard as $wizard) {
             $result[] = [
               'wizard_id'=>$wizard->id,
               'wizard_name'=>$wizard->wizard_name,
-              'wizard_forms'=>$this->getForms($wizard->application_id,$wizard->id,$user_id)
+              'wizard_forms'=>$this->getForms($getUserApplication->id,$wizard->id,$getUserApplication->user_id)
             ];
         }
         return $result;

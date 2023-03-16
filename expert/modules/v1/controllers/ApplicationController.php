@@ -15,17 +15,13 @@ class ApplicationController extends DefaultController
 {
 
     private $applicationChatService;
-    
+
     public function __construct($id, $module, $config = [])
     {
-     $this->applicationChatService = new ApplicationChatService();
+        $this->applicationChatService = new ApplicationChatService();
         parent::__construct($id, $module, $config);
     }
 
-    public function actionSaveForm()
-    {
-        return Yii::$app->request->post();
-    }
 
     public function actionSendExpertMessage()
     {
@@ -37,8 +33,8 @@ class ApplicationController extends DefaultController
 
     public function actionGetExpertMessage($user_application_id)
     {
-       return $this->applicationChatService->getFormMessage(
-           htmlspecialchars($user_application_id)
-       );
+        return $this->applicationChatService->getFormMessage(
+            htmlspecialchars($user_application_id)
+        );
     }
 }
