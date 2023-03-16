@@ -66,11 +66,10 @@ class ApplicationChat extends \yii\db\ActiveRecord
         $getUserMaxOrder = self::find()
             ->where(['user_application_id' => $this->user_application_id])
             ->max('chat_order_number');
-        $order = 1;
         if ($getUserMaxOrder < 1) {
             $order = 1;
         } else {
-            $order++;
+            $order = $getUserMaxOrder+1;
         }
         $this->chat_order_number = $order;
     }
