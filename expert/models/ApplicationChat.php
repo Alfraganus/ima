@@ -2,6 +2,7 @@
 
 namespace expert\models;
 
+use common\models\UserApplications;
 use expert\models\forms\ExpertFormList;
 use expert\modules\v1\services\ApplicationChatService;
 use Yii;
@@ -16,8 +17,9 @@ use Yii;
  * @property int|null $expert_form_type_id
  * @property int|null $expert_form_id
  * @property string|null $datetime
+ * @property string|null $user_message
+ * @property string|null $user_file
  * @property int|null $chat_order_number
- *
  * @property ExpertUser $expert
  * @property ExpertFormList $expertFormType
  */
@@ -39,6 +41,7 @@ class ApplicationChat extends \yii\db\ActiveRecord
         return [
             [['user_application_id', 'expert_id', 'sender_is_expert', 'expert_form_type_id', 'expert_form_id', 'chat_order_number'], 'integer'],
             [['datetime'], 'safe'],
+            [['user_message','user_file'], 'string', 'max' => 255],
             [['expert_form_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertFormList::class, 'targetAttribute' => ['expert_form_type_id' => 'id']],
             [['expert_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertUser::class, 'targetAttribute' => ['expert_id' => 'id']],
         ];
@@ -85,8 +88,15 @@ class ApplicationChat extends \yii\db\ActiveRecord
             'expert_form_type_id',
             'expert_form_id',
             'datetime',
+            'user_message',
+            'user_file',
             'chat_order_number',
         ];
+    }
+
+    public function getUserApplication()
+    {
+        return $this->hasOne(UserApplications::class, ['id' => 'user_application_id']);
     }
 
     /**

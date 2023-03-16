@@ -3,6 +3,7 @@
 namespace expert\modules\v1\controllers;
 
 use expert\modules\v1\services\ApplicationChatService;
+use Yii;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\rest\Controller;
@@ -13,16 +14,31 @@ use yii\rest\Controller;
 class ApplicationController extends DefaultController
 {
 
+    private $applicationChatService;
+    
+    public function __construct($id, $module, $config = [])
+    {
+     $this->applicationChatService = new ApplicationChatService();
+        parent::__construct($id, $module, $config);
+    }
 
     public function actionSaveForm()
     {
-        return \Yii::$app->request->post();
+        return Yii::$app->request->post();
     }
 
-    public function actionSendMessage()
+    public function actionSendExpertMessage()
     {
-        $post = \Yii::$app->request->post();
-        $user_id = \Yii::$app->user->id;
-        return (new ApplicationChatService())->sendMessage($user_id,$post);
+        return $this->applicationChatService->sendMessage(
+            Yii::$app->user->id,
+            Yii::$app->request->post()
+        );
+    }
+
+    public function actionGetExpertMessage($user_application_id)
+    {
+       return $this->applicationChatService->getFormMessage(
+           htmlspecialchars($user_application_id)
+       );
     }
 }

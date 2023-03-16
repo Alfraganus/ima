@@ -127,7 +127,8 @@ class FormSaveService
         $fileTypes = $files['forms']['type'];
         for ($i = 0; $i < sizeof($fileNames); $i++) {
             $fileIndentification = array_keys($fileNames[$i])[0];
-            $fileName = 'form_uploads/' . $fileNames[$i][$fileIndentification];
+            $fileTitle = time().$fileNames[$i][$fileIndentification];
+            $fileName = 'form_uploads/' .$fileTitle;
             move_uploaded_file($tempNames2[$i][$fileIndentification], $fileName);
             $mediaContent = new ApplicationFormMedia();
             $mediaContent->application_id = $application_id;
@@ -135,7 +136,7 @@ class FormSaveService
             $mediaContent->form_id = $fileIndentification;
             $mediaContent->user_id = $user_id;
             $mediaContent->file_path = Yii::$app->request->hostInfo . '/' . $fileName;
-            $mediaContent->file_name = $fileNames[$i][$fileIndentification];
+            $mediaContent->file_name = $fileTitle;
             $mediaContent->file_extension = $fileTypes[$i][$fileIndentification];
             if (!$mediaContent->save()) {
                 throw new  \Exception(json_encode($mediaContent->errors));

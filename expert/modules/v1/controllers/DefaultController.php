@@ -33,6 +33,7 @@ class DefaultController extends Controller
             'actions' => [
                 'save-form' => ['POST'],
                 'send-message' => ['POST'],
+                'send-user-message' => ['POST'],
             ],
         ];
         return  $behaviors;
