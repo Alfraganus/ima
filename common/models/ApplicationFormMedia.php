@@ -40,7 +40,7 @@ class ApplicationFormMedia extends \yii\db\ActiveRecord
             [['application_id', 'wizard_id', 'form_id', 'user_id'], 'integer'],
             [['file_name'], 'string', 'max' => 255],
             [['file_path', 'file_extension'], 'string', 'max' => 500],
-            [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],
+            [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['application_id' => 'id']],
             [['form_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationForm::class, 'targetAttribute' => ['form_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['wizard_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationWizard::class, 'targetAttribute' => ['wizard_id' => 'id']],
@@ -71,7 +71,7 @@ class ApplicationFormMedia extends \yii\db\ActiveRecord
      */
     public function getApplication()
     {
-        return $this->hasOne(Application::class, ['id' => 'application_id']);
+        return $this->hasOne(UserApplications::class, ['id' => 'application_id']);
     }
 
     /**

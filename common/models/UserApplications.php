@@ -14,7 +14,8 @@ use Yii;
  * @property int|null $payment_done
  * @property int|null $current_wizard_id
  * @property int|null $date_submitted
- *
+ * @property string|null $generated_id
+ * @property int|null $application_number
  * @property Application $application
  * @property ApplicationWizard $currentWizard
  * @property User $user
@@ -35,6 +36,7 @@ class UserApplications extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['generated_id'], 'string'],
             [['user_id', 'application_id', 'is_finished', 'payment_done', 'current_wizard_id', 'date_submitted'], 'integer'],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],
             [['current_wizard_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationWizard::class, 'targetAttribute' => ['current_wizard_id' => 'id']],

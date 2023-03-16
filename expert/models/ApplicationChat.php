@@ -3,6 +3,7 @@
 namespace expert\models;
 
 use expert\models\forms\ExpertFormList;
+use expert\modules\v1\services\ApplicationChatService;
 use Yii;
 
 /**
@@ -59,6 +60,22 @@ class ApplicationChat extends \yii\db\ActiveRecord
             'chat_order_number' => Yii::t('app', 'Chat Order Number'),
         ];
     }
+
+    public function setMaxOrderId()
+    {
+        $getUserMaxOrder = self::find()
+            ->where(['user_application_id' => $this->user_application_id])
+            ->max('chat_order_number');
+        $order = 1;
+        if ($getUserMaxOrder < 1) {
+            $order = 1;
+        } else {
+            $order++;
+        }
+        $this->chat_order_number = $order;
+    }
+
+
     public function fields()
     {
         return [
@@ -70,19 +87,6 @@ class ApplicationChat extends \yii\db\ActiveRecord
             'expert_form_id',
             'datetime',
             'chat_order_number',
-
-//            'department'=> function() {
-//                return self::departmentList($this->department);
-//            },
-//
-//            'file' => function () {
-//                return FormComponent::getExpertFiles(
-//                    $this->user_id,
-//                    $this->module_id,
-//                    $this->tab_id,
-//                    $this->id
-//                );
-//            }
         ];
     }
 

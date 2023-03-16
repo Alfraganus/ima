@@ -89,6 +89,7 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
             'expert_id',
             'user_id',
             'application_id',
+            'user_application_id',
             'module_id',
             'tab_id',
             'decision_type',
@@ -100,14 +101,19 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
                 return date('d-m-Y',strtotime($this->sent_date));
             },
             'file' => function () {
-                return FormComponent::getExpertFiles(
-                    $this->user_id,
-                    $this->module_id,
-                    $this->tab_id,
-                    $this->id
-                );
+                return $this->getFile();
             }
         ];
+    }
+
+    public function getFile()
+    {
+        return FormComponent::getExpertFiles(
+            $this->user_id,
+            $this->module_id,
+            $this->tab_id,
+            $this->id
+        );
     }
 
     public function run($queryParams=null,$orderBy=false)
@@ -126,7 +132,9 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
     public static function decisionTypeTabOne($data_id)
     {
         $data = [
-
+            0=> 'Decision 1',
+            1=> 'Decision 2',
+            2=> 'Decision 3',
         ];
         return  $data_id ? $data[$data_id] : $data;
     }

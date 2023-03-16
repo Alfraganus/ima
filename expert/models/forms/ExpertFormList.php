@@ -46,13 +46,5 @@ class ExpertFormList extends \yii\db\ActiveRecord
         ];
     }
 
-    public function toArray(array $fields = [], array $expand = [], $recursive = true)
-    {
-        // TODO: Implement toArray() method.
-    }
 
-    public static function instance($refresh = false)
-    {
-        // TODO: Implement instance() method.
-    }
 }

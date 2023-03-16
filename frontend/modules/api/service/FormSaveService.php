@@ -39,9 +39,9 @@ class FormSaveService
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $this->saveApplication($postContent['application_id']);
-            if ($postContent['forms'])  $this->saveForms($postContent['forms'], $postContent['application_id'], $postContent['wizard_id']);
-            if ($files) $this->saveFiles($files, $postContent, $user_id);
+          $user_application_id =  $this->saveApplication($postContent['application_id']);
+            if ($postContent['forms'])  $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id']);
+            if ($files) $this->saveFiles($files, $postContent, $user_id,$user_application_id);
             $transaction->commit();
 
             return [
@@ -70,10 +70,12 @@ class FormSaveService
             $application->user_id = $user_id;
             $application->save();
         }
+        return $application->id;
     }
 
     private function saveForms($forms,$application_id,$wizard_id,$user_id =1)
     {
+//        throw new \Exception($application_id);
         foreach ($forms as $form) {
             if (!in_array($form['form_id'], array_keys($this->setForm))) {
                 throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
@@ -117,19 +119,18 @@ class FormSaveService
     }
 
 
-    public function saveFiles($files, $postContent, $user_id)
+    public function saveFiles($files, $postContent, $user_id,$application_id)
     {
 //        return $postContent;
         $fileNames = $files['forms']['name'];
         $tempNames2 = $files['forms']['tmp_name'];
         $fileTypes = $files['forms']['type'];
         for ($i = 0; $i < sizeof($fileNames); $i++) {
-            /*validatsiya yozish kerak file nomi form id bolishini tekshirgani*/
             $fileIndentification = array_keys($fileNames[$i])[0];
             $fileName = 'form_uploads/' . $fileNames[$i][$fileIndentification];
             move_uploaded_file($tempNames2[$i][$fileIndentification], $fileName);
             $mediaContent = new ApplicationFormMedia();
-            $mediaContent->application_id = $postContent['application_id'];
+            $mediaContent->application_id = $application_id;
             $mediaContent->wizard_id = $postContent['wizard_id'];
             $mediaContent->form_id = $fileIndentification;
             $mediaContent->user_id = $user_id;

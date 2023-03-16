@@ -5,6 +5,7 @@ namespace common\models\forms;
 use common\models\Application;
 use common\models\ApplicationWizard;
 use common\models\User;
+use common\models\UserApplications;
 use Yii;
 
 /**
@@ -42,7 +43,7 @@ class FormPriority extends \yii\db\ActiveRecord
             [['user_id', 'user_application_id', 'user_application_wizard_id', 'priority_type', 'country_id'], 'integer'],
             [['requested_data'], 'safe'],
             [['questionnaire_number'], 'string', 'max' => 255],
-            [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['user_application_id' => 'id']],
+            [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['user_application_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['user_application_wizard_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationWizard::class, 'targetAttribute' => ['user_application_wizard_id' => 'id']],
         ];
@@ -82,7 +83,7 @@ class FormPriority extends \yii\db\ActiveRecord
      */
     public function getUserApplication()
     {
-        return $this->hasOne(Application::class, ['id' => 'user_application_id']);
+        return $this->hasOne(UserApplications::class, ['id' => 'user_application_id']);
     }
 
     /**

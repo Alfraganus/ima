@@ -53,6 +53,19 @@ class m230304_124459_create__form_industry_example_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropForeignKey(
+            'fk-_form_industry_example_application_id',
+            'form_industry_example'
+        );
+        $this->dropForeignKey(
+            'fk-form_industry_example_wizard_id',
+            'form_industry_example'
+        );
+
+        $this->dropForeignKey(
+            'fk-form_industry_example-user_id',
+            'form_industry_example'
+        );
         $this->dropTable('{{%form_industry_example}}');
     }
 }

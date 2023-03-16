@@ -44,23 +44,20 @@ class m230306_115800_add_foreign_key_to_request_table extends Migration
      */
     public function safeDown()
     {
-        echo "m230306_115800_add_foreign_key_to_request_table cannot be reverted.\n";
+        $this->dropForeignKey(
+            'fk-form_requester_application_id',
+            'form_requester'
+        );
+        $this->dropForeignKey(
+            'fk-form_requester_wizard_id',
+            'form_requester'
+        );
 
-        return false;
+        $this->dropForeignKey(
+            'fk-form_requester-user_id',
+            'form_requester'
+        );
     }
 
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
 
-    }
-
-    public function down()
-    {
-        echo "m230306_115800_add_foreign_key_to_request_table cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }

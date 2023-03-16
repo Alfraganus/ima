@@ -5,6 +5,7 @@ namespace common\models\forms;
 use common\models\Application;
 use common\models\ApplicationWizard;
 use common\models\User;
+use common\models\UserApplications;
 use Yii;
 
 /**
@@ -40,11 +41,50 @@ class FormPayment extends \yii\db\ActiveRecord
         return [
             [['user_id', 'user_application_id', 'user_application_wizard_id', 'payment_done'], 'integer'],
             [['payment_info'], 'string'],
-            [['payment_time'], 'safe'],
-            [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['user_application_id' => 'id']],
+            [['payment_time', 'generated_id'], 'safe'],
+            [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['user_application_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['user_application_wizard_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationWizard::class, 'targetAttribute' => ['user_application_wizard_id' => 'id']],
         ];
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        $maxApplicationNumber = UserApplications::find()->max('application_number');
+        $model = UserApplications::findOne([
+            'user_id'=>$this->user_id,
+//            'id'=>$this->user_application_id
+        ]);
+        if (empty($maxApplicationNumber)) {
+            $model->application_number = 1;
+        } else {
+            $model->application_number++;
+        }
+        $model->generated_id = $this->formatOrderNumber('MGU',$model->application_number);
+        $model->save(false);
+
+    }
+    private function formatOrderNumber($prefix, $number) {
+        $numberLength = strlen((string)$number);
+        switch ($numberLength) {
+            case 1:
+                $formattedNumber = $prefix.'0000' . $number;
+                break;
+            case 2:
+                $formattedNumber = $prefix.'000' . $number;
+                break;
+            case 3:
+                $formattedNumber = $prefix.'00' . $number;
+                break;
+            case 4:
+                $formattedNumber = $prefix.'0' . $number;
+                break;
+            default:
+                $formattedNumber = $number;
+        }
+
+        return $formattedNumber;
     }
 
     /**
@@ -80,7 +120,7 @@ class FormPayment extends \yii\db\ActiveRecord
      */
     public function getUserApplication()
     {
-        return $this->hasOne(Application::class, ['id' => 'user_application_id']);
+        return $this->hasOne(UserApplications::class, ['id' => 'user_application_id']);
     }
 
     /**
