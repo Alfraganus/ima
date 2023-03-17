@@ -2,6 +2,7 @@
 
 namespace common\models\forms;
 
+use common\models\ApplicationForm;
 use Yii;
 
 /**
@@ -69,7 +70,7 @@ class FormRequester extends \yii\db\ActiveRecord
     {
         return [
             'form_id' => function () {
-                return self::CLASS_FORM_ID;
+                return ApplicationForm::findOne(['form_class'=>get_called_class()])->id;
             },
             'id',
             'user_id',

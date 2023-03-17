@@ -2,6 +2,7 @@
 
 namespace frontend\modules\api\service;
 
+use common\models\ApplicationForm;
 use Yii;
 use common\models\forms\FormConfirmation;
 use common\models\forms\FormMktu;
@@ -15,6 +16,7 @@ use common\models\forms\FormIndustryExample;
 use common\models\forms\FormRequester;
 use common\models\UserApplications;
 use common\models\forms\FormProductSymbol;
+use yii\helpers\ArrayHelper;
 
 class FormSaveService
 {
@@ -22,17 +24,7 @@ class FormSaveService
 
     public function __construct()
     {
-        $this->setForm = [
-            1 => new FormRequester(),
-            2 => new FormAuthor(),
-            3 => new FormIndustryExample(),
-            4 => new FormIndustryDocument(),
-            5 => new FormProductSymbol(),
-            6 => new FormMktu(),
-            7 => new FormPriority(),
-            8 => new FormConfirmation(),
-            9 => new FormPayment(),
-        ];
+        $this->setForm = ArrayHelper::map(ApplicationForm::find()->all(),'id','form_class');
     }
 
     public function saveData($user_id, $postContent, $files = null)
@@ -75,12 +67,12 @@ class FormSaveService
 
     private function saveForms($forms,$application_id,$wizard_id,$user_id =1)
     {
-//        throw new \Exception($application_id);
+//        throw new \Exception(json_encode(Yii::createObject($this->setForm[1])));
         foreach ($forms as $form) {
             if (!in_array($form['form_id'], array_keys($this->setForm))) {
                 throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
             }
-            $formModel = new $this->setForm[$form['form_id']];
+            $formModel =  new $this->setForm[$form['form_id']];
             $formModel->user_application_id = $application_id;
             $formModel->user_application_wizard_id = $wizard_id;
             $formModel->user_id = $user_id;
@@ -115,9 +107,7 @@ class FormSaveService
                 throw new \Exception(json_encode($mktuChildModel->errors));
             }
         }
-
     }
-
 
     public function saveFiles($files, $postContent, $user_id,$application_id)
     {
@@ -143,5 +133,4 @@ class FormSaveService
             }
         }
     }
-
 }

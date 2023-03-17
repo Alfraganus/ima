@@ -3,6 +3,7 @@
 namespace common\models\forms;
 
 use common\models\Application;
+use common\models\ApplicationForm;
 use common\models\ApplicationFormMedia;
 use common\models\ApplicationWizard;
 use common\models\query\ApplicationQuery;
@@ -69,7 +70,7 @@ class FormIndustryExample extends \yii\db\ActiveRecord
     {
         return [
             'form_id' => function () {
-                return self::CLASS_FORM_ID;
+                return ApplicationForm::findOne(['form_class'=>get_called_class()])->id;
             },
             'title',
             'file' => function () {
