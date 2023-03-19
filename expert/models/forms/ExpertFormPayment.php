@@ -81,6 +81,7 @@ class ExpertFormPayment extends \yii\db\ActiveRecord implements FormInterface
             'amount' => Yii::t('app', 'Amount'),
         ];
     }
+
     public function fields()
     {
         return [
@@ -90,34 +91,46 @@ class ExpertFormPayment extends \yii\db\ActiveRecord implements FormInterface
             'application_id',
             'module_id',
             'tab_id',
-            'payment_purpose_id'=>  function() {
+            'payment_purpose_id' => function () {
                 return self::paymentPurposeList($this->payment_purpose_id);
             },
-            'payment_date'=> function() {
-             return date('d-m-Y',strtotime($this->payment_date));
+            'payment_date' => function () {
+                return date('d-m-Y', strtotime($this->payment_date));
             },
-            'currency' => function() {
+            'currency' => function () {
                 return self::currencyList($this->currency);
             },
             'amount',
             'file' => function () {
-                return FormComponent::getExpertFiles(
-                    $this->user_id,
-                    $this->module_id,
-                    $this->tab_id,
-                    $this->id
-                );
+                return $this->getFile();
             }
         ];
     }
 
-    public function run($queryParams=null,$orderBy=false)
+    public static function getCurrentModelFormId()
+    {
+        return ExpertFormList::findOne(['form_class' => get_called_class()])->id;
+    }
+
+    public function getFile()
+    {
+        return FormComponent::getExpertFiles(
+            $this->user_application_id,
+            $this->user_id,
+            $this->module_id,
+            self::getCurrentModelFormId(),
+            $this->id
+        );
+    }
+
+
+    public function run($queryParams = null, $orderBy = false)
     {
         $query = $this->find();
-        if($queryParams && is_array($queryParams)) {
+        if ($queryParams && is_array($queryParams)) {
             $query->where($queryParams);
         }
-        if($orderBy) {
+        if ($orderBy) {
             $query->orderBy('id DESC');
         }
 
@@ -132,17 +145,17 @@ class ExpertFormPayment extends \yii\db\ActiveRecord implements FormInterface
             2 => 'USD',
             3 => 'Rubl',
         ];
-     return  $currency_id ? $currencies[$currency_id] : $currencies;
+        return $currency_id ? $currencies[$currency_id] : $currencies;
     }
 
     public static function paymentPurposeList($payment_id)
     {
-        $paymentTypes  = [
+        $paymentTypes = [
             1 => 'Za podachu zayavki',
             2 => 'Za vneseniya izmeneniya',
             3 => 'Dobpata za podachu zayavki',
         ];
-        return  $payment_id ? $paymentTypes[$payment_id] : $paymentTypes;
+        return $payment_id ? $paymentTypes[$payment_id] : $paymentTypes;
     }
 
     /**

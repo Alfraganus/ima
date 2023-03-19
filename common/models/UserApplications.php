@@ -60,11 +60,13 @@ class UserApplications extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * Gets query for [[Application]].
-     *
-     * @return \yii\db\ActiveQuery|\common\models\query\ApplicationQuery
-     */
+
+    public static function getApplicationOrderNumber($user_application_id)
+    {
+      $userApplication =  UserApplications::findOne($user_application_id);
+      return $userApplication ? $userApplication->generated_id : null;
+    }
+
     public function getApplication()
     {
         return $this->hasOne(Application::class, ['id' => 'application_id']);

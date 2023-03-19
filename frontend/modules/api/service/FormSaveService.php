@@ -111,7 +111,6 @@ class FormSaveService
 
     public function saveFiles($files, $postContent, $user_id,$application_id)
     {
-//        return $postContent;
         $fileNames = $files['forms']['name'];
         $tempNames2 = $files['forms']['tmp_name'];
         $fileTypes = $files['forms']['type'];

@@ -92,13 +92,22 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
             'user_application_id',
             'module_id',
             'tab_id',
-            'decision_type',
-            'application_identification',
-            'accepted_date'=> function() {
-                return date('d-m-Y',strtotime($this->accepted_date));
+            'decision_type' => function () {
+                if ($this->tab_id == 1) {
+                    $result = self::decisionTypeTabOne($this->tab_id);
+                } elseif ($this->tab_id == 2) {
+                    $result = self::decisionTypeTabTwo($this->tab_id);
+                }
+                return $result;
             },
-            'sent_date'=> function() {
-                return date('d-m-Y',strtotime($this->sent_date));
+            'application_identification' => function () {
+             return  UserApplications::getApplicationOrderNumber($this->user_application_id);
+            },
+            'accepted_date' => function () {
+                return date('d-m-Y', strtotime($this->accepted_date));
+            },
+            'sent_date' => function () {
+                return date('d-m-Y', strtotime($this->sent_date));
             },
             'file' => function () {
                 return $this->getFile();
@@ -106,23 +115,29 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
         ];
     }
 
+    public static function getCurrentModelFormId()
+    {
+        return ExpertFormList::findOne(['form_class' => get_called_class()])->id;
+    }
+
     public function getFile()
     {
         return FormComponent::getExpertFiles(
+            $this->user_application_id,
             $this->user_id,
             $this->module_id,
-            $this->tab_id,
+            self::getCurrentModelFormId(),
             $this->id
         );
     }
 
-    public function run($queryParams=null,$orderBy=false)
+    public function run($queryParams = null, $orderBy = false)
     {
         $query = $this->find();
-        if($queryParams && is_array($queryParams)) {
+        if ($queryParams && is_array($queryParams)) {
             $query->where($queryParams);
         }
-        if($orderBy) {
+        if ($orderBy) {
             $query->orderBy('id DESC');
         }
 
@@ -132,11 +147,22 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
     public static function decisionTypeTabOne($data_id)
     {
         $data = [
-            0=> 'Decision 1',
-            1=> 'Decision 2',
-            2=> 'Decision 3',
+            1 => 'Решение о принятии заявки к рассмотрению',
+            2 => 'Решение об отказе в принятии к рассмотрению заявки',
         ];
-        return  $data_id ? $data[$data_id] : $data;
+        return $data_id ? $data[$data_id] : $data;
+    }
+
+    public static function decisionTypeTabTwo($data_id)
+    {
+        $data = [
+            1 => 'Положительное (17-11-шакл)',
+            2 => 'Отрицательное (19-шакл)',
+            3 => 'Отрицательное (20-шакл)',
+            4 => 'Отрицательное (21-шакл)',
+            5 => 'Отрицательное (22-шакл)',
+        ];
+        return $data_id ? $data[$data_id] : $data;
     }
 
     /**

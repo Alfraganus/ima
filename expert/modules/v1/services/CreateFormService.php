@@ -11,7 +11,7 @@ use yii\helpers\ArrayHelper;
 
 class CreateFormService
 {
-    private static function getAllForms()
+    public static function getAllForms()
     {
         return ArrayHelper::map(
             ExpertFormList::find()
@@ -22,7 +22,7 @@ class CreateFormService
         );
     }
 
-    private function getApplicationOwner($user_application_id)
+    public function getApplicationOwner($user_application_id)
     {
         $applicationModel = UserApplications::findOne($user_application_id);
         if (!$applicationModel) {
@@ -36,38 +36,56 @@ class CreateFormService
 
     public function createForm($data, $attachment, $user_id)
     {
-        $forms = self::getAllForms();
-        if (empty($forms[$data['form_id']])) {
-            throw new \Exception('Form with given id not found!');
+//        return $data['form_info'];
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $forms = self::getAllForms();
+            $form = new $forms[$data['form_id']];
+//            throw new \Exception(json_encode($data['form_info']));
+            if (empty($forms[$data['form_id']])) {
+                throw new \Exception('Form with given id not found!');
+            }
+            $applicationInfo = $this->getApplicationOwner($data['user_application_id']);
+            $form->application_id = $applicationInfo['application_id'];
+            $form->user_id = $applicationInfo['user_id'];
+            $form->expert_id = $user_id;
+            $form->setAttributes($data);
+            $form->setAttributes($data['form_info'][0]);
+            if (!$form->save()) {
+                throw new \Exception(json_encode($form->errors));
+            }
+            if ($attachment) {
+                $this->saveAttachment($attachment, $data, $form->id, $applicationInfo);
+            }
+            $transaction->commit();
+            return [
+                'success' => true,
+                'message' => 'form has been saved!',
+                'data'=> (new ReadFormService())->getFormData(
+                    $forms[$data['form_id']],
+                    $data
+                ),
+            ];
+        } catch (\Exception $exception) {
+            $transaction->rollBack();
+            Yii::$app->response->statusCode = 400;
+            return [
+                'success' => false,
+                'message' => json_decode($exception->getMessage())
+            ];
         }
-        $form = new $forms[$data['form_id']];
-        $applicationInfo = $this->getApplicationOwner($data['user_application_id']);
-        $form->application_id = $applicationInfo['application_id'];
-        $form->user_id = $applicationInfo['user_id'];
-        $form->expert_id = $user_id;
-        $form->setAttributes($data['form_info']);
-        $form->setAttributes($data);
-        if (!$form->save()) {
-            throw new \Exception(json_encode($form->errors));
-        }
-        if ($attachment) {
-            $this->saveAttachment($attachment, $data, $form->id, $applicationInfo);
-        }
-        return [
-            'success' => true,
-            'message' => 'form has been saved!'
-        ];
+
     }
 
-    private function saveAttachment($file, $data, $object_id, $applicationInfo)
+    public function saveAttachment($file, $data, $object_id, $applicationInfo)
     {
-        $fileNames = $file['name'];
-        $tempNames2 = $file['tmp_name'];
-        $fileTypes = $file['type'];
-        $fileIndentification = array_keys($fileNames)[0];
-        $fileTitle = time() . $fileNames[$fileIndentification];
+        $fileName = $file['name'][0][$data['form_id']];
+        $tempName = $file['tmp_name'][0][$data['form_id']];
+        $fileType = $file['type'][0][$data['form_id']];
+//        throw new \Exception(json_encode($fileTypes));
+        $fileTitle = time() . $fileName;
         $fileName = 'form_uploads/' . $fileTitle;
-        move_uploaded_file($tempNames2[$fileIndentification], $fileName);
+        move_uploaded_file($tempName, $fileName);
         $mediaContent = new ExpertFormMedia();
         $mediaContent->setAttributes($data);
         $mediaContent->user_id = $applicationInfo['user_id'];
@@ -75,7 +93,7 @@ class CreateFormService
         $mediaContent->object_id = $object_id;
         $mediaContent->file_path = Yii::$app->request->hostInfo . '/' . $fileName;
         $mediaContent->file_name = $fileTitle;
-        $mediaContent->file_extension = $fileTypes[$fileIndentification];
+        $mediaContent->file_extension = $fileType;
         if (!$mediaContent->save()) {
             throw new  \Exception(json_encode($mediaContent->errors));
         }

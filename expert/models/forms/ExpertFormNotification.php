@@ -11,6 +11,7 @@ use expert\models\application\ExpertTabs;
 use expert\models\ExpertUser;
 use frontend\models\ImaUsers;
 use Yii;
+
 /**
  * This is the model class for table "expert_form_notification".
  *
@@ -90,59 +91,96 @@ class ExpertFormNotification extends \yii\db\ActiveRecord implements FormInterfa
             'application_id',
             'module_id',
             'tab_id',
-            'notification_type'=>  function() {
-                return self::notificationTypeList($this->notification_type);
+            'notification_type' => function () {
+                if ($this->tab_id == 1) {
+                    return self::notificationTabOneTypeList($this->notification_type);
+                }
+                if ($this->tab_id == 2) {
+                    return self::notificationTabOneTypeList($this->notification_type);
+                }
+                if ($this->tab_id == 3) {
+                    return self::notificationTabThreeTypeList($this->notification_type);
+                }
+                if ($this->tab_id == 4) {
+                    return self::notificationTabThreeTypeList($this->notification_type);
+                }
             },
-            'department'=> function() {
-                return self::departmentList($this->department);
+            'department' => function () {
+                if ($this->tab_id == 3 || $this->tab_id == 4) {
+                    return ExpertFormEnquiry::departmentListGosrestr($this->department);
+                }
+                return ExpertFormNotification::departmentList($this->department);
             },
-            'sent_date' => function() {
-                return date('d-m-Y',strtotime($this->sent_date));
+            'sent_date' => function () {
+                return date('d-m-Y', strtotime($this->sent_date));
             },
-            'application_identification',
+            'application_identification'=>function() {
+                return  UserApplications::getApplicationOrderNumber($this->user_application_id);
+            },
             'file' => function () {
-                return FormComponent::getExpertFiles(
-                    $this->user_id,
-                    $this->module_id,
-                    $this->tab_id,
-                    $this->id
-                );
+                return $this->getFile();
             }
         ];
     }
 
-    public function run($queryParams=null,$orderBy=false)
+    public static function getCurrentModelFormId()
+    {
+        return ExpertFormList::findOne(['form_class' => get_called_class()])->id;
+    }
+
+    public function getFile()
+    {
+        return FormComponent::getExpertFiles(
+            $this->user_application_id,
+            $this->user_id,
+            $this->module_id,
+            self::getCurrentModelFormId(),
+            $this->id
+        );
+    }
+
+    public function run($queryParams = null, $orderBy = false)
     {
         $query = $this->find();
-        if($queryParams && is_array($queryParams)) {
+        if ($queryParams && is_array($queryParams)) {
             $query->where($queryParams);
         }
-        if($orderBy) {
+        if ($orderBy) {
             $query->orderBy('id DESC');
         }
 
         return $query->all();
     }
 
-    public function notificationTypeList($notification_id)
+    public function notificationTabOneTypeList($notification_id)
     {
         $notifications = [
-            1 => 'Notification type 1',
-            2 => 'Notification type 2',
-            3 => 'Notificationl type 3',
-            4 => 'Notificationl type 4',
-            5 => 'Notificationl type 5',
+            1 => 'О принятии доп.материалов (05-шакл)',
+            2 => 'О внесении изменений (06-шакл)',
+            3 => 'О продлении срока предоставления ответа (07-шакл)',
+            4 => 'О восстановлении пропущенного срока (08-шакл)',
+            5 => 'О разделении заявки (09-шакл)',
         ];
-        return  $notification_id ? $notifications[$notification_id] : $notifications;
+        return $notification_id ? $notifications[$notification_id] : $notifications;
     }
 
-    public function departmentList($data_id)
+    public function notificationTabThreeTypeList($notification_id)
+    {
+        $notifications = [
+            1 => 'О внесении изменений',
+            2 => 'О не предоставлении плат.док. за регистрацию',
+            3 => 'О не предоставлении плат.док. за продление',
+        ];
+        return $notification_id ? $notifications[$notification_id] : $notifications;
+    }
+
+    public static function departmentList($data_id)
     {
         $data = [
-            1 => 'Otdek ekspertiza',
-            2 => 'Gosrestr',
+            1 => 'Отдел экспертизы',
+            2 => 'Госреестр',
         ];
-        return  $data_id ? $data[$data_id] : $data;
+        return $data_id ? $data[$data_id] : $data;
     }
 
     /**

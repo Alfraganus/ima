@@ -95,66 +95,121 @@ class ExpertFormEnquiry extends \yii\db\ActiveRecord implements FormInterface
             'application_id',
             'module_id',
             'tab_id',
-            'type_enquiry'=>  function() {
-                return self::enquiryList($this->type_enquiry);
+            'type_enquiry' => function () {
+                if ($this->tab_id == 1) {
+                    return self::enquiryListTabOne($this->type_enquiry);
+                }
+                if ($this->tab_id == 2) {
+                    return self::enquiryListTabTwo($this->type_enquiry);
+                }
+                if ($this->tab_id == 3) {
+                    return self::enquiryListTabThree($this->type_enquiry);
+                }
+                if ($this->tab_id == 4) {
+                    return self::enquiryListTabThree($this->type_enquiry);
+                }
             },
-            'department'=> function() {
-                return self::departmentList($this->department);
+            'department' => function () {
+                if ($this->tab_id == 3 || $this->tab_id == 4) {
+                    return self::departmentListGosrestr($this->department);
+                }
+                return ExpertFormNotification::departmentList($this->department);
             },
-            'sent_date' => function() {
-                return date('d-m-Y',strtotime($this->sent_date));
+            'sent_date' => function () {
+                return date('d-m-Y', strtotime($this->sent_date));
             },
-            'recommended_respond_date' => function() {
-                return date('d-m-Y',strtotime($this->recommended_respond_date));
+            'recommended_respond_date' => function () {
+                return date('d-m-Y', strtotime($this->recommended_respond_date));
             },
-            'date_respond' => function() {
-                return date('d-m-Y',strtotime($this->date_respond));
+            'date_respond' => function () {
+                return date('d-m-Y', strtotime($this->date_respond));
             },
-            'application_identification',
+            'application_identification' => function () {
+                return UserApplications::getApplicationOrderNumber($this->user_application_id);
+            },
             'file' => function () {
-                return FormComponent::getExpertFiles(
-                    $this->user_id,
-                    $this->module_id,
-                    $this->tab_id,
-                    $this->id
-                );
+                return $this->getFile();
             }
         ];
     }
 
-    public function run($queryParams=null,$orderBy=false)
+    public static function getCurrentModelFormId()
+    {
+        return ExpertFormList::findOne(['form_class' => get_called_class()])->id;
+    }
+
+    public function getFile()
+    {
+        return FormComponent::getExpertFiles(
+            $this->user_application_id,
+            $this->user_id,
+            $this->module_id,
+            self::getCurrentModelFormId(),
+            $this->id
+        );
+    }
+
+    public function run($queryParams = null, $orderBy = false)
     {
         $query = $this->find();
-        if($queryParams && is_array($queryParams)) {
+        if ($queryParams && is_array($queryParams)) {
             $query->where($queryParams);
         }
-        if($orderBy) {
+        if ($orderBy) {
             $query->orderBy('id DESC');
         }
 
         return $query->all();
     }
 
-    public function enquiryList($data_id)
+    public function enquiryListTabOne($data_id)
     {
         $data = [
-            1 => 'enquiry type 1',
-            2 => 'enquiry type 2',
-            3 => 'enquiry type 3',
-            4 => 'enquiry type 4',
-            5 => 'enquiry type 5',
+            1 => '§2 Правил (03-шакл)',
+            2 => 'п. 16 Правил (03-шакл)',
+            3 => 'п. 20 Правил (03-шакл)',
+            4 => 'п. 25 Правил (03-шакл)',
+            5 => 'п. 26 Правил (03-шакл)',
+            6 => 'п. 9 Правил (03-шакл)',
+            7 => 'п. 7 Правил (03-шакл)',
+            8 => 'п. 86 и пп. «а» п. 12 Правил (03-шакл)',
+            9 => 'п. 13 Правил (03-шакл)"',
         ];
-        return  $data_id ? $data[$data_id] : $data;
+        return $data_id ? $data[$data_id] : $data;
     }
 
-    public function departmentList($data_id)
+
+    public function enquiryListTabTwo($data_id)
     {
         $data = [
-            1 => 'Otdek ekspertiza',
-            2 => 'Gosrestr',
+            1 => 'ч. 1 ст. 9 Закона (11-шакл)',
+            2 => 'пп 1-4 ст. 10 Закона (12-шакл)',
+            3 => 'пп 5-8 ст. 10 Закона (13-шакл)',
+            4 => 'пп 9-12 ст. 10 Закона (14-шакл)',
+            5 => 'пп 13 ст. 10 Закона (15-шакл)',
+            6 => 'п. 4 Правил (16-шакл)',
+            7 => 'п. 93 Правил (17-шакл)',
+            8 => 'п. 97 Правил (18-шакл)',
         ];
-        return  $data_id ? $data[$data_id] : $data;
+        return $data_id ? $data[$data_id] : $data;
     }
+
+    public function enquiryListTabThree($data_id)
+    {
+        $data = [
+            1 => 'Запрос',
+        ];
+        return $data_id ? $data[$data_id] : $data;
+    }
+
+    public static function departmentListGosrestr($data_id)
+    {
+        $data = [
+            1 => 'Госреестр',
+        ];
+        return $data_id ? $data[$data_id] : $data;
+    }
+
     /**
      * Gets query for [[Application]].
      *

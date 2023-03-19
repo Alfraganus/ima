@@ -94,38 +94,50 @@ class ExpertFormFeedback extends \yii\db\ActiveRecord implements FormInterface
             'application_id',
             'module_id',
             'tab_id',
-
-            'department'=> function() {
-                return self::departmentList($this->department);
+            'department' => function () {
+                return ExpertFormNotification::departmentList($this->department);
             },
-            'feedback_date' => function() {
-                return date('d-m-Y',strtotime($this->feedback_date));
+            'feedback_date' => function () {
+                return date('d-m-Y', strtotime($this->feedback_date));
             },
-            'date_recovery' => function() {
-                return date('d-m-Y',strtotime($this->date_recovery));
+            'date_recovery' => function () {
+                return date('d-m-Y', strtotime($this->date_recovery));
             },
-            'feedback_type'=> function() {
-                return self::feedbackTypeList($this->feedback_type);
+            'feedback_type' => function () {
+                return self::feedbackTypeListTabOne($this->feedback_type);
             },
-            'application_identification',
+            'application_identification' => function () {
+                return UserApplications::getApplicationOrderNumber($this->user_application_id);
+            },
             'file' => function () {
-                return FormComponent::getExpertFiles(
-                    $this->user_id,
-                    $this->module_id,
-                    $this->tab_id,
-                    $this->id
-                );
+                return $this->getFile();
             }
         ];
     }
 
-    public function run($queryParams=null,$orderBy=false)
+    public static function getCurrentModelFormId()
+    {
+        return ExpertFormList::findOne(['form_class' => get_called_class()])->id;
+    }
+
+    public function getFile()
+    {
+        return FormComponent::getExpertFiles(
+            $this->user_application_id,
+            $this->user_id,
+            $this->module_id,
+            self::getCurrentModelFormId(),
+            $this->id
+        );
+    }
+
+    public function run($queryParams = null, $orderBy = false)
     {
         $query = $this->find();
-        if($queryParams && is_array($queryParams)) {
+        if ($queryParams && is_array($queryParams)) {
             $query->where($queryParams);
         }
-        if($orderBy) {
+        if ($orderBy) {
             $query->orderBy('id DESC');
         }
 
@@ -138,16 +150,15 @@ class ExpertFormFeedback extends \yii\db\ActiveRecord implements FormInterface
             1 => 'Otdek ekspertiza',
             2 => 'Gosrestr',
         ];
-        return  $data_id ? $data[$data_id] : $data;
+        return $data_id ? $data[$data_id] : $data;
     }
 
-    public function feedbackTypeList($data_id)
+    public function feedbackTypeListTabOne($data_id)
     {
         $data = [
-            1 => 'Feedback type 1',
-            2 => 'Feedback type 2',
+            1 => 'Уведомление об отзыве (10-шакл)',
         ];
-        return  $data_id ? $data[$data_id] : $data;
+        return $data_id ? $data[$data_id] : $data;
     }
 
 
