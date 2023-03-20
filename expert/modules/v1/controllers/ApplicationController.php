@@ -37,4 +37,6 @@ class ApplicationController extends DefaultController
             htmlspecialchars($user_application_id)
         );
     }
+
+
 }

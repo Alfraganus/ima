@@ -82,14 +82,4 @@ class ExpertApplicationModulesTabs extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ExpertTabs::class, ['id' => 'tab_id']);
     }
-
-    public function toArray(array $fields = [], array $expand = [], $recursive = true)
-    {
-        // TODO: Implement toArray() method.
-    }
-
-    public static function instance($refresh = false)
-    {
-        // TODO: Implement instance() method.
-    }
 }
