@@ -3,6 +3,8 @@
 namespace common\models\forms;
 
 use common\models\Application;
+use common\models\ApplicationForm;
+use common\models\ApplicationFormMedia;
 use common\models\ApplicationWizard;
 use common\models\User;
 use common\models\UserApplications;
@@ -66,6 +68,36 @@ class FormPriority extends \yii\db\ActiveRecord
         ];
     }
 
+
+    public function fields()
+    {
+        return [
+            'form_id' => function () {
+                return $this->getFormId();
+            },
+            'id',
+            'user_id',
+            'user_application_id',
+            'user_application_wizard_id',
+            'priority_type',
+            'questionnaire_number',
+            'requested_data',
+            'country_id',
+            'file' => function () {
+                return ApplicationFormMedia::find()->where([
+                    'application_id'=>$this->user_application_id,
+                    'user_id' => $this->user_id,
+                    'wizard_id' => $this->user_application_wizard_id,
+                    'form_id' => $this->getFormId(),
+                ])->select(['id', 'file_name', 'file_path'])->all();
+            }
+        ];
+    }
+
+    public function getFormId()
+    {
+        return ApplicationForm::findOne(['form_class'=>get_called_class()])->id;
+    }
     /**
      * Gets query for [[User]].
      *

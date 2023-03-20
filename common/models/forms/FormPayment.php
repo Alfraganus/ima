@@ -3,6 +3,8 @@
 namespace common\models\forms;
 
 use common\models\Application;
+use common\models\ApplicationForm;
+use common\models\ApplicationFormMedia;
 use common\models\ApplicationWizard;
 use common\models\User;
 use common\models\UserApplications;
@@ -61,7 +63,7 @@ class FormPayment extends \yii\db\ActiveRecord
         } else {
             $model->application_number = $maxApplicationNumber + 1;
         }
-        $model->generated_id = $this->formatOrderNumber('MGU',$model->application_number);
+        $model->generated_id = $this->formatOrderNumber(sprintf('MGU%d',date('Y')),$model->application_number);
         $model->save(false);
 
     }
@@ -101,6 +103,35 @@ class FormPayment extends \yii\db\ActiveRecord
             'payment_info' => Yii::t('app', 'Payment Info'),
             'payment_time' => Yii::t('app', 'Payment Time'),
         ];
+    }
+
+    public function fields()
+    {
+        return [
+            'form_id' => function () {
+                return $this->getFormId();
+            },
+            'id',
+            'user_id',
+            'user_application_id',
+            'user_application_wizard_id',
+            'payment_done',
+            'payment_info',
+            'payment_time',
+            'file' => function () {
+                return ApplicationFormMedia::find()->where([
+                    'application_id'=>$this->user_application_id,
+                    'user_id' => $this->user_id,
+                    'wizard_id' => $this->user_application_wizard_id,
+                    'form_id' => $this->getFormId(),
+                ])->select(['id', 'file_name', 'file_path'])->all();
+            }
+        ];
+    }
+
+    public function getFormId()
+    {
+        return ApplicationForm::findOne(['form_class'=>get_called_class()])->id;
     }
 
     /**

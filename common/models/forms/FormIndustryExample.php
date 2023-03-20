@@ -70,17 +70,23 @@ class FormIndustryExample extends \yii\db\ActiveRecord
     {
         return [
             'form_id' => function () {
-                return ApplicationForm::findOne(['form_class'=>get_called_class()])->id;
+               return $this->getFormId();
             },
             'title',
             'file' => function () {
                 return ApplicationFormMedia::find()->where([
+                    'application_id'=>$this->user_application_id,
                     'user_id' => $this->user_id,
                     'wizard_id' => $this->user_application_wizard_id,
-                    'form_id' => self::CLASS_FORM_ID,
+                    'form_id' => $this->getFormId(),
                 ])->select(['id', 'file_name', 'file_path'])->all();
             }
         ];
+    }
+
+    public function getFormId()
+    {
+        return ApplicationForm::findOne(['form_class'=>get_called_class()])->id;
     }
 
     public function getUser()

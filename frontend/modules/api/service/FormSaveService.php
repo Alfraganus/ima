@@ -67,7 +67,7 @@ class FormSaveService
 
     private function saveForms($forms,$application_id,$wizard_id,$user_id =1)
     {
-//        throw new \Exception(json_encode(Yii::createObject($this->setForm[1])));
+        throw new \Exception(json_encode($application_id));
         foreach ($forms as $form) {
             if (!in_array($form['form_id'], array_keys($this->setForm))) {
                 throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));

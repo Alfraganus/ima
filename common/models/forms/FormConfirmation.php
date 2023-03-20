@@ -3,6 +3,8 @@
 namespace common\models\forms;
 
 use common\models\Application;
+use common\models\ApplicationForm;
+use common\models\ApplicationFormMedia;
 use common\models\ApplicationWizard;
 use common\models\User;
 use common\models\UserApplications;
@@ -60,6 +62,21 @@ class FormConfirmation extends \yii\db\ActiveRecord
             'confirmed_date' => Yii::t('app', 'Confirmed Date'),
         ];
     }
+    public function fields()
+    {
+        return [
+            'form_id' => function () {
+                return ApplicationForm::findOne(['form_class'=>get_called_class()])->id;
+            },
+            'id',
+            'user_id',
+            'user_application_id',
+            'user_application_wizard_id',
+            'is_confirmed',
+            'confirmed_date',
+        ];
+    }
+
 
     /**
      * Gets query for [[User]].
