@@ -63,6 +63,9 @@ class FormPayment extends \yii\db\ActiveRecord
         } else {
             $model->application_number = $maxApplicationNumber + 1;
         }
+        $model->is_finished = true;
+        $model->payment_done = true;
+        $model->date_submitted = time();
         $model->generated_id = $this->formatOrderNumber(sprintf('MGU%d',date('Y')),$model->application_number);
         $model->save(false);
 
