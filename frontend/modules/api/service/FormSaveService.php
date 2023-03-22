@@ -2,21 +2,13 @@
 
 namespace frontend\modules\api\service;
 
-use common\models\ApplicationForm;
 use Yii;
-use common\models\forms\FormConfirmation;
+use yii\helpers\ArrayHelper;
+use common\models\ApplicationForm;
 use common\models\forms\FormMktu;
-use common\models\forms\FormPayment;
-use common\models\forms\FormPriority;
 use common\models\forms\mktu\FormMktuChildren;
 use common\models\ApplicationFormMedia;
-use common\models\forms\FormAuthor;
-use common\models\forms\FormIndustryDocument;
-use common\models\forms\FormIndustryExample;
-use common\models\forms\FormRequester;
 use common\models\UserApplications;
-use common\models\forms\FormProductSymbol;
-use yii\helpers\ArrayHelper;
 
 class FormSaveService
 {
@@ -73,10 +65,10 @@ class FormSaveService
             'user_application_id' => $user_application_id,
             'user_id' => $user_id,
         ]);
-          if (!empty($form)) {
-              return true;
-          }
-          return false;
+        if (!empty($form)) {
+            return true;
+        }
+        return false;
     }
 
     private function saveForms($forms, $application_id, $wizard_id, $user_id = 1)
@@ -85,7 +77,7 @@ class FormSaveService
             if (!in_array($form['form_id'], array_keys($this->setForm))) {
                 throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
             }
-            if(!$this->checkIfFormDataExists($form['form_id'], $application_id, $user_id)) {
+            if (!$this->checkIfFormDataExists($form['form_id'], $application_id, $user_id)) {
                 $formModel = new $this->setForm[$form['form_id']];
                 $formModel->user_application_id = $application_id;
                 $formModel->user_application_wizard_id = $wizard_id;
@@ -131,20 +123,35 @@ class FormSaveService
         $fileTypes = $files['forms']['type'];
         for ($i = 0; $i < sizeof($fileNames); $i++) {
             $fileIndentification = array_keys($fileNames[$i])[0];
-            $fileTitle = time() . $fileNames[$i][$fileIndentification];
-            $fileName = 'form_uploads/' . $fileTitle;
-            move_uploaded_file($tempNames2[$i][$fileIndentification], $fileName);
-            $mediaContent = new ApplicationFormMedia();
-            $mediaContent->application_id = $application_id;
-            $mediaContent->wizard_id = $postContent['wizard_id'];
-            $mediaContent->form_id = $fileIndentification;
-            $mediaContent->user_id = $user_id;
-            $mediaContent->file_path = Yii::$app->request->hostInfo . '/' . $fileName;
-            $mediaContent->file_name = $fileTitle;
-            $mediaContent->file_extension = $fileTypes[$i][$fileIndentification];
-            if (!$mediaContent->save()) {
-                throw new  \Exception(json_encode($mediaContent->errors));
+            if (!$this->checkIfDataExistsForMedia($user_id, $application_id, $fileIndentification)) {
+                $fileTitle = time() . $fileNames[$i][$fileIndentification];
+                $fileName = 'form_uploads/' . $fileTitle;
+                move_uploaded_file($tempNames2[$i][$fileIndentification], $fileName);
+                $mediaContent = new ApplicationFormMedia();
+                $mediaContent->application_id = $application_id;
+                $mediaContent->wizard_id = $postContent['wizard_id'];
+                $mediaContent->form_id = $fileIndentification;
+                $mediaContent->user_id = $user_id;
+                $mediaContent->file_path = Yii::$app->request->hostInfo . '/' . $fileName;
+                $mediaContent->file_name = $fileTitle;
+                $mediaContent->file_extension = $fileTypes[$i][$fileIndentification];
+                if (!$mediaContent->save()) {
+                    throw new  \Exception(json_encode($mediaContent->errors));
+                }
             }
         }
+    }
+
+    private function checkIfDataExistsForMedia($user_id, $user_application_id, $form_id)
+    {
+        $form = ApplicationFormMedia::find()->where([
+            'application_id' => $user_application_id,
+            'user_id' => $user_id,
+            'form_id' => $form_id,
+        ]);
+        if ($form->exists()) {
+            return true;
+        }
+        return false;
     }
 }
