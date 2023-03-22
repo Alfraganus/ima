@@ -29,7 +29,12 @@ class FormSaveService
             $transaction->commit();
             return [
                 'success' => true,
-                'message' => 'Operation is successful but repeated data for the same form would be ignored!'
+                'message' => 'Operation is successful!',
+                'data'=> (new FormReadService())->getWizardContent(
+                    $user_application_id,
+                    $postContent['wizard_id'],
+                    Yii::$app->user->id
+                )
             ];
 
         } catch (\Exception $exception) {
@@ -77,7 +82,6 @@ class FormSaveService
             if (!in_array($form['form_id'], array_keys($this->setForm))) {
                 throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
             }
-            if (!$this->checkIfFormDataExists($form['form_id'], $application_id, $user_id)) {
                 $formModel = new $this->setForm[$form['form_id']];
                 $formModel->user_application_id = $application_id;
                 $formModel->user_application_wizard_id = $wizard_id;
@@ -89,7 +93,6 @@ class FormSaveService
                 if ($form['child']) {
                     $this->saveChildForm($form['child'], $formModel->id, $form['class_content_type'], $form['form_id']);
                 }
-            }
         }
     }
 
@@ -123,7 +126,6 @@ class FormSaveService
         $fileTypes = $files['forms']['type'];
         for ($i = 0; $i < sizeof($fileNames); $i++) {
             $fileIndentification = array_keys($fileNames[$i])[0];
-            if (!$this->checkIfDataExistsForMedia($user_id, $application_id, $fileIndentification)) {
                 $fileTitle = time() . $fileNames[$i][$fileIndentification];
                 $fileName = 'form_uploads/' . $fileTitle;
                 move_uploaded_file($tempNames2[$i][$fileIndentification], $fileName);
@@ -138,7 +140,6 @@ class FormSaveService
                 if (!$mediaContent->save()) {
                     throw new  \Exception(json_encode($mediaContent->errors));
                 }
-            }
         }
     }
 

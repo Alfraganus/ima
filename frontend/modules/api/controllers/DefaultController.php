@@ -3,21 +3,19 @@
 namespace frontend\modules\api\controllers;
 
 
+use Yii;
+use yii\rest\Controller;
+use yii\web\Response;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\HttpBearerAuth;
 use common\models\Application;
 use common\models\ApplicationWizard;
-use common\models\UserApplications;
-use expert\models\application\ExpertApplicationModulesTabs;
 use expert\models\application\ExpertModules;
 use expert\models\application\ExpertTabs;
 use expert\models\forms\ExpertFormList;
 use frontend\modules\api\service\FormReadService;
 use frontend\modules\api\service\FormSaveService;
 use frontend\modules\api\service\UpdateFormService;
-use Yii;
-use yii\rest\Controller;
-use yii\web\Response;
-use yii\filters\auth\CompositeAuth;
-use yii\filters\auth\HttpBearerAuth;
 
 /**
  * Default controller for the `api` module
@@ -47,14 +45,18 @@ class DefaultController extends Controller
 
         $request = Yii::$app->request;
         $post = $request->post();
-        return (new FormSaveService())->saveData($user_id = 1, $post, $_FILES);
+        return (new FormSaveService())->saveData(
+            Yii::$app->user->id,
+            $post,
+            $_FILES
+        );
 
     }
 
     public function actionUpdateApplication()
     {
         $post = Yii::$app->request->post();
-        return (new UpdateFormService())->updateWizard($user_id = 1, $post, $_FILES);
+        return (new UpdateFormService())->updateWizard(Yii::$app->user->id, $post, $_FILES);
     }
 
 
