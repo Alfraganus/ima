@@ -47,7 +47,7 @@ class AuthController extends Controller
                 }
             }
         } else {
-            Yii::$app->controller->redirect($this->actionLoginRedirect());
+           return Yii::$app->controller->redirect(Yii::$app->oneId->getLoginLink());
         }
     }
 
