@@ -21,7 +21,7 @@ return [
             'responseType' => 'one_code',
             'state' => 'eyJtZXRob2QiOiJJRFBXIn0=',
             'grantType' => 'one_authorization_code',
-            'redirectUrl' => 'http://ima.api/api/auth/test',
+            'redirectUrl' => 'https://ima-dev.uz/frontend/web/api/auth/login',
         ],
        /* 'request' => [
             'csrfParam' => '_csrf-frontend',

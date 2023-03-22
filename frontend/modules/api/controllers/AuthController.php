@@ -46,12 +46,8 @@ class AuthController extends Controller
                     ];
                 }
             }
-
         } else {
-            return [
-                'success'=>false,
-                'message'=>'Request failed, please contact sysadmin'
-            ];
+            Yii::$app->controller->redirect($this->actionLoginRedirect());
         }
     }
 
