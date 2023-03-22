@@ -181,8 +181,6 @@ class DefaultController extends Controller
                 ]
             ]
         ];
-
-
     }
 
     private function getFormInfo($form_class)
@@ -202,6 +200,5 @@ class DefaultController extends Controller
         $module = ExpertModules::findOne(['module_name' => $module_name]);
         return $module->id;
     }
-
 
 }
