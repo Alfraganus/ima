@@ -50,10 +50,28 @@ class FormPayment extends \yii\db\ActiveRecord
         ];
     }
 
+
+    private function getApplicationPrefix()
+    {
+        $userApplication = UserApplications::findOne($this->user_application_id);
+        switch ($userApplication->application->name) {
+            case 'industry' :
+                $prefix = strtoupper('ind');
+                break;
+            case 'product' :
+                $prefix = strtoupper('mgu');
+                break;
+        }
+
+        return $prefix;
+    }
+
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
-        $maxApplicationNumber = UserApplications::find()->max('application_number');
+        $maxApplicationNumber = UserApplications::find()
+            ->where(['year'=>date('Y')])
+            ->max('application_number');
         $model = UserApplications::findOne([
             'user_id'=>$this->user_id,
             'id'=>$this->user_application_id
@@ -66,9 +84,11 @@ class FormPayment extends \yii\db\ActiveRecord
         $model->is_finished = true;
         $model->payment_done = true;
         $model->date_submitted = time();
-        $model->generated_id = $this->formatOrderNumber(sprintf('MGU%d',date('Y')),$model->application_number);
+        $model->generated_id = $this->formatOrderNumber(sprintf('%s%d',
+            $this->getApplicationPrefix(),
+            date('Y')),
+        $model->application_number);
         $model->save(false);
-
     }
     private function formatOrderNumber($prefix, $number) {
         $numberLength = strlen((string)$number);
