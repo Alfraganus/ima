@@ -12,15 +12,18 @@ class TableController extends Controller
 {
     public function actionTruncate($table_name)
     {
-      return  Yii::$app->db->truncateTable($table_name);
+        return Yii::$app->db->truncateTable($table_name);
     }
 
-    public function actionAnyTable($table_name)
+    public function actionAnyTable($table_name, $query = [])
     {
-       return (new \yii\db\Query())
+        $table = (new \yii\db\Query())
             ->select('*')
-            ->from($table_name)
-            ->all();
+            ->from($table_name);
+        if ($query) {
+            $table->andWhere($query);
+        }
+        return $table->all();
     }
 
     public function actionGetTables()
