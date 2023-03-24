@@ -92,7 +92,7 @@ class ExpertFormPayment extends \yii\db\ActiveRecord implements FormInterface
             'module_id',
             'tab_id',
             'payment_purpose_id' => function () {
-                return self::paymentPurposeListTabOne($this->payment_purpose_id);
+                return $this->paymentPurposeListTab($this->tab_id,$this->payment_purpose_id);
             },
             'payment_date' => function () {
                 return date('d-m-Y', strtotime($this->payment_date));
@@ -143,18 +143,43 @@ class ExpertFormPayment extends \yii\db\ActiveRecord implements FormInterface
         $currencies = [
             1 => 'UZS',
             2 => 'USD',
-            3 => 'Rubl',
+            3 => 'RUB',
+            4 => 'EUR',
+            5 => 'CHF',
         ];
         return $currency_id ? $currencies[$currency_id] : $currencies;
     }
 
-    public static function paymentPurposeListTabOne($payment_id=null)
+    public static function paymentPurposeListTab($tab_id, $payment_id = null)
     {
-        $paymentTypes = [
-            1 => 'За подачу заявки',
-            2 => 'За внесение изменений',
-            3 => 'Доплата за подачу заявки',
-        ];
+        switch ($tab_id) {
+            case 1:
+                $paymentTypes = [
+                    1 => 'За подачу заявки',
+                    2 => 'За внесение изменений',
+                    3 => 'Доплата за подачу заявки',
+                ];
+                break;
+            case 2:
+                $paymentTypes = [
+                    1 => 'За внесение изменений',
+                ];
+                break;
+            case 3:
+                $paymentTypes = [
+                    1 => 'За подачу заявки',
+                    2 => 'Доплата за внесение изменений',
+                    3 => 'За регистрацию и выд. св.ва',
+                    4 => 'Доплата за регистрацию',
+                ];
+                break;
+            case 4:
+                $paymentTypes = [
+                    1 => 'Продление регистрации',
+                    2 => 'Доплата за продление регистрации',
+                ];
+                break;
+        }
         return $payment_id ? $paymentTypes[$payment_id] : $paymentTypes;
     }
 

@@ -19,7 +19,7 @@ use yii\web\UploadedFile;
  */
 class DefaultController extends Controller
 {
-    public function behaviors()
+  /*  public function behaviors()
     {
         $behaviors = parent::behaviors();
         unset($behaviors['authenticator']);
@@ -40,7 +40,7 @@ class DefaultController extends Controller
             ],
         ];
         return $behaviors;
-    }
+    }*/
 
     private $form;
 

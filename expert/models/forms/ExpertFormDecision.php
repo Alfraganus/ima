@@ -93,12 +93,7 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
             'module_id',
             'tab_id',
             'decision_type' => function () {
-                if ($this->tab_id == 1) {
-                    $result = self::decisionTypeTabOne($this->tab_id);
-                } elseif ($this->tab_id == 2) {
-                    $result = self::decisionTypeTabTwo($this->tab_id);
-                }
-                return $result;
+               return self::decisionTypeTab($this->tab_id,$this->decision_type);
             },
             'application_identification' => function () {
              return  UserApplications::getApplicationOrderNumber($this->user_application_id);
@@ -144,24 +139,26 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
         return $query->all();
     }
 
-    public static function decisionTypeTabOne($data_id=null)
+    public static function decisionTypeTab($tab,$data_id=null)
     {
-        $data = [
-            1 => 'Решение о принятии заявки к рассмотрению',
-            2 => 'Решение об отказе в принятии к рассмотрению заявки',
-        ];
-        return $data_id ? $data[$data_id] : $data;
-    }
+        switch ($tab) {
+            case 1:
+                $data = [
+                    1 => 'Решение о принятии заявки к рассмотрению',
+                    2 => 'Решение об отказе в принятии к рассмотрению заявки',
+                ];
+                break;
+            case 2:
+                $data = [
+                    1 => 'Положительное (17-11-шакл)',
+                    2 => 'Отрицательное (19-шакл)',
+                    3 => 'Отрицательное (20-шакл)',
+                    4 => 'Отрицательное (21-шакл)',
+                    5 => 'Отрицательное (22-шакл)',
+                ];
+                break;
+        }
 
-    public static function decisionTypeTabTwo($data_id=null)
-    {
-        $data = [
-            1 => 'Положительное (17-11-шакл)',
-            2 => 'Отрицательное (19-шакл)',
-            3 => 'Отрицательное (20-шакл)',
-            4 => 'Отрицательное (21-шакл)',
-            5 => 'Отрицательное (22-шакл)',
-        ];
         return $data_id ? $data[$data_id] : $data;
     }
 

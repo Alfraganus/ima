@@ -92,30 +92,16 @@ class ExpertFormNotification extends \yii\db\ActiveRecord implements FormInterfa
             'module_id',
             'tab_id',
             'notification_type' => function () {
-                if ($this->tab_id == 1) {
-                    return self::notificationTabOneTypeList($this->notification_type);
-                }
-                if ($this->tab_id == 2) {
-                    return self::notificationTabOneTypeList($this->notification_type);
-                }
-                if ($this->tab_id == 3) {
-                    return self::notificationTabThreeTypeList($this->notification_type);
-                }
-                if ($this->tab_id == 4) {
-                    return self::notificationTabThreeTypeList($this->notification_type);
-                }
+                return self::notificationTabTypeList($this->tab_id, $this->notification_type);
             },
             'department' => function () {
-                if ($this->tab_id == 3 || $this->tab_id == 4) {
-                    return ExpertFormEnquiry::departmentListGosrestr($this->department);
-                }
-                return ExpertFormNotification::departmentList($this->department);
+                return self::departmentList($this->tab_id,$this->department);
             },
             'sent_date' => function () {
                 return date('d-m-Y', strtotime($this->sent_date));
             },
-            'application_identification'=>function() {
-                return  UserApplications::getApplicationOrderNumber($this->user_application_id);
+            'application_identification' => function () {
+                return UserApplications::getApplicationOrderNumber($this->user_application_id);
             },
             'file' => function () {
                 return $this->getFile();
@@ -152,34 +138,48 @@ class ExpertFormNotification extends \yii\db\ActiveRecord implements FormInterfa
         return $query->all();
     }
 
-    public function notificationTabOneTypeList($notification_id)
+    public static function notificationTabTypeList($tab, $data_id = null)
     {
-        $notifications = [
-            1 => 'О принятии доп.материалов (05-шакл)',
-            2 => 'О внесении изменений (06-шакл)',
-            3 => 'О продлении срока предоставления ответа (07-шакл)',
-            4 => 'О восстановлении пропущенного срока (08-шакл)',
-            5 => 'О разделении заявки (09-шакл)',
-        ];
-        return $notification_id ? $notifications[$notification_id] : $notifications;
+        switch ($tab) {
+            case 2:
+            case 1:
+                $notifications = [
+                    1 => 'О принятии доп.материалов (05-шакл)',
+                    2 => 'О внесении изменений (06-шакл)',
+                    3 => 'О продлении срока предоставления ответа (07-шакл)',
+                    4 => 'О восстановлении пропущенного срока (08-шакл)',
+                    5 => 'О разделении заявки (09-шакл)',
+                ];
+                break;
+            case 4:
+            case 3:
+                $notifications = [
+                    1 => 'О внесении изменений',
+                    2 => 'О не предоставлении плат.док. за регистрацию',
+                    3 => 'О не предоставлении плат.док. за продление',
+                ];
+                break;
+        }
+        return $data_id ? $notifications[$data_id] : $notifications;
     }
 
-    public function notificationTabThreeTypeList($notification_id)
+    public static function departmentList($tab_id, $data_id=null)
     {
-        $notifications = [
-            1 => 'О внесении изменений',
-            2 => 'О не предоставлении плат.док. за регистрацию',
-            3 => 'О не предоставлении плат.док. за продление',
-        ];
-        return $notification_id ? $notifications[$notification_id] : $notifications;
-    }
-
-    public static function departmentList($data_id)
-    {
-        $data = [
-            1 => 'Отдел экспертизы',
-            2 => 'Госреестр',
-        ];
+        switch ($tab_id) {
+            case 1:
+            case 2:
+                $data = [
+                    1 => 'Отдел экспертизы',
+                    2 => 'Госреестр',
+                ];
+                break;
+            case 3:
+            case 4:
+                $data = [
+                    1 => 'Госреестр',
+                ];
+                break;
+        }
         return $data_id ? $data[$data_id] : $data;
     }
 
