@@ -17,6 +17,9 @@ return [
         ],
     ],
     'components' => [
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager', // or use 'yii\rbac\DbManager'
+        ],
         'request' => [
             'csrfParam' => '_csrf-backend',
         ],
@@ -49,6 +52,12 @@ return [
             ],
         ],
 
+    ],
+    'as access' => [
+        'class' => 'mdm\admin\components\AccessControl',
+        'allowActions' => [
+            '*',
+        ]
     ],
 
     'params' => $params,

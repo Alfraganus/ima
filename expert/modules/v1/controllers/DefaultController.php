@@ -106,4 +106,28 @@ class DefaultController extends Controller
                 return $dropdownComponent->module000();
         }
     }
+
+    public function actionTest()
+    {
+
+        $auth = Yii::$app->authManager;
+
+
+        $auth->createPermission('expert');
+        $createPost = $auth->createPermission('expert');
+        $createPost->description = 'Expert permission';
+        $auth->add($createPost);
+        // add "createPost" permission
+//        return  $auth->getPermission('expert');
+        /* $createPost = $auth->createPermission('createPost');
+         $createPost->description = 'Create a post';
+         $auth->add($createPost);
+
+         // add "updatePost" permission
+         $updatePost = $auth->createPermission('updatePost');
+         $updatePost->description = 'Update post';
+         $auth->add($updatePost); */
+
+
+    }
 }

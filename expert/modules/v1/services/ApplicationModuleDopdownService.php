@@ -101,8 +101,6 @@ class ApplicationModuleDopdownService extends Model
             'feedback_type' => [
                 'tab1' => ExpertFormFeedback::feedbackTypeListTab(1),
                 'tab2' => ExpertFormFeedback::feedbackTypeListTab(2),
-                'tab3' => ExpertFormFeedback::feedbackTypeListTab(3),
-                'tab4' => ExpertFormFeedback::feedbackTypeListTab(4),
             ]
         ];
     }
