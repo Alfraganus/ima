@@ -96,24 +96,10 @@ class ExpertFormEnquiry extends \yii\db\ActiveRecord implements FormInterface
             'module_id',
             'tab_id',
             'type_enquiry' => function () {
-                if ($this->tab_id == 1) {
-                    return self::enquiryListTabOne($this->type_enquiry);
-                }
-                if ($this->tab_id == 2) {
-                    return self::enquiryListTabTwo($this->type_enquiry);
-                }
-                if ($this->tab_id == 3) {
-                    return self::enquiryListTabThree($this->type_enquiry);
-                }
-                if ($this->tab_id == 4) {
-                    return self::enquiryListTabThree($this->type_enquiry);
-                }
+                return self::enquiryListTab($this->tab_id, $this->type_enquiry);
             },
             'department' => function () {
-                if ($this->tab_id == 3 || $this->tab_id == 4) {
-                    return self::departmentListGosrestr($this->department);
-                }
-                return ExpertFormNotification::departmentList($this->department);
+                return ExpertFormNotification::departmentList($this->tab_id, $this->department);
             },
             'sent_date' => function () {
                 return date('d-m-Y', strtotime($this->sent_date));
@@ -162,51 +148,41 @@ class ExpertFormEnquiry extends \yii\db\ActiveRecord implements FormInterface
         return $query->all();
     }
 
-    public function enquiryListTabOne($data_id)
+    public static function enquiryListTab($tab_id, $data_id = null)
     {
-        $data = [
-            1 => '§2 Правил (03-шакл)',
-            2 => 'п. 16 Правил (03-шакл)',
-            3 => 'п. 20 Правил (03-шакл)',
-            4 => 'п. 25 Правил (03-шакл)',
-            5 => 'п. 26 Правил (03-шакл)',
-            6 => 'п. 9 Правил (03-шакл)',
-            7 => 'п. 7 Правил (03-шакл)',
-            8 => 'п. 86 и пп. «а» п. 12 Правил (03-шакл)',
-            9 => 'п. 13 Правил (03-шакл)"',
-        ];
-        return $data_id ? $data[$data_id] : $data;
-    }
-
-
-    public function enquiryListTabTwo($data_id)
-    {
-        $data = [
-            1 => 'ч. 1 ст. 9 Закона (11-шакл)',
-            2 => 'пп 1-4 ст. 10 Закона (12-шакл)',
-            3 => 'пп 5-8 ст. 10 Закона (13-шакл)',
-            4 => 'пп 9-12 ст. 10 Закона (14-шакл)',
-            5 => 'пп 13 ст. 10 Закона (15-шакл)',
-            6 => 'п. 4 Правил (16-шакл)',
-            7 => 'п. 93 Правил (17-шакл)',
-            8 => 'п. 97 Правил (18-шакл)',
-        ];
-        return $data_id ? $data[$data_id] : $data;
-    }
-
-    public function enquiryListTabThree($data_id)
-    {
-        $data = [
-            1 => 'Запрос',
-        ];
-        return $data_id ? $data[$data_id] : $data;
-    }
-
-    public static function departmentListGosrestr($data_id)
-    {
-        $data = [
-            1 => 'Госреестр',
-        ];
+        switch ($tab_id) {
+            case 1:
+                $data = [
+                    1 => '§2 Правил (03-шакл)',
+                    2 => 'п. 16 Правил (03-шакл)',
+                    3 => 'п. 20 Правил (03-шакл)',
+                    4 => 'п. 25 Правил (03-шакл)',
+                    5 => 'п. 26 Правил (03-шакл)',
+                    6 => 'п. 9 Правил (03-шакл)',
+                    7 => 'п. 7 Правил (03-шакл)',
+                    8 => 'п. 86 и пп. «а» п. 12 Правил (03-шакл)',
+                    9 => 'п. 13 Правил (03-шакл)"',
+                ];
+                break;
+            case 2:
+                $data = [
+                    1 => 'ч. 1 ст. 9 Закона (11-шакл)',
+                    2 => 'пп 1-4 ст. 10 Закона (12-шакл)',
+                    3 => 'пп 5-8 ст. 10 Закона (13-шакл)',
+                    4 => 'пп 9-12 ст. 10 Закона (14-шакл)',
+                    5 => 'пп 13 ст. 10 Закона (15-шакл)',
+                    6 => 'п. 4 Правил (16-шакл)',
+                    7 => 'п. 93 Правил (17-шакл)',
+                    8 => 'п. 97 Правил (18-шакл)',
+                ];
+                break;
+            case 3:
+            case 4:
+                $data = [
+                    1 => 'Запрос',
+                ];
+                break;
+        }
         return $data_id ? $data[$data_id] : $data;
     }
 

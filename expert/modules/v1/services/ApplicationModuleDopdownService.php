@@ -5,6 +5,8 @@ namespace expert\modules\v1\services;
 use common\models\UserApplications;
 use expert\models\ApplicationChat;
 use expert\models\forms\ExpertFormDecision;
+use expert\models\forms\ExpertFormEnquiry;
+use expert\models\forms\ExpertFormFeedback;
 use expert\models\forms\ExpertFormList;
 use expert\models\forms\ExpertFormNotification;
 use expert\models\forms\ExpertFormPayment;
@@ -22,6 +24,8 @@ class ApplicationModuleDopdownService extends Model
             'expert_desicion' => $this->typeDecision(),
             'expert_payment' => $this->paymentDropdown(),
             'expert_notification' => $this->notificationDropdown(),
+            'expert_enquiry' => $this->enquiryDropdown(),
+            'expert_feedback' => $this->feedbackDropdown(),
         ];
     }
 
@@ -63,6 +67,42 @@ class ApplicationModuleDopdownService extends Model
                 'tab2' => ExpertFormNotification::departmentList(2),
                 'tab3' => ExpertFormNotification::departmentList(3),
                 'tab4' => ExpertFormNotification::departmentList(4),
+            ]
+        ];
+    }
+
+    private function enquiryDropdown()
+    {
+        return [
+            'payment_purpose_id' => [
+                'tab1' => ExpertFormEnquiry::enquiryListTab(1),
+                'tab2' => ExpertFormEnquiry::enquiryListTab(2),
+                'tab3' => ExpertFormEnquiry::enquiryListTab(3),
+                'tab4' =>ExpertFormEnquiry::enquiryListTab(4),
+            ],
+            'department' => [
+                'tab1' => ExpertFormNotification::departmentList(1),
+                'tab2' => ExpertFormNotification::departmentList(2),
+                'tab3' => ExpertFormNotification::departmentList(3),
+                'tab4' => ExpertFormNotification::departmentList(4),
+            ]
+        ];
+    }
+
+    private function feedbackDropdown()
+    {
+        return [
+            'department' => [
+                'tab1' => ExpertFormNotification::departmentList(1),
+                'tab2' => ExpertFormNotification::departmentList(2),
+                'tab3' => ExpertFormNotification::departmentList(3),
+                'tab4' => ExpertFormNotification::departmentList(4),
+            ],
+            'feedback_type' => [
+                'tab1' => ExpertFormFeedback::feedbackTypeListTab(1),
+                'tab2' => ExpertFormFeedback::feedbackTypeListTab(2),
+                'tab3' => ExpertFormFeedback::feedbackTypeListTab(3),
+                'tab4' => ExpertFormFeedback::feedbackTypeListTab(4),
             ]
         ];
     }

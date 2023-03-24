@@ -104,7 +104,7 @@ class ExpertFormFeedback extends \yii\db\ActiveRecord implements FormInterface
                 return date('d-m-Y', strtotime($this->date_recovery));
             },
             'feedback_type' => function () {
-                return self::feedbackTypeListTabOne($this->feedback_type);
+                return self::feedbackTypeListTab($this->tab_id, $this->feedback_type);
             },
             'application_identification' => function () {
                 return UserApplications::getApplicationOrderNumber($this->user_application_id);
@@ -144,23 +144,19 @@ class ExpertFormFeedback extends \yii\db\ActiveRecord implements FormInterface
         return $query->all();
     }
 
-    public function departmentList($data_id)
+
+    public static function feedbackTypeListTab($tab_id, $data_id=null)
     {
-        $data = [
-            1 => 'Otdek ekspertiza',
-            2 => 'Gosrestr',
-        ];
+        switch ($tab_id) {
+            case 1:
+            case 2:
+                $data = [
+                    1 => 'Уведомление об отзыве (10-шакл)',
+                ];
+                break;
+        }
         return $data_id ? $data[$data_id] : $data;
     }
-
-    public function feedbackTypeListTabOne($data_id)
-    {
-        $data = [
-            1 => 'Уведомление об отзыве (10-шакл)',
-        ];
-        return $data_id ? $data[$data_id] : $data;
-    }
-
 
     /**
      * Gets query for [[Application]].
