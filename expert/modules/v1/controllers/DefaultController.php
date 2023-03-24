@@ -2,18 +2,15 @@
 
 namespace expert\modules\v1\controllers;
 
-use expert\models\forms\ExpertFormDecision;
-use expert\models\forms\ExpertFormEnquiry;
-use expert\models\forms\ExpertFormFeedback;
-use expert\models\forms\ExpertFormNotification;
-use expert\models\forms\ExpertFormPayment;
-use expert\modules\v1\services\DeleteFormService;
-use expert\modules\v1\services\ReadFormService;
-use expert\modules\v1\services\UpdateFormService;
+
+use expert\modules\v1\services\ApplicationModuleDopdownService;
 use Yii;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\rest\Controller;
+use expert\modules\v1\services\DeleteFormService;
+use expert\modules\v1\services\ReadFormService;
+use expert\modules\v1\services\UpdateFormService;
 use expert\modules\v1\services\CreateFormService;
 use yii\web\UploadedFile;
 
@@ -99,6 +96,14 @@ class DefaultController extends Controller
                 'message' => $exception->getMessage()
             ];
         }
+    }
 
+    public function actionModuleComponentDropdowns($module_name)
+    {
+        $dropdownComponent = new ApplicationModuleDopdownService();
+        switch ($module_name) {
+            case '000' :
+                return $dropdownComponent->module000();
+        }
     }
 }

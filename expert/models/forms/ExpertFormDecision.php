@@ -144,7 +144,7 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
         return $query->all();
     }
 
-    public static function decisionTypeTabOne($data_id)
+    public static function decisionTypeTabOne($data_id=null)
     {
         $data = [
             1 => 'Решение о принятии заявки к рассмотрению',
@@ -153,7 +153,7 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
         return $data_id ? $data[$data_id] : $data;
     }
 
-    public static function decisionTypeTabTwo($data_id)
+    public static function decisionTypeTabTwo($data_id=null)
     {
         $data = [
             1 => 'Положительное (17-11-шакл)',

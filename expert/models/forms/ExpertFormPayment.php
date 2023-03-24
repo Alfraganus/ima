@@ -92,7 +92,7 @@ class ExpertFormPayment extends \yii\db\ActiveRecord implements FormInterface
             'module_id',
             'tab_id',
             'payment_purpose_id' => function () {
-                return self::paymentPurposeList($this->payment_purpose_id);
+                return self::paymentPurposeListTabOne($this->payment_purpose_id);
             },
             'payment_date' => function () {
                 return date('d-m-Y', strtotime($this->payment_date));
@@ -148,12 +148,12 @@ class ExpertFormPayment extends \yii\db\ActiveRecord implements FormInterface
         return $currency_id ? $currencies[$currency_id] : $currencies;
     }
 
-    public static function paymentPurposeList($payment_id)
+    public static function paymentPurposeListTabOne($payment_id=null)
     {
         $paymentTypes = [
-            1 => 'Za podachu zayavki',
-            2 => 'Za vneseniya izmeneniya',
-            3 => 'Dobpata za podachu zayavki',
+            1 => 'За подачу заявки',
+            2 => 'За внесение изменений',
+            3 => 'Доплата за подачу заявки',
         ];
         return $payment_id ? $paymentTypes[$payment_id] : $paymentTypes;
     }
