@@ -4,6 +4,7 @@ namespace frontend\modules\api\controllers;
 
 use expert\modules\v1\controllers\DefaultController;
 use expert\modules\v1\services\ApplicationChatService;
+use expert\modules\v1\services\UserRoleService;
 use yii\web\UploadedFile;
 
 /**
@@ -17,6 +18,8 @@ class UserApplicationController extends DefaultController
     public function __construct($id, $module, $config = [])
     {
         $this->applicationChatService = new ApplicationChatService();
+
+
         parent::__construct($id, $module, $config);
     }
 
@@ -39,4 +42,6 @@ class UserApplicationController extends DefaultController
             false
         );
     }
+
+
 }
