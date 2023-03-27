@@ -3,6 +3,7 @@
 namespace frontend\modules\api\service;
 
 use common\models\forms\FormMktu;
+use common\models\Regions;
 use Yii;
 use common\models\ApplicationForm;
 use common\models\ApplicationFormMedia;
@@ -17,6 +18,14 @@ use common\models\forms\FormProductSymbol;
 
 class FormReadService
 {
+    public function getRegions()
+    {
+        $regions = Regions::find()
+            ->joinWith('districts')
+            ->all();
+
+        return $regions;
+    }
 
     public static function getUserFormData($user_id, $application_id, $form_id, $wizard_id)
     {
