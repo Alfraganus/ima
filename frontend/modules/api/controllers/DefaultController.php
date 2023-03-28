@@ -82,6 +82,11 @@ class DefaultController extends Controller
         ];
     }
 
+    public function actionGetLocations()
+    {
+        return (new FormReadService())->getRegions();
+    }
+
     public function actionExpertApplicationComponents($application_id)
     {
         $application = Application::findOne(htmlspecialchars($application_id));
