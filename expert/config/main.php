@@ -24,7 +24,7 @@ return [
         ],
         'user' => [
             'identityClass' => \expert\models\ExpertUser::class,
-            'enableAutoLogin' => true,
+            'enableAutoLogin' => false,
             'identityCookie' => ['name' => '_identity-expert', 'httpOnly' => true],
         ],
         'session' => [

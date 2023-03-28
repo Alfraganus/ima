@@ -5,6 +5,7 @@ namespace expert\modules\v1\controllers;
 
 use expert\modules\v1\services\ApplicationModuleDopdownService;
 use Yii;
+use yii\filters\AccessControl;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\rest\Controller;
@@ -19,7 +20,7 @@ use yii\web\UploadedFile;
  */
 class DefaultController extends Controller
 {
-  /*  public function behaviors()
+    public function behaviors()
     {
         $behaviors = parent::behaviors();
         unset($behaviors['authenticator']);
@@ -29,6 +30,16 @@ class DefaultController extends Controller
                 HttpBearerAuth::class,
             ],
         ];
+/*        $behaviors['access'] = [
+            'class' => AccessControl::class,
+            'rules' => [
+                [
+                    'actions' => ['test'],
+                    'allow' => true,
+                    'roles' => ['expert'],
+                ],
+            ],
+        ];*/
         $behaviors['verbs'] = [
             'class' => \yii\filters\VerbFilter::class,
             'actions' => [
@@ -38,9 +49,10 @@ class DefaultController extends Controller
                 'send-message' => ['POST'],
                 'send-user-message' => ['POST'],
             ],
+
         ];
         return $behaviors;
-    }*/
+    }
 
     private $form;
 
@@ -48,6 +60,12 @@ class DefaultController extends Controller
     {
         $this->form = CreateFormService::getAllForms();
         parent::__construct($id, $module, $config);
+    }
+
+
+    public function actionTest2()
+    {
+        return 'tes';
     }
 
     public function actionSaveForm()
@@ -107,27 +125,4 @@ class DefaultController extends Controller
         }
     }
 
-    public function actionTest()
-    {
-
-        $auth = Yii::$app->authManager;
-
-
-        $auth->createPermission('expert');
-        $createPost = $auth->createPermission('expert');
-        $createPost->description = 'Expert permission';
-        $auth->add($createPost);
-        // add "createPost" permission
-//        return  $auth->getPermission('expert');
-        /* $createPost = $auth->createPermission('createPost');
-         $createPost->description = 'Create a post';
-         $auth->add($createPost);
-
-         // add "updatePost" permission
-         $updatePost = $auth->createPermission('updatePost');
-         $updatePost->description = 'Update post';
-         $auth->add($updatePost); */
-
-
-    }
 }

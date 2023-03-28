@@ -2,6 +2,7 @@
 
 namespace expert\modules\v1\controllers;
 
+use common\models\ApplicationFormMedia;
 use expert\modules\v1\services\ApplicationChatService;
 use Yii;
 use yii\filters\auth\CompositeAuth;
@@ -36,6 +37,13 @@ class ApplicationController extends DefaultController
         return $this->applicationChatService->getFormMessage(
             htmlspecialchars($user_application_id)
         );
+    }
+
+    public function actionGetUserDocuments($user_application_id)
+    {
+        $formMedia = ApplicationFormMedia::findAll(['application_id'=>$user_application_id]);
+
+        return $formMedia;
     }
 
 

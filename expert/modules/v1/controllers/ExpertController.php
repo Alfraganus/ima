@@ -25,22 +25,9 @@ class ExpertController extends Controller
         ];
     }
 
-    public function actionRegisterUser()
-    {
-        $post =  Yii::$app->request->post();
-
-       $user = (new UserRoleService())->createUser($post);
-
-        return [
-          'data'=>$user
-        ];
-        //  $auth->assign($author, 2);
-    }
-
 
     public function actionTest()
     {
-     return  (new UserRoleService())->createRole();
        /* $createPost = $auth->createPermission('createPost');
         $createPost->description = 'Create a post';
         $auth->add($createPost);

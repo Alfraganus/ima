@@ -32,7 +32,7 @@ class m230228_182311_create_author_application_table extends Migration
             'fk-form_author_application_id',
             'form_author',
             'user_application_id',
-            'application',
+            'user_applications',
             'id',
             'CASCADE'
         );

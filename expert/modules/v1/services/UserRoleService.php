@@ -10,6 +10,17 @@ use yii\console\Request;
 
 class UserRoleService
 {
+    public function getRole($role_id)
+    {
+        $roles = [
+          1=>'expert'
+        ];
+
+        if(!in_array($role_id,array_keys($roles))) {
+            throw new \Exception('Wrong user role provided!');
+        }
+        return $role_id ? $roles[$role_id] : $roles;
+    }
 
     public function createUser($post)
     {
@@ -22,7 +33,7 @@ class UserRoleService
         if (!$expertUser->save()) {
             throw new \Exception(json_encode($expertUser->errors));
         }
-        $this->assignRole($expertUser->id, 'expert');
+        $this->assignRole($expertUser->id, $this->getRole($post['role_id']));
 
         return $expertUser;
     }
@@ -32,7 +43,7 @@ class UserRoleService
         Yii::$app->authManager->assign(Yii::$app->authManager->getRole($role), $user_id);
     }
 
-    public function createRole()
+    public function createExpertRole()
     {
         $auth = Yii::$app->authManager;
         if (!$auth->getRole('expert')) {
@@ -47,36 +58,7 @@ class UserRoleService
             $expert = $auth->createRole('expert');
             $auth->add($expert);
             $auth->addChild($expert, $createPost);
-        } else {
-            throw new \Exception('Role already exists');
         }
     }
 
-    public function runRbacMigrations()
-    {
-        if (Yii::$app->db->schema->getTableSchema('auth_assignment') === null) {
-            $migrateController = new MigrateController('migrate', Yii::$app);
-
-            $request = new Request();
-            $request->setParams(['migrationPath' => '@yii/rbac/migrations']);
-
-          return  $runMigration = function () use ($migrateController, $request) {
-                $tempStream = fopen('php://temp', 'w+');
-                $oldStream = defined('STDOUT') ? STDOUT : null;
-                define('STDOUT', $tempStream);
-                $migrateController->runAction('up', [], $request);
-                fseek($tempStream, 0);
-                $output = stream_get_contents($tempStream);
-                fclose($tempStream);
-                if ($oldStream === null) {
-                    unset($STDOUT);
-                } else {
-                    define('STDOUT', $oldStream);
-                }
-                return $output;
-            };
-
-
-        }
-    }
 }
