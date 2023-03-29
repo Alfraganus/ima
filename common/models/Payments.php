@@ -15,8 +15,9 @@ use Yii;
  * @property string|null $invoice_status
  * @property string|null $invoice_note
  * @property string|null $invoice_created_at
- * @property string|null $invoice_updated_at
  * @property string|null $invoice_expire_date
+ * @property int|null $payment_taxid
+ * @property string|null $online_license
  * @property string|null $invoice_json
  * @property string|null $billing_request_id
  * @property string|null $billing_invoice_serial
@@ -24,13 +25,11 @@ use Yii;
  * @property string|null $billing_status
  * @property string|null $billing_note
  * @property string|null $billing_created_at
- * @property string|null $billing_updated_at
  * @property string|null $billing_json
  * @property string|null $billing_ip
  * @property int|null $payment_status
  * @property string|null $document
- * @property int|null $created_at
- * @property int|null $updated_at
+ * @property string|null $created_at
  *
  * @property UserApplications $userApplication
  */
@@ -50,10 +49,12 @@ class Payments extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_application_id', 'invoice_amount', 'billing_amount', 'payment_status', 'created_at', 'updated_at'], 'integer'],
+            [['user_application_id', 'invoice_amount', 'payment_taxid', 'billing_amount', 'payment_status'], 'integer'],
+            [['invoice_created_at', 'invoice_expire_date', 'billing_created_at', 'created_at'], 'safe'],
             [['invoice_json', 'billing_json', 'document'], 'string'],
-            [['invoice_request_id', 'invoice_serial', 'invoice_status', 'invoice_created_at', 'invoice_updated_at', 'invoice_expire_date', 'billing_request_id', 'billing_invoice_serial', 'billing_status', 'billing_created_at', 'billing_updated_at', 'billing_ip'], 'string', 'max' => 32],
+            [['invoice_request_id', 'invoice_serial', 'invoice_status', 'billing_request_id', 'billing_invoice_serial', 'billing_status', 'billing_ip'], 'string', 'max' => 32],
             [['invoice_note', 'billing_note'], 'string', 'max' => 255],
+            [['online_license'], 'string', 'max' => 20],
             [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['user_application_id' => 'id']],
         ];
     }
@@ -72,8 +73,9 @@ class Payments extends \yii\db\ActiveRecord
             'invoice_status' => Yii::t('app', 'Invoice Status'),
             'invoice_note' => Yii::t('app', 'Invoice Note'),
             'invoice_created_at' => Yii::t('app', 'Invoice Created At'),
-            'invoice_updated_at' => Yii::t('app', 'Invoice Updated At'),
             'invoice_expire_date' => Yii::t('app', 'Invoice Expire Date'),
+            'payment_taxid' => Yii::t('app', 'Payment Taxid'),
+            'online_license' => Yii::t('app', 'Online License'),
             'invoice_json' => Yii::t('app', 'Invoice Json'),
             'billing_request_id' => Yii::t('app', 'Billing Request ID'),
             'billing_invoice_serial' => Yii::t('app', 'Billing Invoice Serial'),
@@ -81,13 +83,11 @@ class Payments extends \yii\db\ActiveRecord
             'billing_status' => Yii::t('app', 'Billing Status'),
             'billing_note' => Yii::t('app', 'Billing Note'),
             'billing_created_at' => Yii::t('app', 'Billing Created At'),
-            'billing_updated_at' => Yii::t('app', 'Billing Updated At'),
             'billing_json' => Yii::t('app', 'Billing Json'),
             'billing_ip' => Yii::t('app', 'Billing Ip'),
             'payment_status' => Yii::t('app', 'Payment Status'),
             'document' => Yii::t('app', 'Document'),
             'created_at' => Yii::t('app', 'Created At'),
-            'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
 

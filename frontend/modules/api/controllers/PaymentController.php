@@ -3,18 +3,27 @@
 namespace frontend\modules\api\controllers;
 
 use  common\models\Payments;
+use common\models\WizardFormField;
+use expert\modules\v1\services\CreateFormService;
+use expert\modules\v1\services\PaymentService;
+use frontend\modules\api\service\FormSaveService;
 use Yii;
 use yii\rest\Controller;
 use common\traits\PaymentFunctions;
+
 class PaymentController extends Controller
 {
 
- use PaymentFunctions;
+    use PaymentFunctions;
+
+    const STATUS_OPEN = 'OPEN';
+    const STATUS_PAID = 'paid';
+
+    const STATUS_BILLING_PAID = 'invoice.paid';
 
     public function actionCreateInvoice()
     {
         if (Yii::$app->request->isPost) {
-
             $data = Yii::$app->request->post();
             $name = $data['name'];
             $email = $data['email'];
@@ -52,24 +61,20 @@ class PaymentController extends Controller
             $payment->invoice_amount = $amount;
             $payment->invoice_status = $invoice['status'];
             $payment->invoice_note = $note;
-            $payment->invoice_created_at = $invoice['createdAt'];
-            $payment->invoice_updated_at = $invoice['updatedAt'];
             $payment->invoice_expire_date = $invoice['expireDate'];
             $payment->invoice_json = json_encode($invoice);
-//            $payment->payment_type = $type;
-//            $payment->payment_taxid = $taxid;
+            $payment->payment_taxid = $taxid;
             $payment->payment_status = 0;
-//            if ($online_license) $payment->online_license = $online_license;
-            $payment->save();
-            if ($payment->hasErrors()) {
-                return $payment->errors;
+            if ($online_license) $payment->online_license = $online_license;
+            if (!$payment->save()) {
+                throw new \Exception(json_encode($payment->errors));
             }
 
             return $invoice;
         }
 
-        return  [
-          'message'=>'something is wrong'
+        return [
+            'message' => 'Request is not post'
         ];
     }
 
@@ -179,10 +184,6 @@ class PaymentController extends Controller
 
     public function actionBillingResponse()
     {
-        if (!Yii::$app->request->isPost) {
-            return $this->billingResponseFormat(BaseModel::ERROR_REQUEST_NOT_POST['error_text']);
-        }
-
         $data = Yii::$app->request->post();
         $billing_type = $data['type'];
         $billing_ip = Yii::$app->getRequest()->getUserIP();
@@ -191,7 +192,7 @@ class PaymentController extends Controller
         }
 
         $billing_request_id = $data['data']['requestId'];
-        $payment = Payment::findOne(['invoice_request_id' => $billing_request_id]);
+        $payment = Payments::findOne(['invoice_request_id' => $billing_request_id]);
         if (!$payment) {
             return $this->billingResponseFormat('Request id is wrong, invoice not found', $data);
         }
@@ -200,7 +201,6 @@ class PaymentController extends Controller
         $billing_amount = $data['data']['payments'][0]['amount'];
         $billing_note = $data['data']['note'];
         $billing_created_at = $data['data']['createdAt'];
-        $billing_updated_at = $data['data']['updatedAt'];
 
         $payment->billing_request_id = $billing_request_id;
         $payment->billing_invoice_serial = $billing_serial;
@@ -208,40 +208,23 @@ class PaymentController extends Controller
         $payment->billing_status = $billing_type;
         $payment->billing_note = $billing_note;
         $payment->billing_created_at = $billing_created_at;
-        $payment->billing_updated_at = $billing_updated_at;
         $payment->billing_ip = $billing_ip;
         $payment->billing_json = json_encode($data);
         $payment->payment_status = true;
-        $payment->save();
 
-        if ($payment->hasErrors()) {
-            return $this->billingResponseFormat($payment->errors, $data);
+        if (!$payment->save()) {
+            throw new \Exception(json_encode($payment->errors));
         }
 
-        if (!$payment->online_license) {
-            /* @var $className Trademark */
-            $className = 'common\\models\\' . $payment->type_application;
-            $service = $className::findOne($payment->id_application);
-            $service_last_number = $this->getServiceLastNumber($payment->type_application, $service->type_service ?? null);
-            $shortcode = $this->getShortcode($payment->type_application, $service->type_service ?? null);
-            $expert_code = $this->makeExpertCode($service_last_number, $shortcode);
-
-            $service->expert_code_number = $service_last_number + 1;
-            $service->expert_code = $expert_code;
-            $service->payment_status = self::STATUS_PAID;
-            $service->save();
-
-            $expert_decision = ExpertDecision::findOne([
-                'type_application' => $payment->type_application,
-                'id_application' => $payment->id_application,
-            ]);
-
-            $expert_decision->expert_code = $expert_code;
-            $expert_decision->expert_code_created_at = time();
-            $expert_decision->save();
+        if (empty($payment->online_license)) {
+            (new PaymentService())->registerUserPayment($payment);
+            (new PaymentService())->registerExpertPayment($payment);
         }
 
-        return $this->billingResponseFormat(false, $data);
+        return [
+            'success' => true
+        ];
+//        return $this->billingResponseFormat(false, $data);
     }
 
     private function billingResponseFormat($error = false, $data = null)

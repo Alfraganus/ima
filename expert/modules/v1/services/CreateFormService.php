@@ -51,7 +51,7 @@ class CreateFormService
             $form->user_id = $applicationInfo['user_id'];
             $form->expert_id = $user_id;
             $form->setAttributes($data);
-            $form->setAttributes($data['form_info'][0]);
+            $form->setAttributes($data['form_info']);
             if (!$form->save()) {
                 throw new \Exception(json_encode($form->errors));
             }
@@ -80,9 +80,9 @@ class CreateFormService
 
     public function saveAttachment($file, $data, $object_id, $applicationInfo)
     {
-        $fileName = $file['name'][0][$data['form_id']];
-        $tempName = $file['tmp_name'][0][$data['form_id']];
-        $fileType = $file['type'][0][$data['form_id']];
+        $fileName = $file['name'][$data['form_id']];
+        $tempName = $file['tmp_name'][$data['form_id']];
+        $fileType = $file['type'][$data['form_id']];
 //        throw new \Exception(json_encode($fileTypes));
         $fileTitle = time() . $fileName;
         $fileName = 'form_uploads/' . $fileTitle;

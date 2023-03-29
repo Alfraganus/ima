@@ -63,11 +63,6 @@ class DefaultController extends Controller
     }
 
 
-    public function actionTest2()
-    {
-        return 'tes';
-    }
-
     public function actionSaveForm()
     {
 //        return Yii::$app->request->post();
