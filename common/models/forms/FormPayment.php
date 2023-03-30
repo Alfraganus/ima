@@ -68,21 +68,20 @@ class FormPayment extends \yii\db\ActiveRecord
 
     public function afterSave($insert, $changedAttributes)
     {
-        parent::afterSave($insert, $changedAttributes);
         $maxApplicationNumber = UserApplications::find()
             ->where(['year'=>date('Y')])
             ->max('application_number');
         $model = UserApplications::findOne([
+            'id'=>$this->user_application_id,
             'user_id'=>$this->user_id,
-            'id'=>$this->user_application_id
         ]);
         if ($maxApplicationNumber < 1) {
             $model->application_number = 1;
         } else {
             $model->application_number = $maxApplicationNumber + 1;
         }
-        $model->is_finished = true;
-        $model->payment_done = true;
+        $model->is_finished = 1;
+        $model->payment_done = 1;
         $model->date_submitted = time();
         $model->generated_id = $this->formatOrderNumber(sprintf('%s%d',
             $this->getApplicationPrefix(),

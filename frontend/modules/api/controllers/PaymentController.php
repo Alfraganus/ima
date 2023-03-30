@@ -2,13 +2,13 @@
 
 namespace frontend\modules\api\controllers;
 
-use  common\models\Payments;
+use common\models\UserApplications;
 use common\models\WizardFormField;
-use expert\modules\v1\services\CreateFormService;
-use expert\modules\v1\services\PaymentService;
-use frontend\modules\api\service\FormSaveService;
+use expert\models\forms\ExpertFormPayment;
 use Yii;
 use yii\rest\Controller;
+use  common\models\Payments;
+use expert\modules\v1\services\PaymentService;
 use common\traits\PaymentFunctions;
 
 class PaymentController extends Controller
@@ -110,32 +110,62 @@ class PaymentController extends Controller
         return self::getBillingCurl($urlPart, 'POST', $body);
     }
 
-    public function actionGetHistory($serviceName)
-    {
-        $id_user = Yii::$app->user->identity->getId();
-        $className = 'common\\models\\' . $serviceName;
-        $services = $className::find()
-            ->select('id,updated_at,created_at,payment_amount,payment_invoice_serial,payment_status,id_payment')
-            ->where(['id_user' => $id_user])
-            ->orderBy(['created_at' => SORT_DESC])
-            ->all();
-        $data = [];
-        foreach ($services as $service) {
-            /* @var $service Trademark */
 
-            /* @var $payment Payment */
-            $payment = Payments::findOne($service->id_payment);
-            $data[] = [
-                'id' => $service->id,
-                'updated_at' => $service->updated_at,
-                'payment_created_at' => $service->created_at,
-                'payment_amount' => $payment->billing_amount ?? $service->payment_amount,
-                'payment_invoice_serial' => $payment->invoice_serial ?? $service->payment_invoice_serial,
-                'payment_status' => $payment->billing_status ?? $service->payment_status,
-                'type_application' => $serviceName,
-            ];
+    public function actionTest()
+    {
+        $data = Yii::$app->request->post();
+        $payment = Payments::findOne(['invoice_request_id' => $data['invoice_request_id']]);
+
+        (new PaymentService())->registerUserPayment($payment);
+        (new PaymentService())->registerExpertPayment($payment);
+
+        return [
+            'message' => 'oxshadi'
+        ];
+    }
+
+    public function actionBillingResponse()
+    {
+        $data = Yii::$app->request->post();
+        $user_id = Yii::$app->user->id;
+        $billing_type = $data['type'];
+        $billing_ip = Yii::$app->getRequest()->getUserIP();
+        if ($billing_type !== self::STATUS_BILLING_PAID) {
+            return $this->billingResponseFormat('Type is not ' . self::STATUS_BILLING_PAID, $data);
         }
-        return $data;
+
+        $billing_request_id = $data['data']['requestId'];
+        $payment = Payments::findOne(['invoice_request_id' => $billing_request_id]);
+        if (!$payment) {
+            return $this->billingResponseFormat('Request id is wrong, invoice not found', $data);
+        }
+
+        $billing_serial = $data['data']['serial'];
+        $billing_amount = $data['data']['payments'][0]['amount'];
+        $billing_note = $data['data']['note'];
+        $billing_created_at = $data['data']['createdAt'];
+
+        $payment->billing_request_id = $billing_request_id;
+        $payment->billing_invoice_serial = $billing_serial;
+        $payment->billing_amount = $billing_amount;
+        $payment->billing_status = $billing_type;
+        $payment->billing_note = $billing_note;
+        $payment->billing_created_at = $billing_created_at;
+        $payment->billing_ip = $billing_ip;
+        $payment->billing_json = json_encode($data);
+        $payment->payment_status = true;
+
+        if (!$payment->save()) {
+            throw new \Exception(json_encode($payment->errors));
+        }
+
+        (new PaymentService())->registerUserPayment($payment,$user_id);
+        (new PaymentService())->registerExpertPayment($payment,$user_id);
+
+        return [
+            'success' => true
+        ];
+//        return $this->billingResponseFormat(false, $data);
     }
 
     public function actionGetOsPdf($serviceName, $id_application)
@@ -182,50 +212,34 @@ class PaymentController extends Controller
         return $this->setPaymentStatus($service, $serviceName);
     }
 
-    public function actionBillingResponse()
+    public function actionGetHistory($serviceName)
     {
-        $data = Yii::$app->request->post();
-        $billing_type = $data['type'];
-        $billing_ip = Yii::$app->getRequest()->getUserIP();
-        if ($billing_type !== self::STATUS_BILLING_PAID) {
-            return $this->billingResponseFormat('Type is not ' . self::STATUS_BILLING_PAID, $data);
+        $id_user = Yii::$app->user->identity->getId();
+        $className = 'common\\models\\' . $serviceName;
+        $services = $className::find()
+            ->select('id,updated_at,created_at,payment_amount,payment_invoice_serial,payment_status,id_payment')
+            ->where(['id_user' => $id_user])
+            ->orderBy(['created_at' => SORT_DESC])
+            ->all();
+        $data = [];
+        foreach ($services as $service) {
+            /* @var $service Trademark */
+
+            /* @var $payment Payment */
+            $payment = Payments::findOne($service->id_payment);
+            $data[] = [
+                'id' => $service->id,
+                'updated_at' => $service->updated_at,
+                'payment_created_at' => $service->created_at,
+                'payment_amount' => $payment->billing_amount ?? $service->payment_amount,
+                'payment_invoice_serial' => $payment->invoice_serial ?? $service->payment_invoice_serial,
+                'payment_status' => $payment->billing_status ?? $service->payment_status,
+                'type_application' => $serviceName,
+            ];
         }
-
-        $billing_request_id = $data['data']['requestId'];
-        $payment = Payments::findOne(['invoice_request_id' => $billing_request_id]);
-        if (!$payment) {
-            return $this->billingResponseFormat('Request id is wrong, invoice not found', $data);
-        }
-
-        $billing_serial = $data['data']['serial'];
-        $billing_amount = $data['data']['payments'][0]['amount'];
-        $billing_note = $data['data']['note'];
-        $billing_created_at = $data['data']['createdAt'];
-
-        $payment->billing_request_id = $billing_request_id;
-        $payment->billing_invoice_serial = $billing_serial;
-        $payment->billing_amount = $billing_amount;
-        $payment->billing_status = $billing_type;
-        $payment->billing_note = $billing_note;
-        $payment->billing_created_at = $billing_created_at;
-        $payment->billing_ip = $billing_ip;
-        $payment->billing_json = json_encode($data);
-        $payment->payment_status = true;
-
-        if (!$payment->save()) {
-            throw new \Exception(json_encode($payment->errors));
-        }
-
-        if (empty($payment->online_license)) {
-            (new PaymentService())->registerUserPayment($payment);
-            (new PaymentService())->registerExpertPayment($payment);
-        }
-
-        return [
-            'success' => true
-        ];
-//        return $this->billingResponseFormat(false, $data);
+        return $data;
     }
+
 
     private function billingResponseFormat($error = false, $data = null)
     {
