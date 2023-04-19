@@ -19,7 +19,6 @@ class AuthController extends Controller
     public function __construct($id, $module, $config = [])
     {
         $this->userRoleService = new UserRoleService();
-        $this->userRoleService->runRbacMigrations();
         parent::__construct($id, $module, $config);
     }
 
