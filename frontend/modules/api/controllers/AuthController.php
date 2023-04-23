@@ -80,6 +80,7 @@ class AuthController extends Controller
             if($one_id_response) {
                 $getUser = ImaUsers::findOne(['username'=>$one_id_response['user_id']]);
                 if($getUser) {
+                    return Yii::$app->controller->redirect("https://ima-dev.uz/frontend/web/api/auth/login?username=alfra@username");
                     return [
                       'user'=>$getUser->username,
                       'token'=>$getUser->auth_key
