@@ -29,6 +29,7 @@ class AuthController extends Controller
                 'class' => \yii\filters\VerbFilter::class,
                 'actions' => [
                     'login-by-credentials'  => ['POST'],
+                    'get-token-by-username'  => ['POST'],
                 ],
             ],
         ];
@@ -103,6 +104,17 @@ class AuthController extends Controller
                 }
             }
         }
+    }
+    public function actionGetTokenByUsername()
+    {
+        $post =  Yii::$app->request->post();
+        $getUser = ImaUsers::findOne(['username'=>$post['username']]);
+        if(!$getUser) return ['message'=>'User does not exist'];
+
+        return [
+            'user'=>$getUser->username,
+            'token'=>$getUser->auth_key
+        ];
     }
 
 }
