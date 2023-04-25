@@ -59,6 +59,7 @@ class DefaultController extends Controller
         return (new \yii\db\Query())
             ->select('*')
             ->from('world_countries')
+            ->orderBy('country_name')
             ->all();
     }
 
