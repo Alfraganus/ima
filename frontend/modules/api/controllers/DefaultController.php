@@ -3,6 +3,8 @@
 namespace frontend\modules\api\controllers;
 
 
+use http\Client;
+use http\Client\Request;
 use Yii;
 use yii\rest\Controller;
 use yii\web\Response;
@@ -51,6 +53,13 @@ class DefaultController extends Controller
             $post,
             $_FILES
         );
+    }
+    public function actionGetCountries()
+    {
+        return (new \yii\db\Query())
+            ->select('*')
+            ->from('world_countries')
+            ->all();
     }
 
     public function actionSaveApplicationAttachment()
