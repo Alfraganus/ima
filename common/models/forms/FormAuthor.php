@@ -17,10 +17,11 @@ use Yii;
  * @property string|null $full_name
  * @property int|null $region
  * @property int|null $district
+ * @property int|null $is_anonymous
  * @property string|null $address
  * @property string|null $workplace
  * @property string|null $position
- * @property string|null $academic_degree
+ * @property string|null $nickname
  */
 class FormAuthor extends \yii\db\ActiveRecord
 {
@@ -38,8 +39,8 @@ class FormAuthor extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'user_application_id', 'user_application_wizard_id', 'author_country_code', 'region', 'district'], 'integer'],
-            [['jshshir', 'full_name', 'address', 'workplace', 'position'], 'string', 'max' => 255],
+            [['user_id', 'user_application_id', 'user_application_wizard_id', 'author_country_code', 'region', 'district','is_anonymous'], 'integer'],
+            [['jshshir', 'full_name', 'address', 'workplace', 'position','nickname'], 'string', 'max' => 255],
             [['academic_degree'], 'string', 'max' => 150],
         ];
     }
@@ -63,6 +64,8 @@ class FormAuthor extends \yii\db\ActiveRecord
             'workplace' => Yii::t('app', 'Workplace'),
             'position' => Yii::t('app', 'Position'),
             'academic_degree' => Yii::t('app', 'Academic Degree'),
+            'is_anonymous',
+            'nickname',
         ];
     }
 
@@ -85,6 +88,8 @@ class FormAuthor extends \yii\db\ActiveRecord
             'workplace',
             'position',
             'academic_degree',
+            'is_anonymous',
+            'nickname',
         ];
     }
 
