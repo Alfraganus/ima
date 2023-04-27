@@ -51,6 +51,15 @@ class FormIndustryExample extends \yii\db\ActiveRecord
         ];
     }
 
+     public static function run($user_id, $application_id, $wizard_id,$form_id=null)
+    {
+        return self::findAll([
+            'user_application_id'=>$application_id,
+            'user_id' => $user_id,
+            'user_application_wizard_id' =>$wizard_id,
+        ]);
+    }
+
     /**
      * {@inheritdoc}
      */

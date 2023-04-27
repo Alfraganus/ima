@@ -46,21 +46,28 @@ class FormIndustryDocument extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function run($user_id, $application_id,  $wizard_id,$form_id)
+    {
+        return ApplicationFormMedia::find()->where([
+                'application_id'    => $application_id,
+                'user_id'           => $user_id,
+                'wizard_id'         => $wizard_id,
+                'form_id'           => $form_id,
+            ])->select(['id', 'file_name', 'file_path'])->all();
+    }
+
     public function fields()
     {
         return [
-            'form_id' => function () {
-                return $this->getFormId();
-            },
             'id',
-            'files' => function () {
+           /* 'files' => function () {
                 return ApplicationFormMedia::find()->where([
                     'application_id'=>$this->user_application_id,
                     'user_id' => $this->user_id,
                     'wizard_id' => $this->user_application_wizard_id,
                     'form_id' => self::CLASS_FORM_ID,
                 ])->select(['id', 'file_name', 'file_path'])->all();
-            }
+            }*/
         ];
     }
 

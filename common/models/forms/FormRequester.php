@@ -3,6 +3,7 @@
 namespace common\models\forms;
 
 use common\models\ApplicationForm;
+use common\models\ApplicationFormMedia;
 use Yii;
 
 /**
@@ -86,6 +87,15 @@ class FormRequester extends \yii\db\ActiveRecord
             'sms_notification_number',
             'role_id',
         ];
+    }
+
+     public static function run($user_id, $application_id, $wizard_id,$form_id=null)
+    {
+       return self::findAll([
+            'user_application_id'=>$application_id,
+            'user_id' => $user_id,
+            'user_application_wizard_id' =>$wizard_id,     
+        ]);
     }
 
     /**

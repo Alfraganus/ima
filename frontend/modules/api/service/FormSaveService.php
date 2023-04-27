@@ -28,7 +28,7 @@ class FormSaveService
             } else {
                 $user_application_id = $postContent['user_application_id'];
             }
-            if ($postContent['forms']) $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id']);
+            if (!empty($postContent['forms'])) $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id']);
 
             if(!empty($postContent['attachments'])) {
                 $this->setFormAttachmentMissingValues(

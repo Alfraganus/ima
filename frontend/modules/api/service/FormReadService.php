@@ -29,12 +29,13 @@ class FormReadService
 
     public static function getUserFormData($user_id, $application_id, $form_id, $wizard_id)
     {
-        $form = ApplicationForm::findOne($form_id);
-        return $form->form_class::findAll([
-            'user_application_id' => $application_id,
-            'user_id' => $user_id,
-            'user_application_wizard_id' => $wizard_id
-        ]);
+       $form = ApplicationForm::findOne($form_id);
+        return $form->form_class::run(
+             $application_id,
+            $user_id,
+            $wizard_id,
+            $form_id
+        );
     }
 
     public function getWizardContent($application_id, $wizard_id, $user_id)
@@ -50,7 +51,8 @@ class FormReadService
                     $application_id,
                     $form->form_id,
                     $form->wizard_id
-                )
+                ),
+
             ];
         }
         return $result;
