@@ -31,8 +31,8 @@ class FormReadService
     {
        $form = ApplicationForm::findOne($form_id);
         return $form->form_class::run(
-             $application_id,
             $user_id,
+            $application_id,
             $wizard_id,
             $form_id
         );
@@ -79,8 +79,9 @@ class FormReadService
         $forms = [];
         foreach ($getWizardForms as $form) {
             $forms[] = $this->getUserFormData(
-                $user_id,
+
                 $application_id,
+                $user_id,
                 $form->form_id,
                 $form->wizard_id
             );
