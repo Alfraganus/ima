@@ -154,7 +154,7 @@ class FormSaveService
         for ($i = 0; $i < sizeof($fileNames); $i++) {
             $fileIndentification = array_keys($fileNames[$i])[0];
             $fileTitle = time() . $fileNames[$i][$fileIndentification];
-            $fileName = 'form_uploads/' . $fileTitle;
+            $fileName = 'frontend/web/form_uploads/' . $fileTitle;
             move_uploaded_file($tempNames2[$i][$fileIndentification], $fileName);
             $mediaContent = new ApplicationFormMedia();
             $mediaContent->application_id = $application_id??null;
