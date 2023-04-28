@@ -32,7 +32,7 @@ class FormSaveService
 
             if(!empty($postContent['attachments'])) {
                 $this->setFormAttachmentMissingValues(
-                    json_decode(json_decode($postContent['attachments'])),
+                    json_decode($postContent['attachments']),
                     $postContent['wizard_id'],
                     $user_application_id
                 );
