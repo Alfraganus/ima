@@ -81,16 +81,15 @@ class DefaultController extends Controller
     }
 
 
-    public function actionGetApplicationData($application_id, $wizard_id, $user_id)
+    public function actionGetApplicationData($application_id, $wizard_id)
     {
-        return (new FormReadService())->getWizardContent($application_id, $wizard_id, $user_id);
+        return (new FormReadService())->getWizardContent($application_id, $wizard_id, Yii::$app->user->id);
     }
 
     public function actionGetApplicationSummary($application_id)
     {
         return (new FormReadService())->getApplicationContent(
             $application_id,
-            Yii::$app->user->id
         );
     }
 
