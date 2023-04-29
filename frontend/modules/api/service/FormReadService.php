@@ -27,7 +27,7 @@ class FormReadService
         return $regions;
     }
 
-    public static function getUserFormData($user_id, $application_id, $form_id, $wizard_id)
+    public static function getUserFormData( $user_id,$application_id,$form_id, $wizard_id)
     {
        $form = ApplicationForm::findOne($form_id);
         return $form->form_class::run(
@@ -79,9 +79,8 @@ class FormReadService
         $forms = [];
         foreach ($getWizardForms as $form) {
             $forms[] = $this->getUserFormData(
-
-                $application_id,
                 $user_id,
+                $application_id,
                 $form->form_id,
                 $form->wizard_id
             );

@@ -43,6 +43,7 @@ class FormSaveService
             return [
                 'success' => true,
                 'message' => 'Operation is successful!',
+                'user_application_id'=>$user_application_id,
                 'data' => (new FormReadService())->getWizardContent(
                     $user_application_id,
                     $postContent['wizard_id'],
@@ -105,7 +106,7 @@ class FormSaveService
                 throw new \Exception(json_encode($formModel->errors));
             }
 
-            if ($form['child']) {
+            if (!empty($form['child'])) {
                 $this->saveChildForm($form['child'], $formModel->id, $form['class_content_type'], $form['form_id']);
             }
         }
