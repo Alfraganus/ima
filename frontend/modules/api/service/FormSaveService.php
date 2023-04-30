@@ -156,13 +156,13 @@ class FormSaveService
             $fileIndentification = array_keys($fileNames[$i])[0];
             $fileTitle = time() . $fileNames[$i][$fileIndentification];
             $fileName = 'frontend/web/form_uploads/' . $fileTitle;
-            move_uploaded_file($tempNames2[$i][$fileIndentification], '/form_uploads/' . $fileTitle);
+            move_uploaded_file($tempNames2[$i][$fileIndentification], 'form_uploads/' . $fileTitle);
             $mediaContent = new ApplicationFormMedia();
             $mediaContent->application_id = $application_id??null;
             $mediaContent->wizard_id = !empty($postContent) ? $postContent['wizard_id'] : null;
             $mediaContent->form_id = $fileIndentification;
             $mediaContent->user_id = $user_id;
-            $mediaContent->file_path = Yii::$app->request->hostInfo . '/' . 'form_uploads/' . $fileTitle;
+            $mediaContent->file_path = Yii::$app->request->hostInfo . '/' .$fileName;
             $mediaContent->file_name = $fileTitle;
             $mediaContent->file_extension = $fileTypes[$i][$fileIndentification];
             if (!$mediaContent->save()) {
