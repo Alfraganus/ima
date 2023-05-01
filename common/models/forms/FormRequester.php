@@ -15,8 +15,11 @@ use Yii;
  * @property int|null $user_application_wizard_id
  * @property int|null $individual_type
  * @property string|null $jshshir
+ * @property string|null $stir
  * @property string|null $full_name
+ * @property string|null $legal_entity_title
  * @property int|null $region
+ * @property int|null $submitting_country_id
  * @property int|null $district
  * @property string|null $submitting_address
  * @property string|null $receiver_name
@@ -57,10 +60,13 @@ class FormRequester extends \yii\db\ActiveRecord
             'user_application_wizard_id' => Yii::t('app', 'User Application Wizard ID'),
             'individual_type' => Yii::t('app', 'Individual Type'),
             'jshshir' => Yii::t('app', 'Jshshir'),
+            'stir' => Yii::t('app', 'stir'),
             'full_name' => Yii::t('app', 'Full Name'),
+            'legal_entity_title' => Yii::t('app', 'legal_entity_title'),
             'region' => Yii::t('app', 'Region'),
             'district' => Yii::t('app', 'District'),
             'submitting_address' => Yii::t('app', 'Submitting Address'),
+            'submitting_country_id'=> Yii::t('app', 'submitting_country_id'),
             'receiver_name' => Yii::t('app', 'Receiver Name'),
             'sms_notification_number' => Yii::t('app', 'Sms Notification Number'),
             'role_id' => Yii::t('app', 'Role ID'),
@@ -79,10 +85,13 @@ class FormRequester extends \yii\db\ActiveRecord
             'user_application_wizard_id',
             'individual_type',
             'jshshir',
+            'stir',
             'full_name',
+            'legal_entity_title',
             'region',
             'district',
             'submitting_address',
+            'submitting_country_id',
             'receiver_name',
             'sms_notification_number',
             'role_id',

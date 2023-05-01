@@ -99,6 +99,12 @@ class FormSaveService
                 throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
             }
             $this->setForm[$form]::deleteAll(['user_application_id'=>$application_id,'user_id'=>$user_id]);
+
+            ApplicationFormMedia::deleteAll([
+                'application_id'=>$application_id,
+                'form_id'=>$form,
+                'user_id'=>$user_id,
+            ]);
         }
     }
     private function saveForms($forms, $application_id, $wizard_id, $user_id = 1)
