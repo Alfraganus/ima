@@ -100,11 +100,19 @@ class FormSaveService
             }
             $this->setForm[$form]::deleteAll(['user_application_id'=>$application_id,'user_id'=>$user_id]);
 
-            ApplicationFormMedia::deleteAll([
+            $applicationMedia = ApplicationFormMedia::findAll( [
+                'application_id'=>$application_id,
+                'form_id'=>$form,
+                'user_id'=>$user_id
+            ]);
+            foreach ($applicationMedia as $media) {
+                $media->delete();
+            }
+            /*ApplicationFormMedia::deleteAll([
                 'application_id'=>$application_id,
                 'form_id'=>$form,
                 'user_id'=>$user_id,
-            ]);
+            ]);*/
         }
     }
     private function saveForms($forms, $application_id, $wizard_id, $user_id = 1)
