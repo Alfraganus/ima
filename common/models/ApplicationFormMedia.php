@@ -77,8 +77,6 @@ class ApplicationFormMedia extends \yii\db\ActiveRecord
         $fileDirectory = Yii::getAlias('@frontend/web/form_uploads/');
         if (file_exists(FileHelper::normalizePath($fileDirectory . $this->file_name))) {
             unlink(sprintf('form_uploads/%s',$this->file_name));
-        } else {
-            throw new \Exception('File does not exist');
         }
         parent::afterDelete();
 
