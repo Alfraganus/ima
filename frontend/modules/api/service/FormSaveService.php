@@ -2,6 +2,7 @@
 
 namespace frontend\modules\api\service;
 
+use common\models\forms\FormAuthor;
 use Yii;
 use yii\helpers\ArrayHelper;
 use common\models\ApplicationForm;
@@ -28,6 +29,7 @@ class FormSaveService
             } else {
                 $user_application_id = $postContent['user_application_id'];
             }
+
             if (!empty($postContent['forms'])) $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id']);
 
             if(!empty($postContent['attachments'])) {
@@ -90,8 +92,23 @@ class FormSaveService
         return false;
     }
 
+    private function cleanRecords($forms,$application_id,$user_id)
+    {
+        foreach ($forms as $form) {
+            if (!in_array($form, array_keys($this->setForm))) {
+                throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
+            }
+            $this->setForm[$form]::deleteAll(['user_application_id'=>$application_id,'user_id'=>$user_id]);
+        }
+    }
     private function saveForms($forms, $application_id, $wizard_id, $user_id = 1)
     {
+        /*cleaning previous records before inserting new ones*/
+        $this->cleanRecords(
+            array_unique(array_column($forms, 'form_id')),
+            $application_id,
+            $user_id
+        );
         foreach ($forms as $form) {
             if (!in_array($form['form_id'], array_keys($this->setForm))) {
                 throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
