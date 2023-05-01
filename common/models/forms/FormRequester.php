@@ -4,6 +4,9 @@ namespace common\models\forms;
 
 use common\models\ApplicationForm;
 use common\models\ApplicationFormMedia;
+use common\models\Districts;
+use common\models\Regions;
+use common\models\WorldCountries;
 use Yii;
 
 /**
@@ -35,6 +38,7 @@ class FormRequester extends \yii\db\ActiveRecord
     {
         return 'form_requester';
     }
+
     const CLASS_FORM_ID = 1;
 
     /**
@@ -66,7 +70,7 @@ class FormRequester extends \yii\db\ActiveRecord
             'region' => Yii::t('app', 'Region'),
             'district' => Yii::t('app', 'District'),
             'submitting_address' => Yii::t('app', 'Submitting Address'),
-            'submitting_country_id'=> Yii::t('app', 'submitting_country_id'),
+            'submitting_country_id' => Yii::t('app', 'submitting_country_id'),
             'receiver_name' => Yii::t('app', 'Receiver Name'),
             'sms_notification_number' => Yii::t('app', 'Sms Notification Number'),
             'role_id' => Yii::t('app', 'Role ID'),
@@ -77,7 +81,7 @@ class FormRequester extends \yii\db\ActiveRecord
     {
         return [
             'form_id' => function () {
-                return ApplicationForm::findOne(['form_class'=>get_called_class()])->id;
+                return ApplicationForm::findOne(['form_class' => get_called_class()])->id;
             },
             'id',
             'user_id',
@@ -88,22 +92,41 @@ class FormRequester extends \yii\db\ActiveRecord
             'stir',
             'full_name',
             'legal_entity_title',
-            'region',
-            'district',
+            'district' => function () {
+                $address = Districts::findOne($this->district);
+             return $address ? [
+                    'id' => $this->region,
+                    'name' => $address->name_uz,
+                ] : [];
+            },
+            'region' => function () {
+                $address = Regions::findOne($this->region);
+                return $address ? [
+                    'id' => $this->region,
+                    'name' => $address->name_uz,
+                ] : [];
+            },
             'submitting_address',
-            'submitting_country_id',
+            'submitting_country_id' => function () {
+                $submittingCountry = WorldCountries::findOne($this->submitting_country_id);
+                return [
+                    'id' => $this->submitting_country_id,
+                    'code' => $submittingCountry->country_code,
+                    'country_name' => $submittingCountry->country_name,
+                ];
+            },
             'receiver_name',
             'sms_notification_number',
             'role_id',
         ];
     }
 
-     public static function run($user_id, $application_id, $wizard_id,$form_id=null)
+    public static function run($user_id, $application_id, $wizard_id, $form_id = null)
     {
-       return self::findAll([
-            'user_application_id'=>$application_id,
+        return self::findAll([
+            'user_application_id' => $application_id,
             'user_id' => $user_id,
-            'user_application_wizard_id' =>$wizard_id,     
+            'user_application_wizard_id' => $wizard_id,
         ]);
     }
 
