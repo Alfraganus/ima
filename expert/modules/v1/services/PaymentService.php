@@ -26,7 +26,7 @@ class PaymentService
                     'application_id' => $getApplicationType->application_id,
                     'wizard_id' => $formComponent->wizard_id,
                     'forms' => [
-                        0 => [
+                        [
                             'form_id' => $formComponent->form_id,
                             'payment_done' => 1,
                             'payment_info'=> $paymentModel->invoice_json,

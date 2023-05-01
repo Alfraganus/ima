@@ -3,6 +3,9 @@
 namespace common\models\forms;
 
 use common\models\ApplicationForm;
+use common\models\Districts;
+use common\models\Regions;
+use common\models\WorldCountries;
 use Yii;
 
 /**
@@ -95,11 +98,30 @@ class FormAuthor extends \yii\db\ActiveRecord
             'user_id',
             'user_application_id',
             'user_application_wizard_id',
-            'author_country_code',
             'jshshir',
             'full_name',
-            'region',
-            'district',
+            'district' => function () {
+                $address = Districts::findOne($this->district);
+                return $address ? [
+                    'id' => $this->region,
+                    'name' => $address->name_uz,
+                ] : [];
+            },
+            'region' => function () {
+                $address = Regions::findOne($this->region);
+                return $address ? [
+                    'id' => $this->region,
+                    'name' => $address->name_uz,
+                ] : [];
+            },
+            'author_country_code' => function () {
+                $submittingCountry = WorldCountries::findOne($this->author_country_code);
+                return [
+                    'id' => $this->author_country_code,
+                    'code' => $submittingCountry->country_code,
+                    'country_name' => $submittingCountry->country_name,
+                ];
+            },
             'address',
             'workplace',
             'position',
