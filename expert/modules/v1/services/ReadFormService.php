@@ -2,6 +2,9 @@
 
 namespace expert\modules\v1\services;
 
+use common\models\ApplicationFormMedia;
+use expert\models\ExpertFormMedia;
+
 class ReadFormService
 {
 
@@ -17,6 +20,15 @@ class ReadFormService
         return $formModel::findall($queryFilter);
     }
 
+    public static function getAttachments($user_id, $user_application_id,$module_id, $form_id)
+    {
+        return ExpertFormMedia::find()->where([
+            'user_application_id'    => $user_application_id,
+            'user_id'           => $user_id,
+            'module_id'           => $module_id,
+            'form_id'           => $form_id,
+        ])->select(['id', 'file_name', 'file_path','file_extension'])->all();
+    }
     public function getColumnByField($field = 210)
     {
         return [
