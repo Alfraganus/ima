@@ -3,6 +3,7 @@
 namespace frontend\modules\api\service;
 
 use common\models\forms\FormAuthor;
+use common\models\forms\FormDocument;
 use Yii;
 use yii\helpers\ArrayHelper;
 use common\models\ApplicationForm;
@@ -32,13 +33,7 @@ class FormSaveService
 
             if (!empty($postContent['forms'])) $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id']);
 
-            if(!empty($postContent['attachments'])) {
-                $this->setFormAttachmentMissingValues(
-                    json_decode($postContent['attachments']),
-                    $postContent['wizard_id'],
-                    $user_application_id
-                );
-            }
+
 
             if ($files) $this->saveFiles($files, $postContent, $user_id, $user_application_id);
             $transaction->commit();
@@ -98,7 +93,11 @@ class FormSaveService
             if (!in_array($form, array_keys($this->setForm))) {
                 throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
             }
-            $this->setForm[$form]::deleteAll(['user_application_id'=>$application_id,'user_id'=>$user_id]);
+            $query = ['user_application_id'=>$application_id,'user_id'=>$user_id];
+            if($this->setForm[$form] instanceof  FormDocument) {
+                $query = ['user_application_id'=>$application_id,'form_id'=>$form, 'user_id'=>$user_id];
+            }
+            $this->setForm[$form]::deleteAll($query);
 
             $applicationMedia = ApplicationFormMedia::findAll([
                 'application_id'=>$application_id,
@@ -132,6 +131,14 @@ class FormSaveService
                 throw new \Exception(json_encode($formModel->errors));
             }
 
+            if(!empty($form['attachments'])) {
+                $this->setFormAttachmentMissingValues(
+                    json_decode($form['attachments']),
+                    $wizard_id,
+                    $application_id
+                );
+            }
+
             if (!empty($form['child'])) {
                 $this->saveChildForm($form['child'], $formModel->id, $form['class_content_type'], $form['form_id']);
             }
@@ -140,6 +147,8 @@ class FormSaveService
     private function setFormAttachmentMissingValues(array $ids,int $wizard_id, int $application_id)
     {
         foreach ($ids as $id) {
+//        throw new \Exception(json_encode($id));
+
             $formAttachments = ApplicationFormMedia::findOne($id);
             $formAttachments->wizard_id = $wizard_id;
             $formAttachments->application_id = $application_id;
@@ -178,6 +187,13 @@ class FormSaveService
         $tempNames2 = $files['forms']['tmp_name'];
         $fileTypes = $files['forms']['type'];
         $attachmentIds = [];
+        foreach (ArrayHelper::toArray($fileNames) as $key => $val)  {
+            if(!in_array( key($val),$application_id)) {
+                $attachmentIds[] = key($val);
+            }
+        }
+        return $attachmentIds;
+
         for ($i = 0; $i < sizeof($fileNames); $i++) {
             $fileIndentification = array_keys($fileNames[$i])[0];
             $fileTitle = time() . $fileNames[$i][$fileIndentification];
@@ -194,7 +210,14 @@ class FormSaveService
             if (!$mediaContent->save()) {
                 throw new  \Exception(json_encode($mediaContent->errors));
             }
-            $attachmentIds[] = $mediaContent->id;
+            if ($fileIndentification == $formId) {
+                $attachmentIdsForForm[] = $attachment['attachment_id'];
+            }
+
+            $attachmentIds[] = [
+                'form_id'=>$fileIndentification,
+                'attachment_id'=>$mediaContent->id
+            ];
         }
         return $attachmentIds;
     }

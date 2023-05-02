@@ -2,9 +2,11 @@
 
 namespace frontend\modules\api\controllers;
 
+use common\models\User;
 use common\models\UserApplications;
 use common\models\WizardFormField;
 use expert\models\forms\ExpertFormPayment;
+use frontend\models\ImaUsers;
 use Yii;
 use yii\rest\Controller;
 use  common\models\Payments;
@@ -24,12 +26,13 @@ class PaymentController extends Controller
     public function actionCreateInvoice()
     {
         if (Yii::$app->request->isPost) {
+            $userInfo = ImaUsers::findOne(Yii::$app->user->id);
             $data = Yii::$app->request->post();
-            $name = $data['name'];
-            $email = $data['email'];
-            $phone = $data['phone'];
+            $name = $userInfo['full_name'];
+            $email = $userInfo['email'];
+            $phone = $userInfo['mob_phone_no'];
             $type = $data['type'];
-            $passport = $data['passport'];
+            $passport = $userInfo['pport_no'];
             $pnfl = $data['pnfl'];
             $amount = $data['amount'];
             $quantity = $data['quantity'];
@@ -37,7 +40,7 @@ class PaymentController extends Controller
             $application_id = $data['application_id'];
             $application_type = $data['application_type'];
             $online_license = $data['online_license'] ?? null;
-            $taxid = $data['taxid'] ?? null;
+            $taxid = $userInfo['taxid'] ?? null;
 
             $payer = self::getPayer($name, $email, $phone, $type, $passport, $pnfl, $taxid);
             if (isset($payer['status']) && $payer['status'] == 'BAD_REQUEST' || !isset($payer['id'])) return $payer;
