@@ -186,14 +186,8 @@ class FormSaveService
         $fileNames = $files['forms']['name'];
         $tempNames2 = $files['forms']['tmp_name'];
         $fileTypes = $files['forms']['type'];
-        $attachmentIds = [];
-        foreach (ArrayHelper::toArray($fileNames) as $key => $val)  {
-            if(!in_array( key($val),$application_id)) {
-                $attachmentIds[] = key($val);
-            }
-        }
-        return $attachmentIds;
-
+        $result = [];
+        $attachmentIdsForForm = [];
         for ($i = 0; $i < sizeof($fileNames); $i++) {
             $fileIndentification = array_keys($fileNames[$i])[0];
             $fileTitle = time() . $fileNames[$i][$fileIndentification];
@@ -210,16 +204,17 @@ class FormSaveService
             if (!$mediaContent->save()) {
                 throw new  \Exception(json_encode($mediaContent->errors));
             }
-            if ($fileIndentification == $formId) {
-                $attachmentIdsForForm[] = $attachment['attachment_id'];
-            }
-
-            $attachmentIds[] = [
-                'form_id'=>$fileIndentification,
-                'attachment_id'=>$mediaContent->id
-            ];
+            $attachmentIdsForForm[][$fileIndentification] = $mediaContent->id;
         }
-        return $attachmentIds;
+        foreach ($attachmentIdsForForm as $item) {
+            foreach ($item as $key => $value) {
+                if (!array_key_exists($key, $result)) {
+                    $result[$key] = [];
+                }
+                $result[$key][] = $value;
+            }
+        }
+        return $result;
     }
 
     private function checkIfDataExistsForMedia($user_id, $user_application_id, $form_id)
