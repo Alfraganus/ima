@@ -47,7 +47,7 @@ class FormRequester extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'user_application_id', 'user_application_wizard_id', 'individual_type', 'region', 'district', 'role_id'], 'integer'],
+            [['user_id', 'user_application_id','submitting_country_id', 'user_application_wizard_id', 'individual_type', 'region', 'district', 'role_id'], 'integer'],
             [['jshshir', 'full_name', 'submitting_address', 'receiver_name', 'sms_notification_number'], 'string', 'max' => 255],
         ];
     }
