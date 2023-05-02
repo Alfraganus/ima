@@ -1,7 +1,9 @@
 <?php
+namespace common\models\forms;
 
-namespace common\models;
-
+use common\models\ApplicationForm;
+use common\models\ApplicationWizard;
+use common\models\UserApplications;
 use expert\models\ExpertUser;
 use Yii;
 
