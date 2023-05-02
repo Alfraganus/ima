@@ -9,7 +9,7 @@ use common\models\ApplicationForm;
 use common\models\ApplicationFormMedia;
 use common\models\ApplicationWizard;
 use common\models\forms\FormAuthor;
-use common\models\forms\FormIndustryDocument;
+use common\models\forms\FormDocument;
 use common\models\forms\FormIndustryExample;
 use common\models\forms\FormRequester;
 use common\models\UserApplications;
