@@ -8,6 +8,8 @@ use common\models\WizardFormField;
 use expert\models\forms\ExpertFormPayment;
 use frontend\models\ImaUsers;
 use Yii;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\HttpBearerAuth;
 use yii\rest\Controller;
 use  common\models\Payments;
 use expert\modules\v1\services\PaymentService;
@@ -17,7 +19,20 @@ class PaymentController extends Controller
 {
 
     use PaymentFunctions;
+    public function behaviors(): array
+    {
+        $behaviors = parent::behaviors();
 
+        unset($behaviors['authenticator']);
+        $behaviors['authenticator'] = [
+            'class' => CompositeAuth::class,
+            'authMethods' => [
+                HttpBearerAuth::class,
+            ],
+        ];
+
+        return $behaviors;
+    }
     const STATUS_OPEN = 'OPEN';
     const STATUS_PAID = 'paid';
 
