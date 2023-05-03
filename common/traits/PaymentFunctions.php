@@ -55,8 +55,8 @@ trait PaymentFunctions
         return  json_decode($response, true);
     }
 
-    public function setPaymentStatus(){
-        $urlPart = "invoice/71462739771754/payments";
+    public function setPaymentStatus($invoice_serial){
+        $urlPart = "invoice/$invoice_serial/payments";
         $response = $this->getBillingCurl($urlPart, 'GET');
         return $response;
     }

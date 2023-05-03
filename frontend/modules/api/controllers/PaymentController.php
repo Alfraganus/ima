@@ -2,9 +2,13 @@
 
 namespace frontend\modules\api\controllers;
 
+use common\models\ApplicationForm;
+use common\models\forms\FormPayment;
+use common\models\forms\FormRequester;
 use common\models\User;
 use common\models\UserApplications;
 use common\models\WizardFormField;
+use Exception;
 use expert\models\forms\ExpertFormPayment;
 use frontend\models\ImaUsers;
 use Yii;
@@ -41,26 +45,38 @@ class PaymentController extends Controller
     public function actionCreateInvoice()
     {
         if (Yii::$app->request->isPost) {
-            $userInfo = ImaUsers::findOne(Yii::$app->user->id);
             $data = Yii::$app->request->post();
+
+            $userInfo = ImaUsers::findOne(Yii::$app->user->id);
+            $applicationForm = UserApplications::findOne($data['user_application_id']);
+            $formRequester = FormRequester::findOne([
+                'user_id'=>Yii::$app->user->id,
+                'user_application_id'=>$data['user_application_id']
+            ]);
+            if ($formRequester->individual_type == 1) {
+                $taxid = $formRequester->jshshir;
+                $type = 'Физическое лицо';
+            } elseif ($formRequester->individual_type == 2) {
+                $taxid = $formRequester->stir;
+                $type = 'Юридическое лицо';
+            }
             $name = $userInfo['full_name'];
             $email = $userInfo['email'];
             $phone = $userInfo['mob_phone_no'];
-            $type = $data['type'];
+            $pnfl = $userInfo['pin'];
             $passport = $userInfo['pport_no'];
-            $pnfl = $data['pnfl'];
-            $amount = $data['amount'];
-            $quantity = $data['quantity'];
-            $note = $data['note'];
-            $application_id = $data['application_id'];
-            $application_type = $data['application_type'];
+
+            $amount = 1000;
+            $quantity = 1;
+            $note =sprintf('Payment for %s application form',$applicationForm->application->name);
+            $application_id = $data['user_application_id'];
+            $application_type =$applicationForm->application->name;
             $online_license = $data['online_license'] ?? null;
-            $taxid = $userInfo['taxid'] ?? null;
 
             $payer = self::getPayer($name, $email, $phone, $type, $passport, $pnfl, $taxid);
             if (isset($payer['status']) && $payer['status'] == 'BAD_REQUEST' || !isset($payer['id'])) return $payer;
             $payer_id = $payer['id'];
-            $request_id = $online_license . $application_type . ':' . $application_id;
+            $request_id =  $application_type . ':' . time();
             $invoice = self::createInvoice($request_id, $payer_id, $amount, $quantity, $note);
 
             if (isset($invoice['statusCode']) && $invoice['statusCode'] = 'INVOICE_EXISTS') {
@@ -128,20 +144,6 @@ class PaymentController extends Controller
         return self::getBillingCurl($urlPart, 'POST', $body);
     }
 
-
-    public function actionTest()
-    {
-        $data = Yii::$app->request->post();
-        $payment = Payments::findOne(['invoice_request_id' => $data['invoice_request_id']]);
-
-        (new PaymentService())->registerUserPayment($payment);
-        (new PaymentService())->registerExpertPayment($payment);
-
-        return [
-            'message' => 'oxshadi'
-        ];
-    }
-
     public function actionBillingResponse()
     {
         $data = Yii::$app->request->post();
@@ -186,45 +188,37 @@ class PaymentController extends Controller
 //        return $this->billingResponseFormat(false, $data);
     }
 
-    public function actionGetOsPdf($serviceName, $id_application)
+
+    public function actionCheckStatus($invoice_serial, $user_application_id)
     {
-        $payment = Payment::find([
-            'type_application' => $serviceName,
-            'id_application' => $id_application,
-            'online_license' => true,
-        ])
-            ->orderBy(['id' => SORT_DESC])
-            ->one();
-
-        if (!$payment) return 'payment not found';
-        if (!$payment->payment_status) return 'not paid';
-
-        /* @var $className Trademark */
-        $className = 'common\\models\\' . $serviceName;
-        $service = $className::findOne($id_application);
-
-        $type_service = $service->type_service ?? null;
-        $shortcode = $this->getShortcode($serviceName, $type_service);
-
-        $qr_code = Setting::findOne(['variable' => 'qr_code_account']);
-        /* @var $service Trademark */
-        $data[] = [
-            'os_id' => $shortcode . ' ' . $service->id,
-            'name' => $service->name,
-            'name_company' => $service->name_company ?? 'not available',
-            'created_at' => $service->created_at,
-            'expert_code' => $service->expert_code,
-            'updated_at' => $service->updated_at,
-            'ids_klass_item' => $service->ids_klass_item ?? 'not available',
-            'type_application' => $serviceName,
-            'qr_code' => $qr_code->value,
-        ];
-        return $data;
-    }
-
-    public function actionCheckStatus()
-    {
-        return $this->setPaymentStatus();
+        try {
+            $acceptablePaymentStatues = [
+                'paid',
+                'pending'
+            ];
+            $paymentInfo = $this->setPaymentStatus($invoice_serial);
+            if (in_array($paymentInfo[0]['status'], $acceptablePaymentStatues)) {
+                $formPayment = FormPayment::findOne([
+                    'user_id' => Yii::$app->user->id,
+                    'user_application_id' => $user_application_id,
+                ]);
+                if(!$formPayment) throw new Exception('Form payment has not been found!');
+                $formPayment->payment_done = 1;
+                $formPayment->payment_info = json_encode($paymentInfo);
+                $formPayment->save();
+                return [
+                    'success' => true,
+                    'message' => 'Payment has been successfully done!',
+                    'paymentInfo' => $paymentInfo
+                ];
+            }
+            return [
+                'success'=>false,
+                'message'=>'Error occured, payment status failed!'
+            ];
+        } catch (Exception $exception) {
+            throw new Exception($exception->getMessage());
+        }
     }
 
     public function actionGetHistory($serviceName)

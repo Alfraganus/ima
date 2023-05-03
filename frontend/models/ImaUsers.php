@@ -128,23 +128,4 @@ class ImaUsers extends \yii\db\ActiveRecord  implements IdentityInterface
     {
         return $this->getAuthKey() === $authKey;
     }
-
-    /**
-     * {@inheritdoc}
-     * @return \frontend\models\query\ImaUsersQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new \frontend\models\query\ImaUsersQuery(get_called_class());
-    }
-
-    public function toArray(array $fields = [], array $expand = [], $recursive = true)
-    {
-        // TODO: Implement toArray() method.
-    }
-
-    public static function instance($refresh = false)
-    {
-        // TODO: Implement instance() method.
-    }
 }
