@@ -222,12 +222,9 @@ class PaymentController extends Controller
         return $data;
     }
 
-    public function actionCheckStatus($serviceName, $id_application)
+    public function actionCheckStatus()
     {
-        /* @var $className Trademark */
-        $className = 'common\\models\\' . $serviceName;
-        $service = $className::findOne($id_application);
-        return $this->setPaymentStatus($service, $serviceName);
+        return $this->setPaymentStatus();
     }
 
     public function actionGetHistory($serviceName)
