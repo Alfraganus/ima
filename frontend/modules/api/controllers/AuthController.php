@@ -77,12 +77,15 @@ class AuthController extends Controller
     public function actionLogin()
     {
         if (!empty(Yii::$app->request->get())) {
+
             $one_id_response = Yii::$app->oneId->getUserData();
             if($one_id_response) {
                 $getUser = ImaUsers::findOne(['email'=>$one_id_response['email']]);
+                $userName = $getUser->username;
+                $url ="https://master--startling-marigold-e6b21a.netlify.app/login?username=$userName";
                 if($getUser) {
                     $userName = $getUser->username;
-                    $url ="http://localhost:3000/login?username=$userName";
+//                    $url ="http://localhost:3000/login?username=$userName";
                     return Yii::$app->controller->redirect($url);
                   /*  return [
                       'user'=>$getUser->username,
@@ -100,7 +103,7 @@ class AuthController extends Controller
                         throw new \Exception(json_encode($model->errors));
                     }
                     $userName = $one_id_response['user_id'];
-                    $url ="http://localhost:3000/login?username=$userName";
+//                    $url ="http://localhost:3000/login?username=$userName";
                     return Yii::$app->controller->redirect($url);
                 }
             }
