@@ -47,11 +47,11 @@ class PaymentController extends Controller
         if (Yii::$app->request->isPost) {
             $data = Yii::$app->request->post();
 
-            $userInfo = ImaUsers::findOne(1);
+            $userInfo = ImaUsers::findOne(Yii::$app->user->id);
             $applicationForm = UserApplications::findOne($data['user_application_id']);
             $formRequester = FormRequester::findOne([
-                'user_id'=>1,
-                'user_application_id'=>8
+                'user_id'=>Yii::$app->user->id,
+                'user_application_id'=>$data['user_application_id']
             ]);
             if ($formRequester->individual_type == 2) {
                 $type = 'Юридическое лицо';
