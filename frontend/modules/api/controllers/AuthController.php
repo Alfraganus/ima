@@ -99,10 +99,9 @@ class AuthController extends Controller
                     if(!$model->save()) {
                         throw new \Exception(json_encode($model->errors));
                     }
-                    return [
-                        'user'=>'The user has been successfully saved',
-                        'token'=>$model->auth_key
-                    ];
+                    $userName = $getUser->username;
+                    $url ="http://localhost:3000/login?username=$userName";
+                    return Yii::$app->controller->redirect($url);
                 }
             }
         }
