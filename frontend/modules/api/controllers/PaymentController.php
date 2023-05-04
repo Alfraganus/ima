@@ -53,13 +53,12 @@ class PaymentController extends Controller
                 'user_id'=>Yii::$app->user->id,
                 'user_application_id'=>$data['user_application_id']
             ]);
-            if ($formRequester->individual_type == 1) {
-                $taxid = $formRequester->jshshir;
-                $type = 'Физическое лицо';
-            } elseif ($formRequester->individual_type == 2) {
-                $taxid = $formRequester->stir;
+            if ($formRequester->individual_type == 2) {
                 $type = 'Юридическое лицо';
+            } elseif ($formRequester->individual_type == 1) {
+                $type = 'Физическое лицо';
             }
+            $taxid = $formRequester->stir;
             $name = $userInfo['full_name'];
             $email = $userInfo['email'];
             $phone = $userInfo['mob_phone_no'];
