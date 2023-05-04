@@ -79,8 +79,7 @@ class AuthController extends Controller
         if (!empty(Yii::$app->request->get())) {
             $one_id_response = Yii::$app->oneId->getUserData();
             if($one_id_response) {
-                return $one_id_response;
-                $getUser = ImaUsers::findOne(['username'=>$one_id_response['user_id']]);
+                $getUser = ImaUsers::findOne(['email'=>$one_id_response['email']]);
                 if($getUser) {
                     $userName = $getUser->username;
                     $url ="http://localhost:3000/login?username=$userName";
