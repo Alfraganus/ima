@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use frontend\models\ImaUsers;
 use Yii;
 use yii\helpers\FileHelper;
 
@@ -43,7 +44,7 @@ class ApplicationFormMedia extends \yii\db\ActiveRecord
             [['file_path', 'file_extension'], 'string', 'max' => 500],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['application_id' => 'id']],
             [['form_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationForm::class, 'targetAttribute' => ['form_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => ImaUsers::class, 'targetAttribute' => ['user_id' => 'id']],
             [['wizard_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationWizard::class, 'targetAttribute' => ['wizard_id' => 'id']],
         ];
     }
