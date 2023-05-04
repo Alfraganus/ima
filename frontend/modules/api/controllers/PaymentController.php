@@ -50,8 +50,8 @@ class PaymentController extends Controller
             $userInfo = ImaUsers::findOne(Yii::$app->user->id);
             $applicationForm = UserApplications::findOne($data['user_application_id']);
             $formRequester = FormRequester::findOne([
-                'user_id'=>Yii::$app->user->id,
-                'user_application_id'=>$data['user_application_id']
+                'user_id'=>1,
+                'user_application_id'=>8
             ]);
             if ($formRequester->individual_type == 2) {
                 $type = 'Юридическое лицо';
