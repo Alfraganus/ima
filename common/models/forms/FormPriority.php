@@ -8,6 +8,7 @@ use common\models\ApplicationFormMedia;
 use common\models\ApplicationWizard;
 use common\models\User;
 use common\models\UserApplications;
+use frontend\models\ImaUsers;
 use Yii;
 
 /**
@@ -46,7 +47,7 @@ class FormPriority extends \yii\db\ActiveRecord
             [['requested_data'], 'safe'],
             [['questionnaire_number'], 'string', 'max' => 255],
             [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['user_application_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => ImaUsers::class, 'targetAttribute' => ['user_id' => 'id']],
             [['user_application_wizard_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationWizard::class, 'targetAttribute' => ['user_application_wizard_id' => 'id']],
         ];
     }
@@ -122,7 +123,7 @@ class FormPriority extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::class, ['id' => 'user_id']);
+        return $this->hasOne(ImaUsers::class, ['id' => 'user_id']);
     }
 
     /**

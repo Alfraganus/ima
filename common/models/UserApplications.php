@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use frontend\models\ImaUsers;
 use Yii;
 
 /**
@@ -41,7 +42,7 @@ class UserApplications extends \yii\db\ActiveRecord
             [['user_id', 'year','application_id', 'is_finished', 'payment_done', 'current_wizard_id', 'date_submitted'], 'integer'],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],
             [['current_wizard_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationWizard::class, 'targetAttribute' => ['current_wizard_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => ImaUsers::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -95,7 +96,7 @@ class UserApplications extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::class, ['id' => 'user_id']);
+        return $this->hasOne(ImaUsers::class, ['id' => 'user_id']);
     }
 
     /**
