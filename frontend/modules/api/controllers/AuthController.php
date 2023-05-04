@@ -82,7 +82,7 @@ class AuthController extends Controller
                 $getUser = ImaUsers::findOne(['username'=>$one_id_response['user_id']]);
                 if($getUser) {
                     $userName = $getUser->username;
-                    $url ="http://localhost:3000?login?username=$userName";
+                    $url ="http://localhost:3000/login?username=$userName";
                     return Yii::$app->controller->redirect($url);
                   /*  return [
                       'user'=>$getUser->username,
