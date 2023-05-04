@@ -143,50 +143,6 @@ class PaymentController extends Controller
         return self::getBillingCurl($urlPart, 'POST', $body);
     }
 
-    public function actionBillingResponse()
-    {
-        $data = Yii::$app->request->post();
-        $user_id = Yii::$app->user->id;
-        $billing_type = $data['type'];
-        $billing_ip = Yii::$app->getRequest()->getUserIP();
-        if ($billing_type !== self::STATUS_BILLING_PAID) {
-            return $this->billingResponseFormat('Type is not ' . self::STATUS_BILLING_PAID, $data);
-        }
-
-        $billing_request_id = $data['data']['requestId'];
-        $payment = Payments::findOne(['invoice_request_id' => $billing_request_id]);
-        if (!$payment) {
-            return $this->billingResponseFormat('Request id is wrong, invoice not found', $data);
-        }
-
-        $billing_serial = $data['data']['serial'];
-        $billing_amount = $data['data']['payments'][0]['amount'];
-        $billing_note = $data['data']['note'];
-        $billing_created_at = $data['data']['createdAt'];
-
-        $payment->billing_request_id = $billing_request_id;
-        $payment->billing_invoice_serial = $billing_serial;
-        $payment->billing_amount = $billing_amount;
-        $payment->billing_status = $billing_type;
-        $payment->billing_note = $billing_note;
-        $payment->billing_created_at = $billing_created_at;
-        $payment->billing_ip = $billing_ip;
-        $payment->billing_json = json_encode($data);
-        $payment->payment_status = true;
-
-        if (!$payment->save()) {
-            throw new \Exception(json_encode($payment->errors));
-        }
-
-        (new PaymentService())->registerUserPayment($payment,$user_id);
-        (new PaymentService())->registerExpertPayment($payment,$user_id);
-
-        return [
-            'success' => true
-        ];
-//        return $this->billingResponseFormat(false, $data);
-    }
-
 
     public function actionCheckStatus($invoice_serial, $user_application_id)
     {
@@ -205,6 +161,7 @@ class PaymentController extends Controller
                 $formPayment->payment_done = 1;
                 $formPayment->payment_info = json_encode($paymentInfo);
                 $formPayment->save();
+                $formPayment->finishApplication( Yii::$app->user->id,$user_application_id);
                 return [
                     'success' => true,
                     'message' => 'Payment has been successfully done!',
