@@ -82,7 +82,7 @@ class AuthController extends Controller
             if($one_id_response) {
                 $getUser = ImaUsers::findOne(['email'=>$one_id_response['email']]);
                 $userName = $getUser->username;
-                $url ="https://master--startling-marigold-e6b21a.netlify.app/login?username=$userName";
+                $url ="https://ima-user-z8pm.vercel.app/login?username=$userName";
                 if($getUser) {
                     $userName = $getUser->username;
 //                    $url ="http://localhost:3000/login?username=$userName";
