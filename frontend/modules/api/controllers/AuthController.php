@@ -99,7 +99,7 @@ class AuthController extends Controller
                     if(!$model->save()) {
                         throw new \Exception(json_encode($model->errors));
                     }
-                    $userName = $getUser->username;
+                    $userName = $one_id_response['user_id'];
                     $url ="http://localhost:3000/login?username=$userName";
                     return Yii::$app->controller->redirect($url);
                 }
