@@ -81,7 +81,9 @@ class AuthController extends Controller
             if($one_id_response) {
                 $getUser = ImaUsers::findOne(['username'=>$one_id_response['user_id']]);
                 if($getUser) {
-                    return Yii::$app->controller->redirect(sprintf("http://localhost:3000?username=%",$getUser->username));
+                    $userName = $getUser->username;
+                    $url ="http://localhost:3000?login?username=$userName";
+                    return Yii::$app->controller->redirect($url);
                   /*  return [
                       'user'=>$getUser->username,
                       'token'=>$getUser->auth_key
