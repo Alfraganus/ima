@@ -5,7 +5,7 @@ $params = array_merge(
     require __DIR__ . '/params.php',
     require __DIR__ . '/params-local.php'
 );
-//'https://ima-dev.uz/frontend/web/api/auth/login'
+//'https://master--startling-marigold-e6b21a.netlify.app/frontend/web/api/auth/login'
 return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
@@ -21,7 +21,7 @@ return [
             'responseType' => 'one_code',
             'state' => 'eyJtZXRob2QiOiJJRFBXIn0=',
             'grantType' => 'one_authorization_code',
-            'redirectUrl' => 'https://master--startling-marigold-e6b21a.netlify.app/frontend/web/api/auth/login',
+            'redirectUrl' => 'https://ima-dev.uz/frontend/web/api/auth/login',
         ],
        /* 'request' => [
             'csrfParam' => '_csrf-frontend',
