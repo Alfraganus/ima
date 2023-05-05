@@ -40,6 +40,24 @@ class DefaultController extends Controller
         return $behaviors;
     }
 
+    public function actionCleanFront()
+    {
+        $tables = [
+            'form_requester',
+            'form_author',
+            'form_priority',
+            'form_document',
+            'form_industry_example',
+            'form_confirmation',
+            'form_payment',
+            'application_form_media',
+            'user_applications',
+        ];
+        $command = Yii::$app->db->createCommand('set foreign_key_checks=0');
+        foreach ($tables as $table) {
+            $command->truncateTable($table)->checkIntegrity(false)->execute();
+        }
+    }
 
     public function actionSaveApplication()
     {
@@ -54,6 +72,7 @@ class DefaultController extends Controller
             $_FILES
         );
     }
+
     public function actionGetCountries()
     {
         return (new \yii\db\Query())
