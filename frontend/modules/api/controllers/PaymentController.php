@@ -62,7 +62,7 @@ class PaymentController extends Controller
             $name = $userInfo['full_name'];
             $email = $userInfo['email'];
             $phone = $userInfo['mob_phone_no'];
-            $pnfl = $userInfo['pin'];
+            $pnfl = $formRequester->jshshir;
             $passport = $userInfo['pport_no'];
 
             $amount = 1000;
