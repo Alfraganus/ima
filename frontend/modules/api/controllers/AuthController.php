@@ -81,7 +81,7 @@ class AuthController extends Controller
             if (!$model->save()) {
                 throw new \Exception(json_encode($model->errors));
             }
-            return $this->redirectToFront($getUser->username);
+            return $this->redirectToFront($model->username);
         } catch (\Exception $exception) {
             throw new \Exception($exception->getMessage());
         }
