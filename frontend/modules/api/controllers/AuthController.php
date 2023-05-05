@@ -75,8 +75,10 @@ class AuthController extends Controller
 
     private function redirectToFront($userName)
     {
-        $url = "https://ima-user-z8pm.vercel.app/login?username=$userName";
-        return Yii::$app->controller->redirect($url);
+
+        $urlLocal = "http://localhost:3000/login?username=$userName";
+//        $url = "https://ima-user-z8pm.vercel.app/login?username=$userName";
+        return Yii::$app->controller->redirect($urlLocal);
 
     }
 
