@@ -44,7 +44,8 @@ class FormSaveService
                     $user_application_id,
                     $postContent['wizard_id'],
                     Yii::$app->user->id
-                )
+                ),
+                'sender_user_id'=>$user_id
             ];
             $submitted = false;
             if ($this->checkIfApplicationSubmitted(Yii::$app->user->id, $user_application_id)) {
