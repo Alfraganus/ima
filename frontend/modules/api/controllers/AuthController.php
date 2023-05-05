@@ -35,12 +35,6 @@ class AuthController extends Controller
         ];
     }
 
-    public function actionTest()
-    {
-        return 'tes';
-    }
-
-
     public function actionLoginRedirect()
     {
         return Yii::$app->controller->redirect(Yii::$app->oneId->getLoginLink());

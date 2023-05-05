@@ -64,9 +64,9 @@ class FormPayment extends \yii\db\ActiveRecord
     }
 
 
-    private function getApplicationPrefix()
+    private function getApplicationPrefix($user_application_id)
     {
-        $userApplication = UserApplications::findOne($this->user_application_id);
+        $userApplication = UserApplications::findOne($user_application_id);
         switch ($userApplication->application->name) {
             case 'industry' :
                 $prefix = strtoupper('ind');
@@ -106,7 +106,7 @@ class FormPayment extends \yii\db\ActiveRecord
         $model->payment_done = 1;
         $model->date_submitted = time();
         $model->generated_id = $this->formatOrderNumber(sprintf('%s%d',
-            $this->getApplicationPrefix(),
+            $this->getApplicationPrefix($user_application_id),
             date('Y')),
             $model->application_number);
         $model->save(false);
