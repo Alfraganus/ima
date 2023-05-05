@@ -77,8 +77,8 @@ class AuthController extends Controller
     {
 
         $urlLocal = "http://localhost:3000/login?username=$userName";
-//        $url = "https://ima-user-z8pm.vercel.app/login?username=$userName";
-        return Yii::$app->controller->redirect($urlLocal);
+        $url = "https://ima-user-z8pm.vercel.app/login?username=$userName";
+        return Yii::$app->controller->redirect($url);
 
     }
 
