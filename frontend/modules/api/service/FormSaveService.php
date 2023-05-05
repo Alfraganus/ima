@@ -26,7 +26,7 @@ class FormSaveService
         $transaction = Yii::$app->db->beginTransaction();
         try {
             if (empty($postContent['user_application_id'])) {
-                $user_application_id = $this->saveApplication($postContent['application_id']);
+                $user_application_id = $this->saveApplication($postContent['application_id'],$user_id);
             } else {
                 $user_application_id = $postContent['user_application_id'];
             }
@@ -80,7 +80,7 @@ class FormSaveService
         return false;
     }
 
-    private function saveApplication($application_id, $user_id = 1)
+    private function saveApplication($application_id, $user_id)
     {
         $application = UserApplications::findOne([
             'user_id' => $user_id,
