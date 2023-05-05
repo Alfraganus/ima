@@ -55,22 +55,10 @@ class AuthController extends Controller
                 'user' => $getUser->username,
                 'token' => $getUser->auth_key
             ];
-        } else {
-            $model = new ImaUsers();
-            $model->setAttributes($post);
-            $model->username = $post['user_id'];
-            $model->pport_issue_date = $post['_pport_issue_date'];
-            $model->pport_expr_date = $post['_pport_expr_date'];
-            $model->is_active = self::ACTIVE;
-            $model->setAuthKey();
-            if (!$model->save()) {
-                throw new \Exception(json_encode($model->errors));
-            }
-            return [
-                'user' => 'The user has been successfully saved',
-                'token' => $model->auth_key
-            ];
         }
+        return [
+            'message'=>'User not found!'
+        ];
     }
 
     private function redirectToFront($userName)
