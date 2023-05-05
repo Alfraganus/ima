@@ -34,19 +34,25 @@ class FormSaveService
             if (!empty($postContent['forms'])) $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id']);
 
 
-
             if ($files) $this->saveFiles($files, $postContent, $user_id, $user_application_id);
             $transaction->commit();
-            return [
+            $result = [
                 'success' => true,
                 'message' => 'Operation is successful!',
-                'user_application_id'=>$user_application_id,
+                'user_application_id' => $user_application_id,
                 'data' => (new FormReadService())->getWizardContent(
                     $user_application_id,
                     $postContent['wizard_id'],
                     Yii::$app->user->id
                 )
             ];
+            $submitted = false;
+            if ($this->checkIfApplicationSubmitted(Yii::$app->user->id, $user_application_id)) {
+                $submitted = true;
+            }
+            $result['is_submitted'] = $submitted;
+
+            return $result;
 
         } catch (\Exception $exception) {
             $transaction->rollBack();
@@ -57,6 +63,20 @@ class FormSaveService
                 'file' => $exception->getFile()
             ];
         }
+    }
+
+    private function checkIfApplicationSubmitted($user_id, $user_application_id)
+    {
+        $app = UserApplications::findOne(['user_id' => $user_id, 'id' => $user_application_id]);
+        $document = ApplicationFormMedia::find()->where([
+            'user_id' => $user_id,
+            'form_id' => ApplicationFormMedia::LEGAL_ENTITY_DOC_FORM_ID,
+            'application_id' => $user_application_id
+        ])->exists();
+        if ($app->is_finished && $document) {
+            return true;
+        }
+        return false;
     }
 
     private function saveApplication($application_id, $user_id = 1)
@@ -87,28 +107,29 @@ class FormSaveService
         return false;
     }
 
-    private function cleanRecords($forms,$application_id,$user_id)
+    private function cleanRecords($forms, $application_id, $user_id)
     {
         foreach ($forms as $form) {
             if (!in_array($form, array_keys($this->setForm))) {
                 throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
             }
-            $query = ['user_application_id'=>$application_id,'user_id'=>$user_id];
-            if($this->setForm[$form] instanceof  FormDocument) {
-                $query = ['user_application_id'=>$application_id,'form_id'=>$form, 'user_id'=>$user_id];
+            $query = ['user_application_id' => $application_id, 'user_id' => $user_id];
+            if ($this->setForm[$form] instanceof FormDocument) {
+                $query = ['user_application_id' => $application_id, 'form_id' => $form, 'user_id' => $user_id];
             }
             $this->setForm[$form]::deleteAll($query);
 
             $applicationMedia = ApplicationFormMedia::findAll([
-                'application_id'=>$application_id,
-                'form_id'=>$form,
-                'user_id'=>$user_id
+                'application_id' => $application_id,
+                'form_id' => $form,
+                'user_id' => $user_id
             ]);
             foreach ($applicationMedia as $media) {
                 $media->delete();
             }
         }
     }
+
     private function saveForms($forms, $application_id, $wizard_id, $user_id = 1)
     {
         /*cleaning previous records before inserting new ones*/
@@ -131,7 +152,7 @@ class FormSaveService
                 throw new \Exception(json_encode($formModel->errors));
             }
 
-            if(!empty($form['attachments'])) {
+            if (!empty($form['attachments'])) {
                 $this->setFormAttachmentMissingValues(
                     json_decode($form['attachments']),
                     $wizard_id,
@@ -144,7 +165,8 @@ class FormSaveService
             }
         }
     }
-    private function setFormAttachmentMissingValues(array $ids,int $wizard_id, int $application_id)
+
+    private function setFormAttachmentMissingValues(array $ids, int $wizard_id, int $application_id)
     {
         foreach ($ids as $id) {
 //        throw new \Exception(json_encode($id));
@@ -152,7 +174,7 @@ class FormSaveService
             $formAttachments = ApplicationFormMedia::findOne($id);
             $formAttachments->wizard_id = $wizard_id;
             $formAttachments->application_id = $application_id;
-            if(!$formAttachments->save()) {
+            if (!$formAttachments->save()) {
                 throw new \Exception(json_encode($formAttachments->errors));
             }
         }
@@ -194,11 +216,11 @@ class FormSaveService
             $fileName = 'frontend/web/form_uploads/' . $fileTitle;
             move_uploaded_file($tempNames2[$i][$fileIndentification], 'form_uploads/' . $fileTitle);
             $mediaContent = new ApplicationFormMedia();
-            $mediaContent->application_id = $application_id??null;
+            $mediaContent->application_id = $application_id ?? null;
             $mediaContent->wizard_id = !empty($postContent) ? $postContent['wizard_id'] : null;
             $mediaContent->form_id = $fileIndentification;
             $mediaContent->user_id = $user_id;
-            $mediaContent->file_path = Yii::$app->request->hostInfo . '/' .$fileName;
+            $mediaContent->file_path = Yii::$app->request->hostInfo . '/' . $fileName;
             $mediaContent->file_name = $fileTitle;
             $mediaContent->file_extension = $fileTypes[$i][$fileIndentification];
             if (!$mediaContent->save()) {

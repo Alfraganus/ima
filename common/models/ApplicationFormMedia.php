@@ -32,7 +32,7 @@ class ApplicationFormMedia extends \yii\db\ActiveRecord
     {
         return 'application_form_media';
     }
-
+    const LEGAL_ENTITY_DOC_FORM_ID = 11;
     /**
      * {@inheritdoc}
      */
