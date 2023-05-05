@@ -3,6 +3,7 @@
 namespace expert\modules\v1\controllers;
 
 use common\models\ApplicationFormMedia;
+use common\models\UserApplications;
 use expert\modules\v1\services\ApplicationChatService;
 use Yii;
 use yii\filters\auth\CompositeAuth;
@@ -23,6 +24,15 @@ class ApplicationController extends DefaultController
         parent::__construct($id, $module, $config);
     }
 
+    public function actionGetApplications($application_type)
+    {
+        $applications = UserApplications::find()->where([
+            'application_id'=>$application_type,
+            'is_finished'=>1
+        ])->orderBy('id DESC')
+        ->all();
+        return $applications;
+    }
 
     public function actionSendExpertMessage()
     {

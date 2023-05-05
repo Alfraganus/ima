@@ -46,6 +46,25 @@ class UserApplications extends \yii\db\ActiveRecord
         ];
     }
 
+    public function fields()
+    {
+        return [
+            'id',
+            'user_id',
+            'application_id',
+            'application_type'=>function() {
+             return Application::findOne($this->application_id)->name;
+            },
+            'date'=>function() {
+                return date('d-m-Y',$this->date_submitted);
+            },
+            'is_finished',
+            'payment_done',
+            'current_wizard_id',
+            'date_submitted',
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
