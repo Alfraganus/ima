@@ -31,7 +31,7 @@ class FormSaveService
                 $user_application_id = $postContent['user_application_id'];
             }
 
-            if (!empty($postContent['forms'])) $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id']);
+            if (!empty($postContent['forms'])) $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id'],$user_id);
 
 
             if ($files) $this->saveFiles($files, $postContent, $user_id, $user_application_id);
@@ -131,7 +131,7 @@ class FormSaveService
         }
     }
 
-    private function saveForms($forms, $application_id, $wizard_id, $user_id = 1)
+    private function saveForms($forms, $application_id, $wizard_id, $user_id)
     {
         /*cleaning previous records before inserting new ones*/
         $this->cleanRecords(
