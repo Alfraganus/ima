@@ -54,13 +54,18 @@ class FormPayment extends \yii\db\ActiveRecord
         ];
     }
 
-     public static function run($user_id, $application_id, $wizard_id,$form_id=null)
+     public static function run($user_id, $application_id, $wizard_id)
     {
-        return self::findAll([
+        return [
+                'user_application_id'=>$application_id,
+                'user_id' => $user_id,
+                'user_application_wizard_id' =>$wizard_id,
+        ];
+       /* return self::findAll([
             'user_application_id'=>$application_id,
             'user_id' => $user_id,
             'user_application_wizard_id' =>$wizard_id,
-        ]);
+        ]);*/
     }
 
 
@@ -149,6 +154,8 @@ class FormPayment extends \yii\db\ActiveRecord
             'payment_time' => Yii::t('app', 'Payment Time'),
         ];
     }
+
+
 
     public function fields()
     {
