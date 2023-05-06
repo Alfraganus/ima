@@ -37,8 +37,6 @@ class FormPayment extends \yii\db\ActiveRecord
     }
 
 
-
-
     /**
      * {@inheritdoc}
      */
@@ -54,10 +52,10 @@ class FormPayment extends \yii\db\ActiveRecord
         ];
     }
 
-     public static function run($user_id, $application_id, $wizard_id=null)
+    public static function run($user_id, $application_id, $wizard_id = null)
     {
         return self::findAll([
-            'user_application_id'=>$application_id,
+            'user_application_id' => $application_id,
             'user_id' => $user_id,
 //            'user_application_wizard_id' =>$wizard_id,
         ]);
@@ -87,14 +85,14 @@ class FormPayment extends \yii\db\ActiveRecord
     }
 
 
-    public function finishApplication($user_id,$user_application_id)
+    public function finishApplication($user_id, $user_application_id)
     {
         $maxApplicationNumber = UserApplications::find()
             ->where(['year' => date('Y')])
             ->max('application_number');
         $model = UserApplications::findOne([
             'id' => $user_application_id,
-            'user_id' =>$user_id,
+            'user_id' => $user_id,
         ]);
         if ($maxApplicationNumber < 1) {
             $model->application_number = 1;
@@ -112,20 +110,21 @@ class FormPayment extends \yii\db\ActiveRecord
     }
 
 
-    private function formatOrderNumber($prefix, $number) {
+    private function formatOrderNumber($prefix, $number)
+    {
         $numberLength = strlen((string)$number);
         switch ($numberLength) {
             case 1:
-                $formattedNumber = $prefix.'0000' . $number;
+                $formattedNumber = $prefix . '0000' . $number;
                 break;
             case 2:
-                $formattedNumber = $prefix.'000' . $number;
+                $formattedNumber = $prefix . '000' . $number;
                 break;
             case 3:
-                $formattedNumber = $prefix.'00' . $number;
+                $formattedNumber = $prefix . '00' . $number;
                 break;
             case 4:
-                $formattedNumber = $prefix.'0' . $number;
+                $formattedNumber = $prefix . '0' . $number;
                 break;
             default:
                 $formattedNumber = $number;
@@ -151,7 +150,6 @@ class FormPayment extends \yii\db\ActiveRecord
     }
 
 
-
     public function fields()
     {
         return [
@@ -163,11 +161,13 @@ class FormPayment extends \yii\db\ActiveRecord
             'user_application_id',
             'user_application_wizard_id',
             'payment_done',
-            'payment_info',
+            'payment_info' => function () {
+                return json_decode($this->payment_info);
+            },
             'payment_time',
             'file' => function () {
                 return ApplicationFormMedia::find()->where([
-                    'application_id'=>$this->user_application_id,
+                    'application_id' => $this->user_application_id,
                     'user_id' => $this->user_id,
                     'wizard_id' => $this->user_application_wizard_id,
                     'form_id' => $this->getFormId(),
@@ -178,7 +178,7 @@ class FormPayment extends \yii\db\ActiveRecord
 
     public function getFormId()
     {
-        return ApplicationForm::findOne(['form_class'=>get_called_class()])->id;
+        return ApplicationForm::findOne(['form_class' => get_called_class()])->id;
     }
 
     /**
