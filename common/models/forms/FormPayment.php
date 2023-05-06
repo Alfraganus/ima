@@ -54,18 +54,13 @@ class FormPayment extends \yii\db\ActiveRecord
         ];
     }
 
-     public static function run($user_id, $application_id, $wizard_id)
+     public static function run($user_id, $application_id, $wizard_id=null)
     {
-        return [
-                'user_application_id'=>$application_id,
-                'user_id' => $user_id,
-                'user_application_wizard_id' =>$wizard_id,
-        ];
-       /* return self::findAll([
+        return self::findAll([
             'user_application_id'=>$application_id,
             'user_id' => $user_id,
-            'user_application_wizard_id' =>$wizard_id,
-        ]);*/
+//            'user_application_wizard_id' =>$wizard_id,
+        ]);
     }
 
 
