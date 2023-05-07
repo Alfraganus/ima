@@ -78,7 +78,7 @@ class FormDocument extends \yii\db\ActiveRecord
             'user_id'           => $user_id,
             'wizard_id'         => $wizard_id,
             'form_id'           => $form_id,
-        ])->select(['id', 'file_name', 'file_path','file_extension'])->all();
+        ])->select(['id', 'form_id','file_name', 'file_path','file_extension'])->all();
     }
 
     /**
