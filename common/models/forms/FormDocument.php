@@ -73,12 +73,6 @@ class FormDocument extends \yii\db\ActiveRecord
 
     public static function run($user_id, $application_id,  $wizard_id,$form_id)
     {
-        return [
-            'application_id'    => $application_id,
-            'user_id'           => $user_id,
-            'wizard_id'         => $wizard_id,
-            'form_id'           => $form_id,
-        ];
         return ApplicationFormMedia::find()->where([
             'application_id'    => $application_id,
             'user_id'           => $user_id,
