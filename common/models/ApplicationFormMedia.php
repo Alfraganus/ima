@@ -83,23 +83,6 @@ class ApplicationFormMedia extends \yii\db\ActiveRecord
 
     }
 
-    public function fields()
-    {
-
-        return [
-           /* 'wizard_id'=>function() {
-                return $this->wizard->wizard_name;
-            },
-            'form_id'=>function() {
-                return $this->form->form_name;
-            },*/
-            'file_name',
-            'file_path',
-            'file_extension',
-        ];
-
-    }
-
     /**
      * Gets query for [[Application]].
      *
