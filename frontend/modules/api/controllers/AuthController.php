@@ -43,16 +43,28 @@ class AuthController extends Controller
     public function actionLoginByCredentials()
     {
         $post = Yii::$app->request->post();
-        $getUser = ImaUsers::findOne(['username' => $post['user_id']]);
+        $getUser = ImaUsers::findOne(['email' => $post['email']]);
         if ($getUser) {
             return [
                 'user' => $getUser->username,
                 'token' => $getUser->auth_key
             ];
+        } else {
+            $model = new ImaUsers();
+            $model->setAttributes($post);
+            $model->username = $post['user_id'];
+            $model->pport_issue_date = $post['_pport_issue_date'];
+            $model->pport_expr_date = $post['_pport_expr_date'];
+            $model->is_active = self::ACTIVE;
+            $model->setAuthKey();
+            if (!$model->save()) {
+                throw new \Exception(json_encode($model->errors));
+            }
+            return [
+                'user' => $model->username,
+                'token' => $model->auth_key
+            ];
         }
-        return [
-            'message'=>'User not found!'
-        ];
     }
 
     private function redirectToFront($userName)
