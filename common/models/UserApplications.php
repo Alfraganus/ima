@@ -52,6 +52,7 @@ class UserApplications extends \yii\db\ActiveRecord
             'id',
             'user_id',
             'application_id',
+            'generated_id',
             'application_type'=>function() {
              return Application::findOne($this->application_id)->name;
             },
