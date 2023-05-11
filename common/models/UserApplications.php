@@ -49,9 +49,13 @@ class UserApplications extends \yii\db\ActiveRecord
     public function fields()
     {
         return [
-            'id',
+            'user_application_id'=>function() {
+             return $this->id;
+            },
             'user_id',
-            'application_id',
+            'application_type_id'=>function() {
+            return $this ->application_id;
+            },
             'generated_id',
             'application_type'=>function() {
              return Application::findOne($this->application_id)->name;
