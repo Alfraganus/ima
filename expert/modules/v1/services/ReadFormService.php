@@ -15,7 +15,7 @@ class ReadFormService
             'module_id' => $postContent['module_id'],
             'tab_id' => $postContent['tab_id']
         ];
-        if (!$postContent['tab_id']) unset($queryFilter['tab_id']);
+         if (!$postContent['tab_id']) unset($queryFilter['tab_id']);
 
         return $formModel::findall($queryFilter);
     }
