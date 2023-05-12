@@ -44,7 +44,7 @@ class DefaultController extends Controller
             'class' => \yii\filters\VerbFilter::class,
             'actions' => [
                 'save-form' => ['POST'],
-                'get-form' => ['POST'],
+                'get-form' => ['GET'],
                 'get-application' => ['POST'],
                 'send-message' => ['POST'],
                 'send-user-message' => ['POST'],
