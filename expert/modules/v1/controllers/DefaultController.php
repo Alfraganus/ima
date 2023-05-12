@@ -75,10 +75,10 @@ class DefaultController extends Controller
 
     public function actionGetForm()
     {
-        $post = Yii::$app->request->post();
+        $get = Yii::$app->request->get();
         return  (new ReadFormService())->getFormData(
-            $this->form[$post['form_id']],
-            Yii::$app->request->post()
+            $this->form[$get['form_id']],
+            $get
         );
 
     }
