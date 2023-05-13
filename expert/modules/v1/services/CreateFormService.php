@@ -85,8 +85,8 @@ class CreateFormService
         $fileType = $file['type'][$data['form_id']];
 //        throw new \Exception(json_encode($fileTypes));
         $fileTitle = time() . $fileName;
-        $fileName = 'form_uploads/' . $fileTitle;
-        move_uploaded_file($tempName, $fileName);
+        $fileName = 'expert/web/form_uploads/' . $fileTitle;
+        move_uploaded_file($tempName,  'form_uploads/' . $fileTitle);
         $mediaContent = new ExpertFormMedia();
         $mediaContent->setAttributes($data);
         $mediaContent->user_id = $applicationInfo['user_id'];
