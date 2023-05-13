@@ -22,6 +22,7 @@ use Yii;
  * @property int|null $user_application_id
  * @property int|null $module_id
  * @property int|null $tab_id
+ * @property int|null $is_sent
  * @property int|null $decision_type
  * @property string|null $application_identification
  * @property string|null $accepted_date
@@ -50,7 +51,7 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
     public function rules()
     {
         return [
-            [['expert_id', 'user_id', 'application_id', 'module_id', 'tab_id', 'decision_type', 'user_application_id'], 'integer'],
+            [['expert_id', 'user_id', 'application_id', 'module_id', 'tab_id', 'decision_type', 'user_application_id','is_sent'], 'integer'],
             [['accepted_date', 'sent_date'], 'safe'],
             [['application_identification'], 'string', 'max' => 150],
             [['expert_fullname'], 'string', 'max' => 255],

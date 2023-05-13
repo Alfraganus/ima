@@ -22,6 +22,7 @@ use Yii;
  * @property int|null $application_id
  * @property int|null $user_application_id
  * @property int|null $module_id
+ * @property int|null $is_sent
  * @property int|null $tab_id
  * @property int|null $department
  * @property string|null $feedback_date
@@ -52,7 +53,7 @@ class ExpertFormFeedback extends \yii\db\ActiveRecord implements FormInterface
     public function rules()
     {
         return [
-            [['expert_id', 'user_id', 'application_id', 'user_application_id', 'module_id', 'tab_id', 'department', 'feedback_type'], 'integer'],
+            [['expert_id', 'is_sent','user_id', 'application_id', 'user_application_id', 'module_id', 'tab_id', 'department', 'feedback_type'], 'integer'],
             [['feedback_date', 'date_recovery'], 'safe'],
             [['application_identification'], 'string', 'max' => 150],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],

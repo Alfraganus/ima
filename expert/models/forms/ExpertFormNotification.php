@@ -22,6 +22,7 @@ use Yii;
  * @property int|null $user_application_id
  * @property int|null $module_id
  * @property int|null $tab_id
+ * @property int|null $is_sent
  * @property int|null $notification_type
  * @property int|null $department
  * @property string|null $sent_date
@@ -50,7 +51,7 @@ class ExpertFormNotification extends \yii\db\ActiveRecord implements FormInterfa
     public function rules()
     {
         return [
-            [['expert_id', 'user_id', 'application_id', 'user_application_id', 'module_id', 'tab_id', 'notification_type', 'department'], 'integer'],
+            [['expert_id','is_sent', 'user_id', 'application_id', 'user_application_id', 'module_id', 'tab_id', 'notification_type', 'department'], 'integer'],
             [['sent_date'], 'safe'],
             [['application_identification'], 'string', 'max' => 150],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],

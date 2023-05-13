@@ -13,12 +13,23 @@ use yii\web\UploadedFile;
 
 class ApplicationChatService extends Model
 {
+
+    public function setFormNotification($form_type_id,$form_id)
+    {
+        $forms = CreateFormService::getAllForms();
+        $formClass = $forms[$form_type_id]::findone($form_id);
+        $formClass->is_sent = true;
+        $formClass->save(false);
+    }
+
     public function sendMessage($expert_id, $data)
     {
         $model = new ApplicationChat();
         $model->setAttributes($data);
         $model->setMaxOrderId();
         $model->expert_id = $expert_id;
+        /*formani userga yuborganda, is_sent = true qilib qoyish uchun */
+        $this->setFormNotification($data['expert_form_type_id'],$data['expert_form_id']);
         if (!$model->save()) {
             throw new \Exception(json_encode($model->errors));
         }
