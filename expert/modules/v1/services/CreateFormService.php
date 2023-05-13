@@ -37,12 +37,10 @@ class CreateFormService
 
     public function createForm($data, $attachment, $user_id)
     {
-//        return $data['form_info'];
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $forms = self::getAllForms();
             $form = new $forms[$data['form_id']];
-//            throw new \Exception(json_encode($data['form_info']));
             if (empty($forms[$data['form_id']])) {
                 throw new \Exception('Form with given id not found!');
             }

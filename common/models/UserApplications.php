@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use expert\models\ApplicationStatus;
 use frontend\models\ImaUsers;
 use Yii;
 
@@ -16,6 +17,7 @@ use Yii;
  * @property int|null $current_wizard_id
  * @property int|null $date_submitted
  * @property int|null $year
+ * @property int|null $status_id
  * @property string|null $generated_id
  * @property int|null $application_number
  * @property Application $application
@@ -39,8 +41,9 @@ class UserApplications extends \yii\db\ActiveRecord
     {
         return [
             [['generated_id'], 'string'],
-            [['user_id', 'year','application_id', 'is_finished', 'payment_done', 'current_wizard_id', 'date_submitted'], 'integer'],
+            [['user_id', 'year','application_id', 'is_finished', 'payment_done', 'current_wizard_id', 'date_submitted','status_id'], 'integer'],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],
+            [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationStatus::class, 'targetAttribute' => ['status_id' => 'id']],
             [['current_wizard_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationWizard::class, 'targetAttribute' => ['current_wizard_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => ImaUsers::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -113,15 +116,17 @@ class UserApplications extends \yii\db\ActiveRecord
         return $this->hasOne(ApplicationWizard::class, ['id' => 'current_wizard_id']);
     }
 
-    /**
-     * Gets query for [[User]].
-     *
-     * @return \yii\db\ActiveQuery|\common\models\query\UserQuery
-     */
     public function getUser()
     {
         return $this->hasOne(ImaUsers::class, ['id' => 'user_id']);
     }
+
+    public function getStatus()
+    {
+        return $this->hasOne(ApplicationStatus::class, ['id' => 'status_id']);
+    }
+
+
 
     /**
      * {@inheritdoc}

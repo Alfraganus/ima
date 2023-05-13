@@ -170,8 +170,6 @@ class FormSaveService
     private function setFormAttachmentMissingValues(array $ids, int $wizard_id, int $application_id)
     {
         foreach ($ids as $id) {
-//        throw new \Exception(json_encode($id));
-
             $formAttachments = ApplicationFormMedia::findOne($id);
             $formAttachments->wizard_id = $wizard_id;
             $formAttachments->application_id = $application_id;

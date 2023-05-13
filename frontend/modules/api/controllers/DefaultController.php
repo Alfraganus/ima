@@ -65,7 +65,6 @@ class DefaultController extends Controller
 
         $request = Yii::$app->request;
         $post = $request->post();
-//        return json_decode(json_decode($post['forms']['attachments']));
         return (new FormSaveService())->saveData(
             Yii::$app->user->id,
             $post,
