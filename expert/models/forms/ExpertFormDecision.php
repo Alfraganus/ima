@@ -95,7 +95,8 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
             'tab_id',
             'expert_fullname',
             'is_sent',
-            'decision_type' => function () {
+            'decision_type',
+            'decision_type_name' => function () {
                return self::decisionTypeTab($this->tab_id,$this->decision_type);
             },
             'application_identification' => function () {
