@@ -31,16 +31,18 @@ class m230513_162953_create_tables_for_application_status extends Migration
             'CASCADE'
         );
 
-        $this->createTable('{{%application_status_log}}', [
+        $this->createTable('{{%application_status_management}}', [
             'id' => $this->primaryKey(),
             'user_application_id' => $this->integer(),
             'status_id' => $this->integer(255)->null(),
-            'log' => $this->string(500)->null(),
+            'description' => $this->string(500)->null(),
+            'start'=>$this->dateTime()->defaultExpression('NOW()')->null(),
+            'finish'=>$this->dateTime()->null()
         ]);
 
         $this->addForeignKey(
-            'fk-application_status_log-user_application_id',
-            'application_status_log',
+            'fk-application_status_management-user_application_id',
+            'application_status_management',
             'user_application_id',
             'user_applications',
             'id',
@@ -48,8 +50,8 @@ class m230513_162953_create_tables_for_application_status extends Migration
         );
 
         $this->addForeignKey(
-            'fk-application_status_log-status_id',
-            'application_status_log',
+            'fk-application_status_management-status_id',
+            'application_status_management',
             'status_id',
             'application_status',
             'id',
@@ -86,16 +88,16 @@ class m230513_162953_create_tables_for_application_status extends Migration
             'user_applications'
         );
         $this->dropForeignKey(
-            'fk-application_status_log-status_id',
-            'application_status_log'
+            'fk-application_status_management-status_id',
+            'application_status_management'
         );
         $this->dropForeignKey(
-            'fk-application_status_log-user_application_id',
-            'application_status_log'
+            'fk-application_status_management-user_application_id',
+            'application_status_management'
         );
         $this->dropColumn('user_applications', 'status_id');
         $this->dropTable('{{%application_status}}');
-        $this->dropTable('{{%application_status_log}}');
+        $this->dropTable('{{%application_status_management}}');
     }
 
 }

@@ -8,38 +8,63 @@ use expert\models\forms\ExpertFormDecision;
 use expert\models\forms\ExpertFormList;
 use Yii;
 use yii\base\Model;
+use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
 
 class ApplicationChatService extends Model
 {
 
-    public function setFormNotification($form_type_id,$form_id)
+    private $expertForms;
+
+    public function __construct($config = [])
     {
-        $forms = CreateFormService::getAllForms();
-        $formClass = $forms[$form_type_id]::findone($form_id);
+        $this->expertForms = CreateFormService::getAllForms();
+        parent::__construct($config);
+    }
+
+    public function setFormNotification($form_type_id, $form_id)
+    {
+        $formClass = $this->expertForms[$form_type_id]::findone($form_id);
         $formClass->is_sent = true;
         $formClass->save(false);
     }
 
+    public function manageApplicationStatus($form_type_id, $form_id)
+    {
+        $formClass = $this->expertForms[$form_type_id]::findone($form_id);
+
+        switch ($formClass) {
+            case "" :
+        }
+
+    }
+
     public function sendMessage($expert_id, $data)
     {
+//        throw new Exception(json_encode($data['expert_form_id']));
         $model = new ApplicationChat();
         $model->setAttributes($data);
         $model->setMaxOrderId();
         $model->expert_id = $expert_id;
         /*formani userga yuborganda, is_sent = true qilib qoyish uchun */
-        $this->setFormNotification($data['expert_form_type_id'],$data['expert_form_id']);
+        $this->setFormNotification($data['expert_form_type_id'], $data['expert_form_id']);
+
+        (new ApplicationStatusService())->manageApplicationStatus(
+            $this->expertForms[$data['expert_form_type_id']],
+            $data['expert_form_id']
+        );
+
         if (!$model->save()) {
             throw new \Exception(json_encode($model->errors));
         }
         return [
-            'success'=>true,
-            'message'=>'Message has been successfully sent!'
+            'success' => true,
+            'message' => 'Message has been successfully sent!'
         ];
     }
 
-    public function sendUserMessage($data,$attachment)
+    public function sendUserMessage($data, $attachment)
     {
         $model = new ApplicationChat();
         $model->setAttributes($data);
@@ -54,12 +79,12 @@ class ApplicationChatService extends Model
             throw new \Exception(json_encode($model->errors));
         }
         return [
-          'success'=>true,
-          'message'=>'Message has been successfully sent!'
+            'success' => true,
+            'message' => 'Message has been successfully sent!'
         ];
     }
 
-    public function getFormMessage($user_application_id,$expert=true)
+    public function getFormMessage($user_application_id, $expert = true)
     {
         $applicationChat = ApplicationChat::findAll(['user_application_id' => $user_application_id]);
         $result = [];
@@ -90,8 +115,8 @@ class ApplicationChatService extends Model
     private function getUserMessage($chat)
     {
         return [
-            'is_expert'=>$chat->sender_is_expert,
-            'title'=>$chat->user_message,
+            'is_expert' => $chat->sender_is_expert,
+            'title' => $chat->user_message,
             'type_application' => $chat->userApplication->application->name,
             'generated_number' => sprintf("%s/%d", $chat->userApplication->generated_id, $chat->chat_order_number),
             'date_time' => date('d-m-Y', strtotime($chat->datetime)),
@@ -100,13 +125,13 @@ class ApplicationChatService extends Model
     }
 
 
-    private function expertFormDecision($getFormClass, $form_id, $user_application_id, $orderId,$is_expert)
+    private function expertFormDecision($getFormClass, $form_id, $user_application_id, $orderId, $is_expert)
     {
         $formModel = $getFormClass::findone(['user_application_id' => $user_application_id, 'id' => $form_id]);
         switch ($formModel->tab_id) {
             case  1 :
                 return [
-                    'is_expert'=>$is_expert,
+                    'is_expert' => $is_expert,
                     'title' => ExpertFormDecision::decisionTypeTabOne($formModel->decision_type),
                     'type_application' => $formModel->application->name,
                     'generated_number' => sprintf("%s/%d", $formModel->userApplication->generated_id, $orderId),

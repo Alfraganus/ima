@@ -74,6 +74,7 @@ class FormConfirmation extends \yii\db\ActiveRecord
             'user_id' =>$this->user_id,
             'user_application_id' => $this->user_application_id
         ]);
+        (new FormPayment())->finishApplication($this->user_id,$this->user_application_id);
         if ($formRequester->individual_type == 2) {
             (new FormPayment())->finishApplication($this->user_id,$this->user_application_id);
         }

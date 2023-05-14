@@ -109,7 +109,7 @@ class FormPayment extends \yii\db\ActiveRecord
             date('Y')),
             $model->application_number);
         $model->save(false);
-        (new ApplicationStatusService())->setApplicationStatusPending($user_application_id);
+        (new ApplicationStatusService())->setApplicationStatusPending($user_application_id,2);
     }
 
 

@@ -11,7 +11,7 @@ use Yii;
  * @property string|null $name
  * @property string|null $description
  *
- * @property ApplicationStatusLog[] $applicationStatusLogs
+ * @property ApplicationStatusManagement[] $applicationStatusLogs
  * @property UserApplications[] $userApplications
  */
 class ApplicationStatus extends \yii\db\ActiveRecord
@@ -54,7 +54,7 @@ class ApplicationStatus extends \yii\db\ActiveRecord
      */
     public function getApplicationStatusLogs()
     {
-        return $this->hasMany(ApplicationStatusLog::class, ['status_id' => 'id']);
+        return $this->hasMany(ApplicationStatusManagement::class, ['status_id' => 'id']);
     }
 
     /**
