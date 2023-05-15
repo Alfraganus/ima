@@ -33,6 +33,16 @@ class ApplicationStatusService
 
     }
 
+    public function getApplicationStatus($statusName)
+    {
+        $status =$this->status::find()->where(
+            ['like', 'name', "%$statusName%", false]
+        )->one();
+
+        return $status->id;
+
+    }
+
     public function setApplicationStatusPending($user_application_id, $valid_month = null)
     {
         $status = $this->status::find()->where(['like', 'name', '%В ожидании формальной экспертизы%', false])->one();
@@ -98,7 +108,7 @@ class ApplicationStatusService
         $appStatusManagement->user_application_id = $user_application_id;
         if ($valid_month) {
             $appStatusManagement->finish = (new DateTime('now'))
-                ->modify("+$valid_month month")
+                ->modify("+$valid_month months")
                 ->format('Y-m-d H:i:s');
         }
         $appStatusManagement->save();

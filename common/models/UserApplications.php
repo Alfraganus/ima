@@ -3,6 +3,7 @@
 namespace common\models;
 
 use expert\models\ApplicationStatus;
+use expert\models\forms\ExpertFormDecision;
 use frontend\models\ImaUsers;
 use Yii;
 
@@ -104,6 +105,11 @@ class UserApplications extends \yii\db\ActiveRecord
     public function getApplication()
     {
         return $this->hasOne(Application::class, ['id' => 'application_id']);
+    }
+
+    public function getDecision()
+    {
+        return $this->hasOne(ExpertFormDecision::class, ['user_application_id' => 'id']);
     }
 
     /**
