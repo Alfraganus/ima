@@ -3,6 +3,7 @@
 namespace expert\modules\v1\services;
 
 use common\models\UserApplications;
+use common\traits\PaymentFunctions;
 use expert\models\ApplicationChat;
 use expert\models\forms\ExpertFormDecision;
 use expert\models\forms\ExpertFormList;
@@ -14,6 +15,7 @@ use yii\web\UploadedFile;
 
 class ApplicationChatService extends Model
 {
+    use PaymentFunctions;
 
     private $expertForms;
 
@@ -49,6 +51,7 @@ class ApplicationChatService extends Model
         $model->expert_id = $expert_id;
         /*formani userga yuborganda, is_sent = true qilib qoyish uchun */
         $this->setFormNotification($data['expert_form_type_id'], $data['expert_form_id']);
+        $this->saveInvoiceToForm($data['expert_form_type_id'], $data['expert_form_id']);
 
         (new ApplicationStatusService())->manageApplicationStatus(
             $this->expertForms[$data['expert_form_type_id']],
@@ -62,6 +65,17 @@ class ApplicationChatService extends Model
             'success' => true,
             'message' => 'Message has been successfully sent!'
         ];
+    }
+
+    public function saveInvoiceToForm($form_type_id,$data_id)
+    {
+        $formModel = $this->expertForms[$form_type_id]::findone($data_id);
+        if($formModel instanceof ExpertFormDecision) {
+            $invoice = $this->createInvoiceForPayment($formModel->user_application_id,1000);
+            $formModel->extra_info = json_encode(['invoice_serial'=>$invoice['serial']]);
+            $formModel->save(false);
+        }
+
     }
 
     public function sendUserMessage($data, $attachment)

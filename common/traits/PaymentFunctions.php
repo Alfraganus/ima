@@ -3,16 +3,79 @@
 namespace common\traits;
 
 use common\models\ExpertDecision;
+use common\models\forms\FormRequester;
 use common\models\Payment;
+use common\models\Payments;
 use common\models\Programming;
 use common\models\Selective;
 use common\models\Trademark;
 use common\models\Nmpt;
 
+use common\models\UserApplications;
+use frontend\models\ImaUsers;
 use Yii;
 
 trait PaymentFunctions
 {
+
+    public function createInvoiceForPayment($user_application_id,$amount)
+    {
+        $userInfo = ImaUsers::findOne(Yii::$app->user->id);
+        $applicationForm = UserApplications::findOne($user_application_id);
+        $formRequester = FormRequester::findOne([
+            'user_id'=>Yii::$app->user->id,
+            'user_application_id'=>$user_application_id
+        ]);
+        if ($formRequester->individual_type == 2) {
+            $type = 'Юридическое лицо';
+        } elseif ($formRequester->individual_type == 1) {
+            $type = 'Физическое лицо';
+        }
+        $taxid = $formRequester->stir;
+        $name = $userInfo['full_name'];
+        $email = $userInfo['email'];
+        $phone = $userInfo['mob_phone_no'];
+        $pnfl = $formRequester->jshshir;
+        $passport = $userInfo['pport_no'];
+
+        $quantity = 1;
+        $note =sprintf('Payment for %s application form',$applicationForm->application->name);
+        $application_id = $user_application_id;
+        $application_type =$applicationForm->application->name;
+        $online_license = $data['online_license'] ?? null;
+
+        $payer = self::getPayer($name, $email, $phone, $type, $passport, $pnfl, $taxid);
+        if (isset($payer['status']) && $payer['status'] == 'BAD_REQUEST' || !isset($payer['id'])) return $payer;
+        $payer_id = $payer['id'];
+        $request_id =  $application_type . ':' . time();
+        $invoice = self::createInvoice($request_id, $payer_id, $amount, $quantity, $note);
+
+        if (isset($invoice['statusCode']) && $invoice['statusCode'] = 'INVOICE_EXISTS') {
+            $request_id = $online_license . $application_type . '::' . $application_id;
+            $invoice = self::createInvoice($request_id, $payer_id, $amount, $quantity, $note);
+        }
+
+        if ($invoice['status'] != 'OPEN') {
+            return $invoice;
+        }
+
+        $payment = new Payments();
+        $payment->user_application_id = $application_id;
+        $payment->invoice_request_id = $request_id;
+        $payment->invoice_serial = $invoice['serial'];
+        $payment->invoice_amount = $amount;
+        $payment->invoice_status = $invoice['status'];
+        $payment->invoice_note = $note;
+        $payment->invoice_expire_date = $invoice['expireDate'];
+        $payment->invoice_json = json_encode($invoice);
+        $payment->payment_taxid = $taxid;
+        $payment->payment_status = 0;
+        if ($online_license) $payment->online_license = $online_license;
+        if (!$payment->save()) {
+            throw new \Exception(json_encode($payment->errors));
+        }
+        return $invoice;
+    }
     private static function getAuthData(){
         $basic_auth_username = Yii::$app->params['billing_auth_username'];
         $auth_data = $basic_auth_username.':';
@@ -59,12 +122,6 @@ trait PaymentFunctions
         $urlPart = "invoice/$invoice_serial/payments";
         $response = $this->getBillingCurl($urlPart, 'GET');
         return $response;
-    }
-
-    protected function makeExpertCode($current_number, $shortcode){
-        $trailing_zeros = str_pad($current_number+1, 4, '0', STR_PAD_LEFT);
-        $year = date("Y");
-        return $shortcode.' '.$year.$trailing_zeros;
     }
 
 

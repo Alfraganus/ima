@@ -27,6 +27,7 @@ use Yii;
  * @property string|null $application_identification
  * @property string|null $accepted_date
  * @property string|null $sent_date
+ * @property string|null $extra_info
  * @property string|null $expert_fullname
  *
  * @property Application $application
@@ -52,7 +53,7 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
     {
         return [
             [['expert_id', 'user_id', 'application_id', 'module_id', 'tab_id', 'decision_type', 'user_application_id','is_sent'], 'integer'],
-            [['accepted_date', 'sent_date'], 'safe'],
+            [['accepted_date', 'sent_date','extra_info'], 'safe'],
             [['application_identification'], 'string', 'max' => 150],
             [['expert_fullname'], 'string', 'max' => 255],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],
@@ -80,6 +81,7 @@ class ExpertFormDecision extends \yii\db\ActiveRecord implements FormInterface
             'application_identification' => Yii::t('app', 'Application Identification'),
             'accepted_date' => Yii::t('app', 'Accepted Date'),
             'sent_date' => Yii::t('app', 'Sent Date'),
+            'extra_info'=>'Form extra info'
         ];
     }
 
