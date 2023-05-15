@@ -101,7 +101,7 @@ class ExpertFormNotification extends \yii\db\ActiveRecord implements FormInterfa
             'department' => function () {
                 return [
                     'id'=>$this->department,
-                    'name'=>ExpertFormNotification::departmentList($this->department),
+                    'name'=>ExpertFormNotification::departmentList($this->tab_id,$this->department),
                 ];
             },
 
