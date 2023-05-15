@@ -132,7 +132,7 @@ class ApplicationChatService extends Model
             case  1 :
                 return [
                     'is_expert' => $is_expert,
-                    'title' => ExpertFormDecision::decisionTypeTabOne($formModel->decision_type),
+                    'title' => ExpertFormDecision::decisionTypeTab($formModel->tab_id,$formModel->decision_type),
                     'type_application' => $formModel->application->name,
                     'generated_number' => sprintf("%s/%d", $formModel->userApplication->generated_id, $orderId),
                     'date_time' => date('d-m-Y', strtotime($formModel->accepted_date)),
