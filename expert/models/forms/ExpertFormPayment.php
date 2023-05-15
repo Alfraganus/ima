@@ -92,13 +92,19 @@ class ExpertFormPayment extends \yii\db\ActiveRecord implements FormInterface
             'module_id',
             'tab_id',
             'payment_purpose_id' => function () {
-                return $this->paymentPurposeListTab($this->tab_id,$this->payment_purpose_id);
+                return [
+                    'id'=>$this->payment_purpose_id,
+                    'name'=>$this->paymentPurposeListTab($this->tab_id,$this->payment_purpose_id),
+                ];
             },
             'payment_date' => function () {
                 return date('d-m-Y', strtotime($this->payment_date));
             },
             'currency' => function () {
-                return self::currencyList($this->currency);
+                return [
+                    'id'=>$this->currency,
+                    'name'=>self::currencyList($this->currency),
+                ];
             },
             'amount',
             'file' => function () {

@@ -96,7 +96,10 @@ class ExpertFormFeedback extends \yii\db\ActiveRecord implements FormInterface
             'module_id',
             'tab_id',
             'department' => function () {
-                return ExpertFormNotification::departmentList($this->department);
+                return [
+                    'id'=>$this->department,
+                    'name'=>ExpertFormNotification::departmentList($this->department),
+                ];
             },
             'feedback_date' => function () {
                 return date('d-m-Y', strtotime($this->feedback_date));
@@ -105,7 +108,10 @@ class ExpertFormFeedback extends \yii\db\ActiveRecord implements FormInterface
                 return date('d-m-Y', strtotime($this->date_recovery));
             },
             'feedback_type' => function () {
-                return self::feedbackTypeListTab($this->tab_id, $this->feedback_type);
+                return [
+                    'id'=>$this->feedback_type,
+                    'name'=>self::feedbackTypeListTab($this->tab_id, $this->feedback_type),
+                ];
             },
             'application_identification' => function () {
                 return UserApplications::getApplicationOrderNumber($this->user_application_id);

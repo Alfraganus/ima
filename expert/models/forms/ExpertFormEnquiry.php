@@ -97,10 +97,16 @@ class ExpertFormEnquiry extends \yii\db\ActiveRecord implements FormInterface
             'module_id',
             'tab_id',
             'type_enquiry' => function () {
-                return self::enquiryListTab($this->tab_id, $this->type_enquiry);
+                return [
+                    'id'=>$this->type_enquiry,
+                    'name'=>self::enquiryListTab($this->tab_id, $this->type_enquiry),
+                ];
             },
             'department' => function () {
-                return ExpertFormNotification::departmentList($this->tab_id, $this->department);
+                return [
+                    'id'=>$this->department,
+                    'name'=>ExpertFormNotification::departmentList($this->tab_id, $this->department),
+                ];
             },
             'sent_date' => function () {
                 return date('d-m-Y', strtotime($this->sent_date));

@@ -93,11 +93,18 @@ class ExpertFormNotification extends \yii\db\ActiveRecord implements FormInterfa
             'module_id',
             'tab_id',
             'notification_type' => function () {
-                return self::notificationTabTypeList($this->tab_id, $this->notification_type);
+                return [
+                    'id'=>$this->notification_type,
+                    'name'=>self::notificationTabTypeList($this->tab_id, $this->notification_type),
+                ];
             },
             'department' => function () {
-                return self::departmentList($this->tab_id,$this->department);
+                return [
+                    'id'=>$this->department,
+                    'name'=>ExpertFormNotification::departmentList($this->department),
+                ];
             },
+
             'sent_date' => function () {
                 return date('d-m-Y', strtotime($this->sent_date));
             },
