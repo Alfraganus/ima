@@ -98,7 +98,7 @@ class ExpertFormFeedback extends \yii\db\ActiveRecord implements FormInterface
             'department' => function () {
                 return [
                     'id'=>$this->department,
-                    'name'=>ExpertFormNotification::departmentList($this->department),
+                    'name'=>ExpertFormNotification::departmentList($this->tab_id, $this->department),
                 ];
             },
             'feedback_date' => function () {
