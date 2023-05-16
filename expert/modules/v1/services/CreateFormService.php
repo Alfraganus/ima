@@ -70,7 +70,7 @@ class CreateFormService
             Yii::$app->response->statusCode = 400;
             return [
                 'success' => false,
-                'message' => json_decode($exception->getMessage())
+                'message' => $exception->getMessage()
             ];
         }
 

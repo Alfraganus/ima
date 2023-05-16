@@ -42,7 +42,7 @@ class UserApplications extends \yii\db\ActiveRecord
     {
         return [
             [['generated_id'], 'string'],
-            [['user_id', 'year','application_id', 'is_finished', 'payment_done', 'current_wizard_id', 'date_submitted','status_id'], 'integer'],
+            [['user_id', 'year', 'application_id', 'is_finished', 'payment_done', 'current_wizard_id', 'date_submitted', 'status_id'], 'integer'],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationStatus::class, 'targetAttribute' => ['status_id' => 'id']],
             [['current_wizard_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationWizard::class, 'targetAttribute' => ['current_wizard_id' => 'id']],
@@ -53,24 +53,26 @@ class UserApplications extends \yii\db\ActiveRecord
     public function fields()
     {
         return [
-            'user_application_id'=>function() {
-             return $this->id;
+            'user_application_id' => function () {
+                return $this->id;
             },
             'user_id',
-            'application_type_id'=>function() {
-            return $this ->application_id;
+            'application_type_id' => function () {
+                return $this->application_id;
             },
             'generated_id',
-            'application_type'=>function() {
-             return Application::findOne($this->application_id)->name;
+            'application_type' => function () {
+                return Application::findOne($this->application_id)->name;
             },
-            'date'=>function() {
-                return date('d-m-Y',$this->date_submitted);
+            'date' => function () {
+                return date('d-m-Y', $this->date_submitted);
             },
             'is_finished',
             'payment_done',
             'current_wizard_id',
-            'date_submitted',
+            'date_submitted' => function () {
+                return date('d-m-Y', $this->date_submitted);
+            },
         ];
     }
 
@@ -90,7 +92,8 @@ class UserApplications extends \yii\db\ActiveRecord
         ];
     }
 
-    public function beforeSave($insert) {
+    public function beforeSave($insert)
+    {
         $this->year = date('Y');
         return parent::beforeSave($insert);
     }
@@ -98,8 +101,8 @@ class UserApplications extends \yii\db\ActiveRecord
 
     public static function getApplicationOrderNumber($user_application_id)
     {
-      $userApplication =  UserApplications::findOne($user_application_id);
-      return $userApplication ? $userApplication->generated_id : null;
+        $userApplication = UserApplications::findOne($user_application_id);
+        return $userApplication ? $userApplication->generated_id : null;
     }
 
     public function getApplication()
@@ -131,7 +134,6 @@ class UserApplications extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ApplicationStatus::class, ['id' => 'status_id']);
     }
-
 
 
     /**
