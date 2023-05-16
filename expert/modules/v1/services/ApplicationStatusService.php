@@ -49,6 +49,13 @@ class ApplicationStatusService
         if (!empty($status->id)) $this->changeUserApplicationStatus($user_application_id, $status->id, $valid_month);
     }
 
+    public function setApplicationStatusFormalExpertise($user_application_id, $valid_month = null)
+    {
+        $status = $this->status::find()->where(['like', 'name', '%На формальной экспертизе%', false])->one();
+        if (!empty($status->id)) $this->changeUserApplicationStatus($user_application_id, $status->id, $valid_month);
+    }
+
+
     public function setApplicationStatusFirstPaymentStage($user_application_id, $valid_month = null)
     {
         $status = $this->status::find()->where(['like', 'name', '%На стадии уплаты пошлины за экспертизу%', false])->one();

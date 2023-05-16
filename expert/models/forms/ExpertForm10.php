@@ -10,6 +10,7 @@ use expert\models\application\ExpertModules;
 use expert\models\application\ExpertTabs;
 use expert\models\ExpertUser;
 use expert\modules\v1\services\ReadFormService;
+use frontend\models\ImaUsers;
 use Yii;
 
 /**
@@ -56,7 +57,7 @@ class ExpertForm10 extends \yii\db\ActiveRecord
             [['expert_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertUser::class, 'targetAttribute' => ['expert_id' => 'id']],
             [['module_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertModules::class, 'targetAttribute' => ['module_id' => 'id']],
             [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['user_application_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => ImaUsers::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 

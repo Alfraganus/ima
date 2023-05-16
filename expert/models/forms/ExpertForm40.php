@@ -11,7 +11,7 @@ use frontend\models\ImaUsers;
 use Yii;
 
 /**
- * This is the model class for table "expert_form_200".
+ * This is the model class for table "expert_form_40".
  *
  * @property int $id
  * @property int|null $expert_id
@@ -19,9 +19,8 @@ use Yii;
  * @property int|null $application_id
  * @property int|null $user_application_id
  * @property int|null $module_id
- * @property string|null $column_210
- * @property string|null $column_220
- * @property string|null $column_230
+ * @property string|null $column_46
+ * @property string|null $nbull
  *
  * @property Application $application
  * @property ExpertUser $expert
@@ -29,14 +28,14 @@ use Yii;
  * @property User $user
  * @property UserApplications $userApplication
  */
-class ExpertForm200 extends \yii\db\ActiveRecord
+class ExpertForm40 extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'expert_form_200';
+        return 'expert_form_40';
     }
 
     /**
@@ -46,8 +45,8 @@ class ExpertForm200 extends \yii\db\ActiveRecord
     {
         return [
             [['expert_id', 'user_id', 'application_id', 'user_application_id', 'module_id'], 'integer'],
-            [['column_220', 'column_230'], 'safe'],
-            [['column_210'], 'string', 'max' => 50],
+            [['column_46'], 'safe'],
+            [['nbull'], 'string', 'max' => 255],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],
             [['expert_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertUser::class, 'targetAttribute' => ['expert_id' => 'id']],
             [['module_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertModules::class, 'targetAttribute' => ['module_id' => 'id']],
@@ -68,9 +67,8 @@ class ExpertForm200 extends \yii\db\ActiveRecord
             'application_id' => Yii::t('app', 'Application ID'),
             'user_application_id' => Yii::t('app', 'User Application ID'),
             'module_id' => Yii::t('app', 'Module ID'),
-            'column_210' => Yii::t('app', 'Column 210'),
-            'column_220' => Yii::t('app', 'Column 220'),
-            'column_230' => Yii::t('app', 'Column 230'),
+            'column_46' => Yii::t('app', 'Column 46'),
+            'nbull' => Yii::t('app', 'Nbull'),
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace common\models;
 
 use expert\models\ApplicationStatus;
+use expert\models\ApplicationStatusManagement;
 use expert\models\forms\ExpertFormDecision;
 use frontend\models\ImaUsers;
 use Yii;
@@ -133,6 +134,14 @@ class UserApplications extends \yii\db\ActiveRecord
     public function getStatus()
     {
         return $this->hasOne(ApplicationStatus::class, ['id' => 'status_id']);
+    }
+
+    public function getStatusManagement()
+    {
+        return $this->hasOne(ApplicationStatusManagement::class, [
+            'user_application_id' => 'id',
+            'status_id' => 'status_id',
+        ]);
     }
 
 
