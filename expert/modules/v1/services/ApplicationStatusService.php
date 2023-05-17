@@ -8,6 +8,9 @@ use Exception;
 use expert\models\ApplicationStatus;
 use expert\models\ApplicationStatusManagement;
 use expert\models\forms\ExpertFormDecision;
+use expert\models\forms\ExpertFormEnquiry;
+use expert\models\forms\ExpertFormNotification;
+use expert\models\forms\ExpertFormPayment;
 use Yii;
 
 class ApplicationStatusService
@@ -25,17 +28,24 @@ class ApplicationStatusService
         switch ($formModel) {
             case $formModel instanceof ExpertFormDecision :
                 if ($formModel->tab_id == 1 && $formModel->decision_type == 1) {
-                    $this->setApplicationStatusFirstPaymentStage($formModel->user_application_id);
+                    $this->setApplicationStatusFirstPaymentStage($formModel->user_application_id, 3);
                 } elseif ($formModel->tab_id == 2) {
                     $this->setApplicationStatusFinished($formModel->user_application_id);
                 }
+            case $formModel instanceof ExpertFormPayment :
+                if ($formModel->payment_purpose_id == 1 && $formModel->tab_id == 2) {
+                    $this->setApplicationStatusExpertPending($formModel->user_application_id, 6);
+                }
+            case $formModel instanceof ExpertFormEnquiry :
+            case $formModel instanceof ExpertFormNotification :
+                $this->expandWaitingPeriod($formModel->user_application_id,3);
         }
 
     }
 
     public function getApplicationStatus($statusName)
     {
-        $status =$this->status::find()->where(
+        $status = $this->status::find()->where(
             ['like', 'name', "%$statusName%", false]
         )->one();
 
@@ -121,5 +131,18 @@ class ApplicationStatusService
         $appStatusManagement->save();
 
 
+    }
+
+    public function expandWaitingPeriod($user_application_id,$month)
+    {
+        $userApplication = UserApplications::findOne($user_application_id);
+        $appStatusManagement =  ApplicationStatusManagement::findOne([
+            'user_application_id'=>$user_application_id,
+            'status_id'=>$userApplication->status_id
+        ]);
+        $appStatusManagement->finish = (new DateTime('now'))
+            ->modify("+$month months")
+            ->format('Y-m-d H:i:s');
+        $appStatusManagement->save(false);
     }
 }
