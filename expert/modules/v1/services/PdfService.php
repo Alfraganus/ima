@@ -11,27 +11,32 @@ class PdfService
 
     public function generatePDF($user_application_id)
     {
-        $userApp = UserApplications::findOne($user_application_id);
-        $model = new ExpertForm10();
-        $model->expert_id = null;
-        $model->user_id = $userApp->user_id;
-        $model->application_id = $userApp->application_id;
-        $model->user_application_id = $user_application_id;
-        $model->column_11 = 'SAP000001';
-        $model->column_15 = date('Y-m-d');
-        $model->column_18 =date('Y-m-d', strtotime('+1 year', strtotime(date('Y-m-d'))) );
-        $model->column_19 = 'UZ';
-        if($model->save()) {
-            $this->savePDFtoLocalServer();
+        try {
+            $userApp = UserApplications::findOne($user_application_id);
+            $model = new ExpertForm10();
+            $model->expert_id = null;
+            $model->user_id = $userApp->user_id;
+            $model->application_id = $userApp->application_id;
+            $model->user_application_id = $user_application_id;
+            $model->column_11 = 'SAP000001';
+            $model->column_15 = date('Y-m-d');
+            $model->column_18 =date('Y-m-d', strtotime('+1 year', strtotime(date('Y-m-d'))) );
+            $model->column_19 = 'UZ';
+            if($model->save()) {
+                return  $this->savePDFtoLocalServer();
+            }
+
+        } catch (\Exception $exception) {
+            throw new \Exception($exception->getMessage());
         }
+
     }
 
-    public function savePDFtoLocalServer()
+    private function savePDFtoLocalServer()
     {
-        $content = \Yii::$app->controller->renderPartial('default/_guvohnoma', [
+        $content = \Yii::$app->controller->renderPartial('_guvohnoma', [
             'name' => 'Alfraganus'
         ]);
-
         // setup kartik\mpdf\Pdf component
         $pdf = new Pdf([
             // set to use core fonts only
@@ -52,6 +57,6 @@ class PdfService
         ]);
         $outputFileName = 'test2.pdf';
         $pdf->filename = $outputFileName;
-        $pdf->render();
+       return $pdf->render();
     }
 }

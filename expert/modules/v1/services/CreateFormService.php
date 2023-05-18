@@ -7,6 +7,7 @@ use common\models\UserApplications;
 use expert\models\ExpertFormMedia;
 use expert\models\forms\ExpertFormList;
 use expert\models\forms\ExpertFormDecision;
+use expert\models\forms\ExpertFormPayment;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -53,9 +54,7 @@ class CreateFormService
             if (!$form->save()) {
                 throw new \Exception(json_encode($form->errors));
             }
-
-            $this->executeFormBackgroundActions($data);
-
+            $this->executeFormBackgroundActions($data, $form);
             if ($attachment) {
                 $this->saveAttachment($attachment, $data, $form->id, $applicationInfo);
             }
@@ -63,7 +62,7 @@ class CreateFormService
             return [
                 'success' => true,
                 'message' => 'form has been saved!',
-                'data'=> (new ReadFormService())->getFormData(
+                'data' => (new ReadFormService())->getFormData(
                     $forms[$data['form_id']],
                     $data
                 ),
@@ -76,13 +75,16 @@ class CreateFormService
                 'message' => $exception->getMessage()
             ];
         }
-
     }
 
-    public function executeFormBackgroundActions($data)
+    public function executeFormBackgroundActions($data, $form)
     {
-        $forms = self::getAllForms();
-        $form =  $forms[$data['form_id']];
+        if ($form instanceof ExpertFormPayment) {
+            /*kerakli action bolishi kerak bolgan tab idni qoyamiz*/
+            if ($data['tab_id'] == 1) {
+                (new PdfService())->generatePDF($data['user_application_id']);
+            }
+        }
     }
 
     public function saveAttachment($file, $data, $object_id, $applicationInfo)
@@ -93,7 +95,7 @@ class CreateFormService
 //        throw new \Exception(json_encode($fileTypes));
         $fileTitle = time() . $fileName;
         $fileName = 'expert/web/form_uploads/' . $fileTitle;
-        move_uploaded_file($tempName,  'form_uploads/' . $fileTitle);
+        move_uploaded_file($tempName, 'form_uploads/' . $fileTitle);
         $mediaContent = new ExpertFormMedia();
         $mediaContent->setAttributes($data);
         $mediaContent->user_id = $applicationInfo['user_id'];

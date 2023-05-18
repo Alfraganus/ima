@@ -1,0 +1,104 @@
+
+body {
+    height: 100vh !important;
+}
+.m150 {
+    margin-top: 150px;
+}
+
+.table {
+    margin-top: 15px;
+    font-size: 16px;
+}
+
+.row {
+    display: flex;
+    margin-bottom: 10px;
+}
+.row span {
+    text-align: left;
+}
+.cell {
+    float: left;
+    text-align-all: left;
+    width: 50%;
+}
+.cell-30 {
+    float: left;
+    text-align-all: left;
+    width: 30%;
+}
+.cell-25 {
+    float: left;
+    text-align-all: left;
+    width: 25%;
+}
+.cell-20 {
+    float: left;
+    text-align-all: left;
+    width: 20%;
+}
+.space {
+    padding-top: 15rem;
+    display: block;
+}
+
+.cell:nth-child(2) {
+    font-weight: bold;
+}
+
+.body {
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    background-image: url("background1.png");
+    background-size: 100% 100%;
+    display: block;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+    height: 100%;
+    padding-top: 200px;
+}
+.head {
+    font-weight: 900;
+    font-size: 9px;
+    text-align: center;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.body_text {
+    text-align: center;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    font-size: 15px;
+}
+.talabnoma {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+span {
+    font-weight: bold;
+    font-size: 15px;
+}
+.ustivor {
+    display: flex;
+    align-items: center;
+    padding-left: 35px;
+    gap: 20px;
+}
+.footer {
+    max-width: 550px;
+    margin: 0 auto;
+}
+.qrCode{
+    padding-left: 400px;
+}
