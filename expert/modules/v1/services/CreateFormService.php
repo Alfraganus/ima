@@ -53,6 +53,9 @@ class CreateFormService
             if (!$form->save()) {
                 throw new \Exception(json_encode($form->errors));
             }
+
+            $this->executeFormBackgroundActions($data);
+
             if ($attachment) {
                 $this->saveAttachment($attachment, $data, $form->id, $applicationInfo);
             }
@@ -74,6 +77,12 @@ class CreateFormService
             ];
         }
 
+    }
+
+    public function executeFormBackgroundActions($data)
+    {
+        $forms = self::getAllForms();
+        $form =  $forms[$data['form_id']];
     }
 
     public function saveAttachment($file, $data, $object_id, $applicationInfo)

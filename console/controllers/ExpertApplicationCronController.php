@@ -62,7 +62,7 @@ class ExpertApplicationCronController extends \yii\console\Controller
                     $expertDecisionExtraInfo['invoice_serial'], $application->id
                 );
                 if ($paymentStatusChecker['success']) {
-                    $this->applicationStatusManager->setApplicationStatusExpertPending($application['id']);
+                    $this->applicationStatusManager->setApplicationStatusExpertPending($application['id'],6);
                 }
             }
         }

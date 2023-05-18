@@ -4,7 +4,6 @@ namespace backend\controllers;
 
 use common\models\LoginForm;
 use kartik\mpdf\Pdf;
-use Mpdf\Mpdf;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -69,7 +68,9 @@ class SiteController extends Controller
 
     public function actionReport() {
         // get your HTML raw content without any layouts or scripts
-        $content = $this->renderPartial('_guvohnoma');
+        $content = $this->renderPartial('_guvohnoma',[
+            'name'=>'Alfraganus'
+        ]);
 
         // setup kartik\mpdf\Pdf component
         $pdf = new Pdf([
@@ -77,10 +78,14 @@ class SiteController extends Controller
             'mode' => Pdf::MODE_CORE,
             // A4 paper format
             'format' => Pdf::FORMAT_A4,
+            'marginTop'=>0,
+            'marginLeft'=>0,
+            'marginRight'=>0,
+            'marginBottom'=>0,
             // portrait orientation
             'orientation' => Pdf::ORIENT_PORTRAIT,
             // stream to browser inline
-            'destination' => Pdf::DEST_BROWSER,
+            'destination' => Pdf::DEST_FILE,
             // your html content input
             'content' => $content,
             // format content from your own css file if needed or use the
@@ -91,12 +96,14 @@ class SiteController extends Controller
             // set mPDF properties on the fly
             'options' => ['title' => 'Krajee Report Title'],
             // call mPDF methods on the fly
-            'methods' => [
+          /*  'methods' => [
                 'SetHeader'=>['Krajee Report Header'],
                 'SetFooter'=>['{PAGENO}'],
-            ]
+            ]*/
         ]);
-
+        $outputFileName = 'test.pdf';
+        $pdf->filename = $outputFileName;
+       return $pdf->render();
         // return the pdf output as per the destination setting
         return $pdf->render();
     }

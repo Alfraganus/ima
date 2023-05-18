@@ -1,20 +1,4 @@
-#document {
-    background-image: url('background.png');
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    width: 100%;
-    /*position: absolute;*/
-    z-index: 1111;
-  /*  width: 500px;
-    background-size: 100%;
-    padding: 35px 20px;
-    background-repeat: no-repeat;
-    background-position-y: top;
-    border-radius: 4px;
-    !*width: 595px;*!
-    position: absolute;
-    z-index: 1111;*/
-}
+
 body {
     height: 100vh !important;
 }
@@ -28,20 +12,32 @@ body {
 }
 
 .row {
-    width: 100%;
     display: flex;
-    align-items: center;
     margin-bottom: 10px;
 }
-.row {
-    display: flex;
+.row span {
+    text-align: left;
 }
 .cell {
     float: left;
+    text-align-all: left;
     width: 50%;
-
 }
-
+.cell-30 {
+    float: left;
+    text-align-all: left;
+    width: 30%;
+}
+.cell-25 {
+    float: left;
+    text-align-all: left;
+    width: 25%;
+}
+.cell-20 {
+    float: left;
+    text-align-all: left;
+    width: 20%;
+}
 .space {
     padding-top: 15rem;
     display: block;
@@ -51,51 +47,58 @@ body {
     font-weight: bold;
 }
 
-
-.summary {
-    margin-top: 7rem;
+.body {
+    margin: 0;
+    padding: 0;
 }
 
-.summary p {
-    width: 60%;
-    margin-left: auto;
+* {
+    box-sizing: border-box;
 }
 
-.summary .qr {
-    width: 20%;
-    margin-left: auto;
-    margin-right: 35px;
+.container {
+    background-image: url("background1.png");
+    background-size: 100% 100%;
+    display: block;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+    height: 100%;
+    padding-top: 200px;
+}
+.head {
+    font-weight: 900;
+    font-size: 9px;
+    text-align: center;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
-.application_image {
+.body_text {
+    text-align: center;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    font-size: 15px;
+}
+.talabnoma {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+span {
+    font-weight: bold;
+    font-size: 15px;
+}
+.ustivor {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 20px 0;
-
+    padding-left: 35px;
+    gap: 20px;
 }
-
-.application_image img {
-    width: 50%;
-}
-
-.black_title {
-    text-align: center;
-    font-size: 18px;
-    width: 70%;
-    font-weight: bold;
-    margin: auto;
-}
-
-.m150 {
-    margin-top: 150px;
-}
-
 .footer {
-    margin-top: 20px;
-
+    max-width: 550px;
+    margin: 0 auto;
 }
-
-.footer span {
-    font-weight: bold;
+.qrCode{
+    padding-left: 400px;
 }
