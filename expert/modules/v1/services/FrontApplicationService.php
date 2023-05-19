@@ -72,7 +72,7 @@ class FrontApplicationService extends Model
         }
     }
 
-    public function updateForm($user_application_id, $form_id, $postData)
+    public function updateFormAll($form_id, $postData)
     {
         $formModel = [];
         try {
@@ -82,6 +82,21 @@ class FrontApplicationService extends Model
                 $formModel->setAttributes($data);
                 $formModel->save(false);
             }
+            return [
+                'success' => true,
+                'data' => $formModel
+            ];
+        } catch (\Exception $exception) {
+            throw new \Exception($exception->getMessage());
+        }
+
+    }
+    public function updateFormSingle($postData)
+    {
+        try {
+            $formModel = $this->getFromClass($postData['form_id'])::findone(['id' => $postData['id']]);
+            $formModel->setAttributes($postData);
+            $formModel->save(false);
             return [
                 'success' => true,
                 'data' => $formModel

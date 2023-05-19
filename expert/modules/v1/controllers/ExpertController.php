@@ -39,12 +39,19 @@ class ExpertController extends Controller
         return $this->frontApplicationService->getFrontForm($user_application_id, $form_id);
     }
 
-    public function actionUpdateFrontForm()
+    public function actionUpdateFrontFormAll()
     {
         $post =  Yii::$app->request->post();
-        return $this->frontApplicationService->updateForm(
-            $post['user_application_id'],
+        return $this->frontApplicationService->updateFormAll(
             $post['form_id'],
+            $post
+        );
+    }
+
+    public function actionUpdateFrontFormSingle()
+    {
+        $post =  Yii::$app->request->post();
+        return $this->frontApplicationService->updateFormSingle(
             $post
         );
     }
