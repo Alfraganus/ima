@@ -68,7 +68,6 @@ class FormConfirmation extends \yii\db\ActiveRecord
     public function beforeSave($insert)
     {
         $maxId = self::find()->max('id');
-        $this->id = $maxId + 1;
 
         $formRequester = FormRequester::findOne([
             'user_id' =>$this->user_id,
