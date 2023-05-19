@@ -27,11 +27,21 @@ class ApplicationController extends DefaultController
     public function actionGetApplications($application_type)
     {
         $applications = UserApplications::find()->where([
-            'application_id'=>$application_type,
-            'is_finished'=>1
+            'application_id' => $application_type,
+            'is_finished' => 1
         ])->orderBy('id DESC')
-        ->all();
+            ->all();
         return $applications;
+    }
+
+    public function actionGet20($user_application_id)
+    {
+        $applications = UserApplications::findOne($user_application_id);
+
+        return [
+            'data_submitted' => date('d-m-Y', $applications->date_submitted),
+            'application_number' => $applications->generated_id,
+        ];
     }
 
     public function actionSendExpertMessage()
@@ -51,7 +61,7 @@ class ApplicationController extends DefaultController
 
     public function actionGetUserDocuments($user_application_id)
     {
-        $formMedia = ApplicationFormMedia::findAll(['application_id'=>$user_application_id]);
+        $formMedia = ApplicationFormMedia::findAll(['application_id' => $user_application_id]);
 
         return $formMedia;
     }

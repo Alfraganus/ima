@@ -22,6 +22,7 @@ use Yii;
  * @property int|null $application_id
  * @property int|null $user_application_id
  * @property int|null $module_id
+ * @property int|null $order_seq
  * @property string|null $column_11
  * @property string|null $column_19
  * @property string|null $column_15
@@ -49,7 +50,7 @@ class ExpertForm10 extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['expert_id', 'user_id', 'application_id', 'user_application_id', 'module_id'], 'integer'],
+            [['expert_id', 'user_id', 'application_id', 'user_application_id', 'module_id','order_seq'], 'integer'],
             [['column_15', 'column_18'], 'safe'],
             [['column_11'], 'string', 'max' => 50],
             [['column_19'], 'string', 'max' => 20],
