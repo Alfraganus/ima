@@ -1,0 +1,117 @@
+<?php
+namespace expert\modules\v1\services;
+
+use expert\models\forms\ExpertForm10;
+use expert\models\forms\ExpertForm40;
+use expert\models\forms\ExpertFormList;
+use yii\data\Pagination;
+use yii\db\Query;
+
+class AdvancedSearch
+{
+    public function search2(array $columns,array $conditions=null)
+    {
+        $query = new Query();
+        $models = [new ExpertForm10(), new ExpertForm40()]; // add other models if necessary
+        $firstModel = true;
+        $select = [];
+        $from = '';
+
+        foreach ($models as $model) {
+            $modelColumns = [];
+            foreach ($columns as $column) {
+                if ($model->hasAttribute($column)) {
+                    $modelColumns[] = "{$model->tableName()}.{$column}";
+                }
+            }
+
+            if (!empty($modelColumns)) {
+                if ($firstModel) {
+                    $from = $model->tableName();
+                    $firstModel = false;
+                } else {
+                    $query->join('JOIN', $model->tableName(), "{$model->tableName()}.user_application_id = {$models[0]->tableName()}.user_application_id");
+                }
+                $select = array_merge($select, $modelColumns);
+            }
+        }
+        if (!empty($select) && !empty($from)) {
+            $query->select($select)->from($from);
+
+            if($conditions) {
+                foreach ($conditions as $condition) {
+                    $query->andWhere([
+                        $condition['operator'],
+                        $condition['column'],
+                        $condition['value']
+                    ]);
+
+                }
+            }
+            $countQuery = clone $query;
+            $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 50]);
+            $query->offset($pages->offset);
+            $query->limit($pages->limit);
+
+
+            $data = $query->all();
+        } else {
+            // handle the case when no columns were found in any model
+        }
+        return $data;
+    }
+
+    public function search(array $columnList=null)
+    {
+        $query = new Query();
+        $columns = ['column_11','column_46'];
+        $models = [new ExpertForm10(), new ExpertForm40()]; // add other models if necessary
+        $firstModel = true;
+        foreach ($models as $model) {
+//            $model = new $modelClass();
+            foreach ($columns as $column) {
+                if ($model->hasAttribute($column)) {
+                    $query->addSelect(["{$model->tableName()}.{$column}"]);
+                    // assuming 'user_application_id' is common in all models
+                    if ($firstModel) {
+                        $query->from($model->tableName());
+                        $firstModel = false;
+                    } else {
+                        $query->join('JOIN', $model->tableName(), "{$model->tableName()}.user_application_id = {$models[0]->tableName()}.user_application_id");
+                    }
+//                    $query->where(['user_application_id' => $yourUserApplicationId]);
+                }
+            }
+        }
+
+        return  $query->all();
+// Apply pagination
+        $countQuery = clone $query;
+        $pages = new Pagination(['totalCount' => $countQuery->count()]);
+        $query->offset($pages->offset);
+        $query->limit($pages->limit);
+
+        $data = $query->all();
+    }
+
+    private static function columnList()
+    {
+        $columnList = [
+            11 => 'column_11',
+            21 => 'column_21',
+        ];
+    }
+
+    private function getModel($columnName)
+    {
+        $expertForms = ExpertFormList::find()->all();
+
+        foreach ($expertForms as $form) {
+            $formClass = new $form->form_class;
+            if($formClass->hasAttribute($columnName)) {
+                return true;
+            }
+        }
+    }
+
+}

@@ -38,7 +38,9 @@ class FormRequester extends \yii\db\ActiveRecord
     {
         return 'form_requester';
     }
-
+    const ROLE_ID_OWDER=1;
+    const ROLE_ID_TRUSTED=2;
+    const ROLE_ID_REPRESENTATIVE=3;
     const CLASS_FORM_ID = 1;
 
     /**

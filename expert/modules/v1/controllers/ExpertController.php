@@ -3,9 +3,12 @@
 namespace expert\modules\v1\controllers;
 
 use common\models\ApplicationForm;
+use common\models\forms\FormRequester;
 use expert\models\ExpertUser;
+use expert\modules\v1\services\AdvancedSearch;
 use expert\modules\v1\services\FrontApplicationService;
 use expert\modules\v1\services\UserRoleService;
+use frontend\models\ImaUsers;
 use Yii;
 use yii\rest\Controller;
 
@@ -33,6 +36,25 @@ class ExpertController extends Controller
             ],
         ];
     }
+    public function actionAdvancedSearch()
+    {
+        $post = Yii::$app->request->post();
+        return (new AdvancedSearch())->search2($post['column'],$post['conditions']);
+    }
+
+
+
+    public function actionGetTrustedPerson($user_application_id)
+    {
+        $formRequester = FormRequester::findOne(['user_application_id' => $user_application_id]);
+        if ($formRequester->role_id == FormRequester::ROLE_ID_TRUSTED) {
+            return [
+                'success' => true,
+                'data' => ImaUsers::findOne($formRequester->user_id)
+            ];
+        }
+        return [];
+    }
 
     public function actionGetFrontForm($user_application_id, $form_id)
     {
@@ -41,7 +63,7 @@ class ExpertController extends Controller
 
     public function actionUpdateFrontFormAll()
     {
-        $post =  Yii::$app->request->post();
+        $post = Yii::$app->request->post();
         return $this->frontApplicationService->updateFormAll(
             $post['form_id'],
             $post
@@ -50,7 +72,7 @@ class ExpertController extends Controller
 
     public function actionUpdateFrontFormSingle()
     {
-        $post =  Yii::$app->request->post();
+        $post = Yii::$app->request->post();
         return $this->frontApplicationService->updateFormSingle(
             $post
         );
@@ -58,15 +80,13 @@ class ExpertController extends Controller
 
     public function actionCreateFrontForm()
     {
-        $post =  Yii::$app->request->post();
+        $post = Yii::$app->request->post();
         return $this->frontApplicationService->createForm(
             $post
         );
-
     }
 
-
-    public function actionAssignPermissions()
+     public function actionAssignPermissions()
     {
         $createPost = $auth->createPermission('createPost');
         $createPost->description = 'Create a post';
