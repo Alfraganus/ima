@@ -93,7 +93,6 @@ class ExpertFormVladeles extends \yii\db\ActiveRecord
             'user_id',
             'application_id',
             'module_id',
-            'tab_id',
             'individual_type',
             'jshshir',
             'full_name',

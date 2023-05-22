@@ -9,6 +9,7 @@ use expert\modules\v1\services\AdvancedSearch;
 use expert\modules\v1\services\FrontApplicationService;
 use expert\modules\v1\services\UserRoleService;
 use frontend\models\ImaUsers;
+use frontend\modules\api\service\FormReadService;
 use Yii;
 use yii\rest\Controller;
 
@@ -42,9 +43,21 @@ class ExpertController extends Controller
         return (new AdvancedSearch())->search2($post['column'],$post['conditions']);
     }
 
+    public function actionGetLocations()
+    {
+        return (new FormReadService())->getRegions();
+    }
 
+    public function actionGetCountries()
+    {
+        return (new \yii\db\Query())
+            ->select('*')
+            ->from('world_countries')
+            ->orderBy('country_name')
+            ->all();
+    }
 
-    public function actionGetTrustedPerson($user_application_id)
+    public function actionGetTrustedRepresentative($user_application_id)
     {
         $formRequester = FormRequester::findOne(['user_application_id' => $user_application_id]);
         if ($formRequester->role_id == FormRequester::ROLE_ID_TRUSTED) {
