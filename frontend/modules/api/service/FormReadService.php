@@ -27,9 +27,18 @@ class FormReadService
         return $regions;
     }
 
-    public static function getUserFormData( $user_id,$application_id,$form_id, $wizard_id)
+    public static function getFormIdByClass($className)
     {
-       $form = ApplicationForm::findOne($form_id);
+        $model = ApplicationForm::findOne(['form_class' => $className]);
+        if($model) return $model->id;
+
+        return false;
+    }
+
+
+    public static function getUserFormData($user_id, $application_id, $form_id, $wizard_id)
+    {
+        $form = ApplicationForm::findOne($form_id);
         return $form->form_class::run(
             $user_id,
             $application_id,
