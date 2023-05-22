@@ -4,6 +4,7 @@ namespace frontend\modules\api\service;
 
 use common\models\forms\FormAuthor;
 use common\models\forms\FormDocument;
+use common\models\forms\FormIndustryExample;
 use Yii;
 use yii\helpers\ArrayHelper;
 use common\models\ApplicationForm;
@@ -26,12 +27,12 @@ class FormSaveService
         $transaction = Yii::$app->db->beginTransaction();
         try {
             if (empty($postContent['user_application_id'])) {
-                $user_application_id = $this->saveApplication($postContent['application_id'],$user_id);
+                $user_application_id = $this->saveApplication($postContent['application_id'], $user_id);
             } else {
                 $user_application_id = $postContent['user_application_id'];
             }
 
-            if (!empty($postContent['forms'])) $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id'],$user_id);
+            if (!empty($postContent['forms'])) $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id'], $user_id);
 
 
             if ($files) $this->saveFiles($files, $postContent, $user_id, $user_application_id);
@@ -45,7 +46,7 @@ class FormSaveService
                     $postContent['wizard_id'],
                     Yii::$app->user->id
                 ),
-                'sender_user_id'=>$user_id
+                'sender_user_id' => $user_id
             ];
             $submitted = false;
             if ($this->checkIfApplicationSubmitted(Yii::$app->user->id, $user_application_id)) {
@@ -157,7 +158,8 @@ class FormSaveService
                 $this->setFormAttachmentMissingValues(
                     json_decode($form['attachments']),
                     $wizard_id,
-                    $application_id
+                    $application_id,
+                    $user_id
                 );
             }
 
@@ -167,10 +169,19 @@ class FormSaveService
         }
     }
 
-    private function setFormAttachmentMissingValues(array $ids, int $wizard_id, int $application_id)
+    private function setFormAttachmentMissingValues(array $ids, int $wizard_id, int $application_id, $user_id)
     {
         foreach ($ids as $id) {
             $formAttachments = ApplicationFormMedia::findOne($id);
+            $formModel = new $this->setForm[$formAttachments->form_id];
+            if ($formModel instanceof FormIndustryExample) {
+                $formIndustry = FormIndustryExample::findOne([
+                    'application_id' => $application_id,
+                    'user_id' => $user_id,
+                ]);
+                $formIndustry->file = $formAttachments->file_path;
+                $formIndustry->save(false);
+            }
             $formAttachments->wizard_id = $wizard_id;
             $formAttachments->application_id = $application_id;
             if (!$formAttachments->save()) {
