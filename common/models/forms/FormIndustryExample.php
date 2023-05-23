@@ -87,6 +87,7 @@ class FormIndustryExample extends \yii\db\ActiveRecord
     public function fields()
     {
         return [
+            'id',
             'form_id' => function () {
                return $this->getFormId();
             },
