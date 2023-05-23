@@ -6,38 +6,42 @@ use common\models\ApplicationFormMedia;
 use common\models\forms\FormIndustryExample;
 use expert\models\ExpertFormMedia;
 use frontend\modules\api\service\FormReadService;
+use yii\helpers\ArrayHelper;
 
 class ReadFormService
 {
 
     public function getForm55($user_application_id)
     {
-        $industryExampleModel = FormIndustryExample::findOne(['user_application_id' => $user_application_id]);
-        $getMoreExamples = ApplicationFormMedia::find()->select(['file_path'])->where([
-            'application_id' => $user_application_id,
-            'form_id' => FormReadService::getFormIdByClass('common\models\forms\FormDocument'),
-        ]);
-        $model = $getMoreExamples->one();
-        $index = 1;
-        $result[] = [
-            'id'=>$industryExampleModel->id,
-            'index'=>$index,
-            'title' => $industryExampleModel->title,
-            'image' =>$model ? $model->file_path : null,
-            'is_main' => $industryExampleModel->is_main,
-            'language' => $industryExampleModel->language,
-        ];
-        foreach ($getMoreExamples->all() as $example) {
-            $index++;
+        $industryDocumentModel = FormIndustryExample::find()->where(['user_application_id' => $user_application_id]);
+
+        $industryExampleModel = ArrayHelper::getColumn(
+            $industryDocumentModel->asArray()->all(),
+            'file'
+        );
+        $formMedia =  ArrayHelper::getColumn(
+            ApplicationFormMedia::find()->where([
+                'application_id' => $user_application_id,
+                'form_id' => FormReadService::getFormIdByClass('common\models\forms\FormDocument'),
+            ])->asArray()->all(),
+            'file_path'
+        );
+        $result = [];
+        foreach ($formMedia as $element) {
+            if (in_array($element, $industryExampleModel)) {
+                continue;
+            }
             $result[] = [
-                'index'=>$index,
-                'title' => null,
-                'image' => $example->file_path,
-                'is_main' => null,
-                'language' => null,
+                'title'=>null,
+                'is_main'=>false,
+                'file'=>$element,
             ];
         }
-        return $result;
+
+        return array_merge(
+            $industryDocumentModel->select(['id','title','is_main' ,'file'])->asArray()->all(),
+            $result
+        );
     }
 
     public function getFormData($formModel, $postContent)

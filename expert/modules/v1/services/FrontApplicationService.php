@@ -46,8 +46,8 @@ class FrontApplicationService extends Model
         $formModel = $this->getFromClass($form_type_id)::findone($data_id);
         $formModel->delete();
         return [
-          'success'=>true,
-          'message'=>'Form has been deleted!'
+            'success' => true,
+            'message' => 'Form has been deleted!'
         ];
     }
 
@@ -56,6 +56,15 @@ class FrontApplicationService extends Model
         $form = $this->getForm($user_application_id, $form_id);
 
         return $form->all();
+    }
+
+    public function getSingleFrontForm($user_application_id, $form_id, $data_id)
+    {
+        $formModel = $this->getForm($user_application_id, $form_id)->andWhere(['id' => $data_id])->one();
+
+        if (!$formModel) return ['message'=>'Data not found!'];
+
+        return  $formModel;
     }
 
     public function createForm($data)

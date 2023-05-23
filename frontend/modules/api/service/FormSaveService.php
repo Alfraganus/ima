@@ -173,19 +173,20 @@ class FormSaveService
     {
         foreach ($ids as $id) {
             $formAttachments = ApplicationFormMedia::findOne($id);
-            $formModel = new $this->setForm[$formAttachments->form_id];
-            if ($formModel instanceof FormIndustryExample) {
-                $formIndustry = FormIndustryExample::findOne([
-                    'application_id' => $application_id,
-                    'user_id' => $user_id,
-                ]);
-                $formIndustry->file = $formAttachments->file_path;
-                $formIndustry->save(false);
-            }
             $formAttachments->wizard_id = $wizard_id;
             $formAttachments->application_id = $application_id;
             if (!$formAttachments->save()) {
                 throw new \Exception(json_encode($formAttachments->errors));
+            }
+            $formModel = new $this->setForm[$formAttachments->form_id];
+            if ($formModel instanceof FormIndustryExample) {
+                $formIndustry = FormIndustryExample::findOne([
+                    'user_application_id' => $application_id,
+                    'user_id' => $user_id,
+                ]);
+                $formIndustry->file = $formAttachments->file_path;
+                $formIndustry->is_main = true;
+                $formIndustry->save(false);
             }
         }
     }

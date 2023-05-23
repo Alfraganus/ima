@@ -92,9 +92,10 @@ class FormIndustryExample extends \yii\db\ActiveRecord
                 return $this->getFormId();
             },
             'title',
-            'file' => function () {
+            'file',
+          /*  'file' => function () {
                 return $this->getFile();
-            }
+            }*/
         ];
     }
 
