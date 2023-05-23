@@ -43,7 +43,7 @@ class FrontApplicationService extends Model
 
     public function deleteFrontForm($form_type_id, $data_id)
     {
-        $formModel = $this->getFromClass($form_type_id)::findone(['id' => $data_id]);
+        $formModel = $this->getFromClass($form_type_id)::findone($data_id);
         $formModel->delete();
         return [
           'success'=>true,
