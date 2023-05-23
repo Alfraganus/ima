@@ -54,10 +54,8 @@ class FrontApplicationService extends Model
     public function getFrontForm($user_application_id, $form_id)
     {
         $form = $this->getForm($user_application_id, $form_id);
-        if ($form->count() > 1) {
-            return $form->all();
-        }
-        return $form->one();
+
+        return $form->all();
     }
 
     public function createForm($data)
