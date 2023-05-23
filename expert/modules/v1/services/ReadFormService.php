@@ -13,18 +13,24 @@ class ReadFormService
     public function getForm55($user_application_id)
     {
         $industryExampleModel = FormIndustryExample::findOne(['user_application_id' => $user_application_id]);
-        $getMoreExamples = ApplicationFormMedia::findAll([
+        $getMoreExamples = ApplicationFormMedia::find()->select(['file_path'])->where([
             'application_id' => $user_application_id,
             'form_id' => FormReadService::getFormIdByClass('common\models\forms\FormDocument'),
         ]);
-        $result = [
+        $model = $getMoreExamples->one();
+        $index = 1;
+        $result[] = [
+            'id'=>$industryExampleModel->id,
+            'index'=>$index,
             'title' => $industryExampleModel->title,
-            'image' => $industryExampleModel->file,
+            'image' =>$model ? $model->file_path : null,
             'is_main' => $industryExampleModel->is_main,
             'language' => $industryExampleModel->language,
         ];
-        foreach ($getMoreExamples as $example) {
+        foreach ($getMoreExamples->all() as $example) {
+            $index++;
             $result[] = [
+                'index'=>$index,
                 'title' => null,
                 'image' => $example->file_path,
                 'is_main' => null,

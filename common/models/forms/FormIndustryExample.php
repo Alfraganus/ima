@@ -46,7 +46,7 @@ class FormIndustryExample extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'user_application_id', 'user_application_wizard_id','is_main'], 'integer'],
+            [['user_id', 'user_application_id', 'user_application_wizard_id', 'is_main'], 'integer'],
             [['title', 'file'], 'string', 'max' => 255],
             [['user_application_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserApplications::class, 'targetAttribute' => ['user_application_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => ImaUsers::class, 'targetAttribute' => ['user_id' => 'id']],
@@ -54,12 +54,12 @@ class FormIndustryExample extends \yii\db\ActiveRecord
         ];
     }
 
-     public static function run($user_id, $application_id, $wizard_id,$form_id=null)
+    public static function run($user_id, $application_id, $wizard_id, $form_id = null)
     {
         return self::findAll([
-            'user_application_id'=>$application_id,
+            'user_application_id' => $application_id,
             'user_id' => $user_id,
-            'user_application_wizard_id' =>$wizard_id,
+            'user_application_wizard_id' => $wizard_id,
         ]);
     }
 
@@ -89,23 +89,28 @@ class FormIndustryExample extends \yii\db\ActiveRecord
         return [
             'id',
             'form_id' => function () {
-               return $this->getFormId();
+                return $this->getFormId();
             },
             'title',
             'file' => function () {
-                return ApplicationFormMedia::find()->where([
-                    'application_id'=>$this->user_application_id,
-                    'user_id' => $this->user_id,
-                    'wizard_id' => $this->user_application_wizard_id,
-                    'form_id' => $this->getFormId(),
-                ])->select(['id', 'file_name', 'file_path'])->all();
+                return $this->getFile();
             }
         ];
     }
 
+    public function getFile()
+    {
+        return ApplicationFormMedia::find()->where([
+            'application_id' => $this->user_application_id,
+            'user_id' => $this->user_id,
+            'wizard_id' => $this->user_application_wizard_id,
+            'form_id' => $this->getFormId(),
+        ])->select(['id', 'file_name', 'file_path'])->all();
+    }
+
     public function getFormId()
     {
-        return ApplicationForm::findOne(['form_class'=>get_called_class()])->id;
+        return ApplicationForm::findOne(['form_class' => get_called_class()])->id;
     }
 
     public function getUser()

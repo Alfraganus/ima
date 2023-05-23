@@ -25,7 +25,6 @@ class AdvancedSearch
                 if ($model->hasAttribute($column) && !in_array("{$model->tableName()}.{$column}", $modelColumns)) {
                     $modelColumns[] = "{$model->tableName()}.{$column}";
                 }
-
             }
             if (!empty($modelColumns)) {
                 if ($firstModel) {

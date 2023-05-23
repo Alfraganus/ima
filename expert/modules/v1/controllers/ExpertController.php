@@ -7,6 +7,7 @@ use common\models\forms\FormRequester;
 use expert\models\ExpertUser;
 use expert\modules\v1\services\AdvancedSearch;
 use expert\modules\v1\services\FrontApplicationService;
+use expert\modules\v1\services\ReadFormService;
 use expert\modules\v1\services\UserRoleService;
 use frontend\models\ImaUsers;
 use frontend\modules\api\service\FormReadService;
@@ -37,10 +38,11 @@ class ExpertController extends Controller
             ],
         ];
     }
+
     public function actionAdvancedSearch()
     {
         $post = Yii::$app->request->post();
-        return (new AdvancedSearch())->search2($post['column'],$post['conditions']);
+        return (new AdvancedSearch())->search2($post['column'], $post['conditions']);
     }
 
     public function actionGetLocations()
@@ -67,6 +69,11 @@ class ExpertController extends Controller
             ];
         }
         return [];
+    }
+
+    public function actionGetForm55($user_application_id)
+    {
+        return (new ReadFormService())->getForm55($user_application_id);
     }
 
     public function actionGetFrontForm($user_application_id, $form_id)
@@ -104,7 +111,7 @@ class ExpertController extends Controller
         );
     }
 
-     public function actionAssignPermissions()
+    public function actionAssignPermissions()
     {
         $createPost = $auth->createPermission('createPost');
         $createPost->description = 'Create a post';
