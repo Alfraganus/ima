@@ -80,8 +80,8 @@ class CreateFormService
     public function executeFormBackgroundActions($data, $form)
     {
         if ($form instanceof ExpertFormPayment) {
-            /*kerakli action bolishi kerak bolgan tab idni qoyamiz*/
-            if ($data['tab_id'] == 1) {
+            /* 3 tab ichidagi registratsiya tanlaganda, pdf hosil qilamiz*/
+            if ($data['tab_id'] == 3 && $form->payment_purpose_id == 3) {
                 (new PdfService())->generatePDF($data['user_application_id']);
             }
         }

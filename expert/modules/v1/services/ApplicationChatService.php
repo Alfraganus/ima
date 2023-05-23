@@ -32,19 +32,9 @@ class ApplicationChatService extends Model
         $formClass->save(false);
     }
 
-    public function manageApplicationStatus($form_type_id, $form_id)
-    {
-        $formClass = $this->expertForms[$form_type_id]::findone($form_id);
-
-        switch ($formClass) {
-            case "" :
-        }
-
-    }
 
     public function sendMessage($expert_id, $data)
     {
-//        throw new Exception(json_encode($data['expert_form_id']));
         $model = new ApplicationChat();
         $model->setAttributes($data);
         $model->setMaxOrderId();

@@ -182,7 +182,7 @@ class ExpertFormPayment extends \yii\db\ActiveRecord implements FormInterface
                 $paymentTypes = [
                     1 => 'За подачу заявки',
                     2 => 'Доплата за внесение изменений',
-                    3 => 'За регистрацию и выд. св.ва',
+                    3 => 'За регистрацию',
                     4 => 'Доплата за регистрацию',
                 ];
                 break;

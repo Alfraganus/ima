@@ -65,7 +65,6 @@ class DefaultController extends Controller
 
     public function actionSaveForm()
     {
-//        return Yii::$app->request->post();
         return  (new CreateFormService)->createForm(
             Yii::$app->request->post(),
             $_FILES['form_info'],

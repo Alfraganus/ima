@@ -2,11 +2,14 @@
 
 namespace expert\modules\v1\services;
 
+use common\models\forms\FormAuthor;
+use common\models\forms\FormRequester;
 use common\models\UserApplications;
 use expert\models\ExpertFormMedia;
 use expert\models\forms\ExpertForm10;
 use kartik\mpdf\Pdf;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class PdfService
 {
@@ -25,21 +28,37 @@ class PdfService
         return $order;
     }
 
+    private function dataForPdf($user_application_id)
+    {
+        $formRequester = FormRequester::find()->select('full_name')
+            ->where(['user_application_id'=>$user_application_id])
+            ->all();
+        $formAuthror = FormAuthor::find()->select('full_name')
+            ->where(['user_application_id'=>$user_application_id])
+            ->all();
+
+        return [
+            'patent_holder'=>implode(' ',ArrayHelper::getColumn($formRequester,'full_name')),
+            'author'=>implode(' ',ArrayHelper::getColumn($formAuthror,'full_name'))
+        ];
+    }
+
     public function generatePDF($user_application_id)
     {
         try {
             $userApp = UserApplications::findOne($user_application_id);
             $getMaxOrderNum = $this->getMaxOrderSeq($userApp->application_id) ;
+            $licenceNum =  $this->formatOrderNumber(
+                'SAP',
+                $getMaxOrderNum
+            );;
             $model = new ExpertForm10();
             $model->expert_id = null;
             $model->user_id = $userApp->user_id;
             $model->application_id = $userApp->application_id;
             $model->user_application_id = $user_application_id;
             $model->order_seq = $getMaxOrderNum;
-            $model->column_11 = $this->formatOrderNumber(
-                'SAP',
-                $getMaxOrderNum
-            );
+            $model->column_11 = $licenceNum;
             $model->column_15 = date('Y-m-d');
             $model->column_18 = date('Y-m-d', strtotime('+10 year', strtotime(date('Y-m-d'))));
             $model->column_19 = 'UZ';
@@ -52,7 +71,12 @@ class PdfService
                 $mediaAsset->form_id = 8;
                 $mediaAsset->user_id = $userApp->user_id;
                 $mediaAsset->object_id = $model->id;
-                $fileTitle = $this->savePDFtoLocalServer();
+                $fileTitle = $this->savePDFtoLocalServer([
+                    'date_submitted'=>date('d-m-Y',$userApp->date_submitted),
+                    'licence_number'=>$licenceNum,
+                    'patent_holder'=>$this->dataForPdf($userApp->id)['patent_holder'],
+                    'author'=>$this->dataForPdf($userApp->id)['author'],
+                ]);
                 $mediaAsset->file_name = $fileTitle;
                 $mediaAsset->file_extension = 'application/pdf';
                 $mediaAsset->file_path = Yii::$app->request->hostInfo . '/expert/web/' . $fileTitle;
@@ -65,11 +89,9 @@ class PdfService
 
     }
 
-    private function savePDFtoLocalServer()
+    private function savePDFtoLocalServer($data)
     {
-        $content = \Yii::$app->controller->renderPartial('_guvohnoma', [
-            'name' => 'Alfraganus'
-        ]);
+        $content = \Yii::$app->controller->renderPartial('_guvohnoma',$data);
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE,
             'format' => Pdf::FORMAT_A4,
