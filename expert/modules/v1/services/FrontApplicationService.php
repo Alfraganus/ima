@@ -24,11 +24,11 @@ class FrontApplicationService extends Model
         return UserApplications::findOne($user_application_id);
     }
 
-    public function getUserApplicationWizardForm($application_id,$form_id)
+    public function getUserApplicationWizardForm($application_id, $form_id)
     {
         return WizardFormField::findOne([
-            'application_id'=>$application_id,
-            'form_id'=>$form_id
+            'application_id' => $application_id,
+            'form_id' => $form_id
         ])->form_id;
     }
 
@@ -39,6 +39,16 @@ class FrontApplicationService extends Model
             ->where([
                 'user_application_id' => $user_application_id
             ]);
+    }
+
+    public function deleteFrontForm($form_type_id, $data_id)
+    {
+        $formModel = $this->getFromClass($form_type_id)::findone(['id' => $data_id]);
+        $formModel->delete();
+        return [
+          'success'=>true,
+          'message'=>'Form has been deleted!'
+        ];
     }
 
     public function getFrontForm($user_application_id, $form_id)
@@ -53,16 +63,16 @@ class FrontApplicationService extends Model
     public function createForm($data)
     {
         try {
-                $userApplication = $this->getUserApplication($data['user_application_id']);
-                $class = $this->getFromClass($data['form_id']);
-                $formModel = new $class;
-                $formModel->user_id = $userApplication->user_id;
-                $formModel->user_application_wizard_id = $this->getUserApplicationWizardForm(
-                    $userApplication->application_id,
-                    $data['form_id']
-                );
-                $formModel->setAttributes($data);
-                $formModel->save();
+            $userApplication = $this->getUserApplication($data['user_application_id']);
+            $class = $this->getFromClass($data['form_id']);
+            $formModel = new $class;
+            $formModel->user_id = $userApplication->user_id;
+            $formModel->user_application_wizard_id = $this->getUserApplicationWizardForm(
+                $userApplication->application_id,
+                $data['form_id']
+            );
+            $formModel->setAttributes($data);
+            $formModel->save();
             return [
                 'success' => true,
                 'data' => $formModel
@@ -91,6 +101,7 @@ class FrontApplicationService extends Model
         }
 
     }
+
     public function updateFormSingle($postData)
     {
         try {

@@ -74,6 +74,11 @@ class ExpertController extends Controller
         return $this->frontApplicationService->getFrontForm($user_application_id, $form_id);
     }
 
+    public function actionDeleteFrontForm($form_type_id, $data_id)
+    {
+        return $this->frontApplicationService->deleteFrontForm($form_type_id, $data_id);
+    }
+
     public function actionUpdateFrontFormAll()
     {
         $post = Yii::$app->request->post();

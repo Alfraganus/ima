@@ -25,28 +25,43 @@ class ExpertApplicationCronController extends \yii\console\Controller
     }
 
     /*pendingda turgan applciationlarni kegingi statusga o'tkazish*/
-    public function actionMoveStatusToFormalExpertise()
+
+    public function actionMoveStatusFormalExpertise()
+    {
+        $this->changeApplicationStatus('В ожидании формальной экспертизы','setApplicationStatusFormalExpertise',1);
+    }
+
+    public function actionMoveStatusExpertise()
+    {
+        $this->changeApplicationStatus('В ожидании экспертизы','setApplicationStatusInProgress',6);
+    }
+
+    private function changeApplicationStatus($currentStatus,$statusChangerAction,$valid_month)
     {
         $applications = $this->userApplicaitons
             ->where([
-            'user_applications.status_id' => $this->applicationStatusManager
-                                            ->getApplicationStatus('%В ожидании формальной экспертизы')
-        ])
+                'user_applications.status_id' => $this->applicationStatusManager
+                    ->getApplicationStatus( "%$currentStatus%")
+            ])
             ->joinWith('statusManagement')
             ->asArray()->all();
 
         foreach ($applications as $application) {
-            $dateTime = new \DateTime($application['statusManagement']['finish']);
-            $now = new \DateTime();
-            if($dateTime < $now) {
-                $this->applicationStatusManager->setApplicationStatusFormalExpertise($application['id'],1);
-                print_r($application['statusManagement']);
+            if(!empty($application['statusManagement']['finish'])) {
+                $dateTime = new \DateTime($application['statusManagement']['finish']);
+                $now = new \DateTime();
+                if($dateTime < $now) {
+                    $this->applicationStatusManager->$statusChangerAction($application['id'],$valid_month);
+                    print_r($application['statusManagement']);
+                }
             }
+
         }
     }
 
+
     /*har kuni shu funksiya run bolishi kerak*/
-    public function actionCheckPaymentsForExpert()
+    public function actionCheckPaymentsAndMoveStatus()
     {
         $applications = $this->userApplicaitons->where([
             'status_id' => $this->applicationStatusManager->getApplicationStatus('%На стадии уплаты пошлины за экспертизу')
