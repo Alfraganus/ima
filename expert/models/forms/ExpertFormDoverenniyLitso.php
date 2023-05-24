@@ -3,6 +3,8 @@
 namespace expert\models\forms;
 
 use common\models\Application;
+use common\models\Districts;
+use common\models\Regions;
 use common\models\UserApplications;
 use expert\models\application\ExpertModules;
 use expert\models\ExpertUser;
@@ -71,11 +73,23 @@ class ExpertFormDoverenniyLitso extends \yii\db\ActiveRecord
             'module_id' => Yii::t('app', 'Module ID'),
             'user_application_id' => Yii::t('app', 'User Application ID'),
             'individual_type' => Yii::t('app', 'Individual Type'),
+            'district' => function () {
+                $address = Districts::findOne($this->district);
+                return $address ? [
+                    'id' => $this->region,
+                    'name' => $address->name_uz,
+                ] : [];
+            },
+            'region' => function () {
+                $address = Regions::findOne($this->region);
+                return $address ? [
+                    'id' => $this->region,
+                    'name' => $address->name_uz,
+                ] : [];
+            },
             'jshshir' => Yii::t('app', 'Jshshir'),
             'full_name' => Yii::t('app', 'Full Name'),
             'country_id' => Yii::t('app', 'Country ID'),
-            'region' => Yii::t('app', 'Region'),
-            'district' => Yii::t('app', 'District'),
             'address' => Yii::t('app', 'Address'),
         ];
     }
