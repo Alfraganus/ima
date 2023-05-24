@@ -73,10 +73,9 @@ class FormConfirmation extends \yii\db\ActiveRecord
             'user_application_id' => $this->user_application_id
         ]);
         $paymentForm = ApplicationFormMedia::findOne([
-            'user_application_id' => $this->user_application_id,
+            'application_id' => $this->user_application_id,
             'form_id' => FormReadService::getFormIdByClass('common\models\forms\FormPayment'),
         ]);
-
         if ($formRequester->individual_type == 2 && $paymentForm) {
             (new FormPayment())->finishApplication($this->user_id, $this->user_application_id);
         }

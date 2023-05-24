@@ -101,10 +101,10 @@ class FormAuthor extends \yii\db\ActiveRecord
             'jshshir',
             'full_name',
             'district' => function () {
-                $address = Districts::findOne($this->district);
-                return $address ? [
-                    'id' => $this->region,
-                    'name' => $address->name_uz,
+                $district = Districts::findOne($this->district);
+                return $district ? [
+                    'id' => $this->district,
+                    'name' => $district->name_uz,
                 ] : [];
             },
             'region' => function () {

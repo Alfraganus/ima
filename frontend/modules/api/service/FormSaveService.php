@@ -3,9 +3,11 @@
 namespace frontend\modules\api\service;
 
 use common\models\forms\FormAuthor;
+use common\models\forms\FormConfirmation;
 use common\models\forms\FormDocument;
 use common\models\forms\FormIndustryExample;
 use Yii;
+use yii\di\Instance;
 use yii\helpers\ArrayHelper;
 use common\models\ApplicationForm;
 use common\models\forms\FormMktu;
@@ -34,8 +36,7 @@ class FormSaveService
 
             if (!empty($postContent['forms'])) $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id'], $user_id);
 
-
-            if ($files) $this->saveFiles($files, $postContent, $user_id, $user_application_id);
+//            if ($files) $this->saveFiles($files, $postContent, $user_id, $user_application_id);
             $transaction->commit();
             $result = [
                 'success' => true,
@@ -69,7 +70,7 @@ class FormSaveService
 
     private function checkIfApplicationSubmitted($user_id, $user_application_id)
     {
-        $app = UserApplications::findOne(['user_id' => $user_id, 'id' => $user_application_id]);
+        $app = UserApplications::findOne($user_application_id);
         $document = ApplicationFormMedia::find()->where([
             'user_id' => $user_id,
             'form_id' => ApplicationFormMedia::LEGAL_ENTITY_DOC_FORM_ID,
@@ -119,16 +120,19 @@ class FormSaveService
             if ($this->setForm[$form] instanceof FormDocument) {
                 $query = ['user_application_id' => $application_id, 'form_id' => $form, 'user_id' => $user_id];
             }
-            $this->setForm[$form]::deleteAll($query);
+            if($this->setForm[$form]::find()->where($query)->exists()) {
+                $this->setForm[$form]::deleteAll($query);
 
-            $applicationMedia = ApplicationFormMedia::findAll([
-                'application_id' => $application_id,
-                'form_id' => $form,
-                'user_id' => $user_id
-            ]);
-            foreach ($applicationMedia as $media) {
-                $media->delete();
+                $applicationMedia = ApplicationFormMedia::findAll([
+                    'application_id' => $application_id,
+                    'form_id' => $form,
+                    'user_id' => $user_id
+                ]);
+                foreach ($applicationMedia as $media) {
+                    $media->delete();
+                }
             }
+
         }
     }
 
@@ -141,15 +145,16 @@ class FormSaveService
             $user_id
         );
         foreach ($forms as $form) {
+
             if (!in_array($form['form_id'], array_keys($this->setForm))) {
                 throw new \Exception(sprintf("Form with form_id %d does not exist, please check it again", $form["form_id"]));
             }
-
             $formModel = new $this->setForm[$form['form_id']];
             $formModel->user_application_id = $application_id;
             $formModel->user_application_wizard_id = $wizard_id;
             $formModel->user_id = $user_id;
             $formModel->setAttributes($form);
+
             if (!$formModel->save()) {
                 throw new \Exception(json_encode($formModel->errors));
             }

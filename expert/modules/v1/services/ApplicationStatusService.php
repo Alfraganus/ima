@@ -51,11 +51,15 @@ class ApplicationStatusService
 
     }
 
-    public function getApplicationStatus($statusName)
+    public function getApplicationStatus($statusName, $description = null)
     {
         $status = $this->status::find()->where(
             ['like', 'name', "%$statusName%", false]
-        )->one();
+        );
+        if ($description) {
+            $status->andWhere(['like', 'description', "%$description%", false]);
+        }
+        $status = $status->one();
 
         return $status->id;
     }
@@ -94,7 +98,7 @@ class ApplicationStatusService
 
     public function setApplicationStatusTabOneOverdue($user_application_id, $valid_month = null)
     {
-        $status = $this->status::find()->where(['like', 'name', '%Формальная экспертиза просрочена%', false])->one();
+        $status = $this->status::find()->where(['name'=>'Формальная экспертиза просрочена'])->one();
         if (!empty($status->id)) $this->changeUserApplicationStatus($user_application_id, $status->id, $valid_month);
     }
 
@@ -116,6 +120,15 @@ class ApplicationStatusService
         if (!empty($status->id)) $this->changeUserApplicationStatus($user_application_id, $status->id, $valid_month);
     }
 
+    public function setApplicationStatusInProgress7Month($user_application_id, $valid_month = null)
+    {
+        $status = $this->status::find()
+            ->where(['like', 'name', '%На экспертизе%', false])
+            ->andWhere(['like', 'description', '%7-month%', false])
+            ->one();
+        if (!empty($status->id)) $this->changeUserApplicationStatus($user_application_id, $status->id, $valid_month);
+    }
+
     public function setApplicationStatusFinished($user_application_id, $valid_month = null)
     {
         $status = $this->status::find()->where(['like', 'name', 'Экспертиза завершена%', false])->one();
@@ -124,7 +137,7 @@ class ApplicationStatusService
 
     public function setApplicationStatusTabTwoOverdue($user_application_id, $valid_month = null)
     {
-        $status = $this->status::find()->where(['like', 'name', '%Экспертиза просрочена%', false])->one();
+        $status = $this->status::find()->where(['name'=>'Экспертиза просрочена'])->one();
         if (!empty($status->id)) $this->changeUserApplicationStatus($user_application_id, $status->id, $valid_month);
     }
 
@@ -187,5 +200,4 @@ class ApplicationStatusService
         }
         return false;
     }
-
 }

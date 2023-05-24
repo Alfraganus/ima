@@ -68,6 +68,12 @@ class UserApplications extends \yii\db\ActiveRecord
             'date' => function () {
                 return date('d-m-Y', $this->date_submitted);
             },
+            'status'  => function () {
+                return [
+                    'id'=>$this->status_id,
+                    'name'=>ApplicationStatus::findOne($this->status_id)->name
+                ];
+            },
             'is_finished',
             'payment_done',
             'current_wizard_id',

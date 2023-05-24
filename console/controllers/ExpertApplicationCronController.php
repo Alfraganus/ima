@@ -4,6 +4,7 @@ namespace console\controllers;
 
 use common\models\UserApplications;
 use common\traits\PaymentFunctions;
+use Exception;
 use expert\models\ApplicationStatus;
 use expert\modules\v1\services\ApplicationStatusService;
 use Yii;
@@ -28,37 +29,62 @@ class ExpertApplicationCronController extends \yii\console\Controller
 
     public function actionMoveStatusFormalExpertise()
     {
-        $this->changeApplicationStatus('В ожидании формальной экспертизы','setApplicationStatusFormalExpertise',1);
+        $this->changeApplicationStatus('В ожидании формальной экспертизы', 'setApplicationStatusFormalExpertise', 1);
     }
 
     public function actionMoveStatusExpertise()
     {
-        $this->changeApplicationStatus('В ожидании экспертизы','setApplicationStatusInProgress',6);
+        $this->changeApplicationStatus('В ожидании экспертизы', 'setApplicationStatusInProgress', 6);
     }
 
     public function actionMoveStatusFormalExpertiseCanceled()
     {
-        $this->changeApplicationStatus('На формальной экспертизе','setApplicationStatusTabOneOverdue');
+        $this->changeApplicationStatus('На формальной экспертизе', 'setApplicationStatusTabOneOverdue');
     }
 
-    private function changeApplicationStatus($currentStatus,$statusChangerAction,$valid_month=null)
+    public function actionMoveStatusExpertiseSeventhMonth()
     {
+        $this->changeApplicationStatus('На экспертизе', 'setApplicationStatusInProgress7Month', 1);
+    }
+
+    public function actionMoveStatusExpertiseCanceled()
+    {
+        $this->changeApplicationStatus(
+            'На экспертизе',
+            'setApplicationStatusTabTwoOverdue',
+            null,
+            '7-month'
+        );
+    }
+
+    private function changeApplicationStatus($currentStatus, $statusChangerAction, $valid_month = null, $description = null)
+    {
+
         $applications = $this->userApplicaitons
             ->where([
                 'user_applications.status_id' => $this->applicationStatusManager
-                    ->getApplicationStatus( "%$currentStatus%")
-            ])
-            ->joinWith('statusManagement')
-            ->asArray()->all();
+                    ->getApplicationStatus("%$currentStatus%", $description)
+            ])->joinWith('statusManagement')
+            ->asArray()
+            ->all();
 
         foreach ($applications as $application) {
-            if(!empty($application['statusManagement']['finish'])) {
+            $statusManagement = $application['statusManagement'];
+            print_r($statusManagement);
+            if (!empty($statusManagement['finish'])) {
+
                 $dateTime = new \DateTime($application['statusManagement']['finish']);
                 $now = new \DateTime();
-                if($dateTime < $now) {
-                    $this->applicationStatusManager->$statusChangerAction($application['id'],$valid_month);
-                    print_r($application['statusManagement']);
+                if (!is_null($description)) {
+                    if ($dateTime > $now) {
+                        $this->applicationStatusManager->$statusChangerAction($application['id'], $valid_month);
+                    }
+                } else {
+                    if ($statusManagement['description'] == $description && $dateTime < $now) {
+                        $this->applicationStatusManager->$statusChangerAction($application['id'], $valid_month);
+                    }
                 }
+
             }
         }
     }
@@ -71,11 +97,11 @@ class ExpertApplicationCronController extends \yii\console\Controller
             ->asArray()
             ->all();
         foreach ($applications as $application) {
-            if(!empty($application['statusManagement']['finish'])) {
+            if (!empty($application['statusManagement']['finish'])) {
                 $statusManagement = $application['statusManagement'];
                 $dateTime = new \DateTime($statusManagement['finish']);
                 $now = new \DateTime();
-                if($dateTime < $now && $statusManagement['is_answer_required']) {
+                if ($dateTime < $now && $statusManagement['is_answer_required']) {
                     $this->applicationStatusManager->setApplicationStatusCanceled($application['id']);
                 }
             }
@@ -100,7 +126,7 @@ class ExpertApplicationCronController extends \yii\console\Controller
                 );
 
                 if ($paymentStatusChecker['success']) {
-                    $this->applicationStatusManager->setApplicationStatusExpertPending($application['id'],6);
+                    $this->applicationStatusManager->setApplicationStatusExpertPending($application['id'], 6);
                 }
             }
         }

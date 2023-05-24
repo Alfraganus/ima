@@ -64,29 +64,4 @@ class AdvancedSearch
         return $data;
     }
 
-    public function search(array $columnList=null)
-    {
-
-    }
-
-    private static function columnList()
-    {
-        $columnList = [
-            11 => 'column_11',
-            21 => 'column_21',
-        ];
-    }
-
-    private function getModel($columnName)
-    {
-        $expertForms = ExpertFormList::find()->all();
-
-        foreach ($expertForms as $form) {
-            $formClass = new $form->form_class;
-            if($formClass->hasAttribute($columnName)) {
-                return true;
-            }
-        }
-    }
-
 }
