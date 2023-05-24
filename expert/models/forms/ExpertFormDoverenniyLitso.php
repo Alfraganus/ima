@@ -84,6 +84,7 @@ class ExpertFormDoverenniyLitso extends \yii\db\ActiveRecord
     public function fields()
     {
         return [
+            'id',
             'module_id',
             'user_application_id',
             'individual_type',
