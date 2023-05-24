@@ -6,6 +6,7 @@ use common\models\Application;
 use common\models\Districts;
 use common\models\Regions;
 use common\models\UserApplications;
+use common\models\WorldCountries;
 use expert\models\application\ExpertModules;
 use expert\models\ExpertUser;
 use frontend\models\ImaUsers;
@@ -102,7 +103,14 @@ class ExpertFormDoverenniyLitso extends \yii\db\ActiveRecord
             },
             'jshshir',
             'full_name',
-            'country_id',
+            'country_id' => function () {
+                $submittingCountry = WorldCountries::findOne($this->submitting_country_id);
+                return [
+                    'id' => $this->submitting_country_id,
+                    'code' => $submittingCountry->country_code,
+                    'country_name' => $submittingCountry->country_name,
+                ];
+            },
             'address',
         ];
     }
