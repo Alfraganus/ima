@@ -46,7 +46,7 @@ class PaymentController extends Controller
     {
         if (Yii::$app->request->isPost) {
             $data = Yii::$app->request->post();
-            return $this->createInvoiceForPayment($data['user_application_id'], 100);
+            return $this->createInvoiceForPayment($data['user_application_id'], 1000);
         }
         return [
             'message' => 'Request is not post'
