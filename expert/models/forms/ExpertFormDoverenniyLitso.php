@@ -23,6 +23,8 @@ use Yii;
  * @property int|null $user_application_id
  * @property int|null $individual_type
  * @property string|null $jshshir
+ * @property string|null $stir
+ * @property string|null $phone_number
  * @property string|null $full_name
  * @property int|null $country_id
  * @property int|null $region
@@ -51,7 +53,7 @@ class ExpertFormDoverenniyLitso extends \yii\db\ActiveRecord
     {
         return [
             [['expert_id', 'user_id', 'application_id', 'module_id', 'user_application_id', 'individual_type', 'country_id', 'region', 'district'], 'integer'],
-            [['address'], 'string'],
+            [['address','stir','phone_number'], 'string'],
             [['jshshir', 'full_name'], 'string', 'max' => 255],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],
             [['expert_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpertUser::class, 'targetAttribute' => ['expert_id' => 'id']],

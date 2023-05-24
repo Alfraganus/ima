@@ -38,7 +38,7 @@ class ApplicationStatusService
                 }
             case $formModel instanceof ExpertFormEnquiry :
             case $formModel instanceof ExpertFormNotification :
-                $this->expandWaitingPeriod($formModel->user_application_id,3);
+                $this->expandWaitingPeriod($formModel->user_application_id,3,true);
         }
 
     }
@@ -128,12 +128,12 @@ class ApplicationStatusService
                 ->modify("+$valid_month months")
                 ->format('Y-m-d H:i:s');
         }
+
+
         $appStatusManagement->save();
-
-
     }
 
-    public function expandWaitingPeriod($user_application_id,$month)
+    public function expandWaitingPeriod($user_application_id,$month,$answer_required=null)
     {
         $userApplication = UserApplications::findOne($user_application_id);
         $appStatusManagement =  ApplicationStatusManagement::findOne([
@@ -143,6 +143,7 @@ class ApplicationStatusService
         $appStatusManagement->finish = (new DateTime('now'))
             ->modify("+$month months")
             ->format('Y-m-d H:i:s');
+        if($answer_required) $appStatusManagement->is_answer_required = true;
         $appStatusManagement->save(false);
     }
 }

@@ -13,6 +13,7 @@ use Yii;
  * @property mixed $finish
  * @property int|null $user_application_id
  * @property int|null $status_id
+ * @property int|null $is_answer_required
  * @property string|null $description
  *
  * @property ApplicationStatus $status
@@ -34,7 +35,7 @@ class ApplicationStatusManagement extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_application_id', 'status_id'], 'integer'],
+            [['user_application_id', 'status_id','is_answer_required'], 'integer'],
             [['description'], 'string', 'max' => 500],
             [['start','finish'], 'safe'],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationStatus::class, 'targetAttribute' => ['status_id' => 'id']],
