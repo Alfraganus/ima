@@ -73,6 +73,19 @@ class ExpertFormDoverenniyLitso extends \yii\db\ActiveRecord
             'module_id' => Yii::t('app', 'Module ID'),
             'user_application_id' => Yii::t('app', 'User Application ID'),
             'individual_type' => Yii::t('app', 'Individual Type'),
+            'jshshir' => Yii::t('app', 'Jshshir'),
+            'full_name' => Yii::t('app', 'Full Name'),
+            'country_id' => Yii::t('app', 'Country ID'),
+            'address' => Yii::t('app', 'Address'),
+        ];
+    }
+
+    public function fields()
+    {
+        return [
+            'module_id',
+            'user_application_id',
+            'individual_type',
             'district' => function () {
                 $address = Districts::findOne($this->district);
                 return $address ? [
@@ -87,10 +100,10 @@ class ExpertFormDoverenniyLitso extends \yii\db\ActiveRecord
                     'name' => $address->name_uz,
                 ] : [];
             },
-            'jshshir' => Yii::t('app', 'Jshshir'),
-            'full_name' => Yii::t('app', 'Full Name'),
-            'country_id' => Yii::t('app', 'Country ID'),
-            'address' => Yii::t('app', 'Address'),
+            'jshshir',
+            'full_name',
+            'country_id',
+            'address',
         ];
     }
 
