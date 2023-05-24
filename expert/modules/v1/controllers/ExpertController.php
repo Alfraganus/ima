@@ -59,10 +59,21 @@ class ExpertController extends Controller
             ->all();
     }
 
-    public function actionGetTrustedRepresentative($user_application_id)
+    public function actionCheckedPatent($user_application_id)
+    {
+        return $this->getRequesterByRoleId($user_application_id,FormRequester::ROLE_ID_TRUSTED);
+    }
+
+    public function actionTrustedRepsesentative($user_application_id)
+    {
+        return $this->getRequesterByRoleId($user_application_id,FormRequester::ROLE_ID_REPRESENTATIVE);
+    }
+
+
+    public function getRequesterByRoleId($user_application_id,$roleId)
     {
         $formRequester = FormRequester::findOne(['user_application_id' => $user_application_id]);
-        if ($formRequester->role_id == FormRequester::ROLE_ID_TRUSTED) {
+        if ($formRequester->role_id == $roleId) {
             return [
                 'success' => true,
                 'data' => ImaUsers::findOne($formRequester->user_id)

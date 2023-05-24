@@ -36,7 +36,12 @@ class ExpertApplicationCronController extends \yii\console\Controller
         $this->changeApplicationStatus('В ожидании экспертизы','setApplicationStatusInProgress',6);
     }
 
-    private function changeApplicationStatus($currentStatus,$statusChangerAction,$valid_month)
+    public function actionMoveStatusFormalExpertiseCanceled()
+    {
+        $this->changeApplicationStatus('На формальной экспертизе','setApplicationStatusTabOneOverdue');
+    }
+
+    private function changeApplicationStatus($currentStatus,$statusChangerAction,$valid_month=null)
     {
         $applications = $this->userApplicaitons
             ->where([
@@ -55,10 +60,27 @@ class ExpertApplicationCronController extends \yii\console\Controller
                     print_r($application['statusManagement']);
                 }
             }
-
         }
     }
 
+    /* 3 oy davomida biror sorovnomaga javob bermagan holatda*/
+    public function actionCheckOverDueApplications()
+    {
+        $applications = $this->userApplicaitons
+            ->joinWith('decision')
+            ->asArray()
+            ->all();
+        foreach ($applications as $application) {
+            if(!empty($application['statusManagement']['finish'])) {
+                $statusManagement = $application['statusManagement'];
+                $dateTime = new \DateTime($statusManagement['finish']);
+                $now = new \DateTime();
+                if($dateTime < $now && $statusManagement['is_answer_required']) {
+                    $this->applicationStatusManager->setApplicationStatusCanceled($application['id']);
+                }
+            }
+        }
+    }
 
     /*har kuni shu funksiya run bolishi kerak*/
     public function actionCheckPaymentsAndMoveStatus()
@@ -76,6 +98,7 @@ class ExpertApplicationCronController extends \yii\console\Controller
                 $paymentStatusChecker = $this->checkInvoiceStatus(
                     $expertDecisionExtraInfo['invoice_serial'], $application->id
                 );
+
                 if ($paymentStatusChecker['success']) {
                     $this->applicationStatusManager->setApplicationStatusExpertPending($application['id'],6);
                 }

@@ -9,6 +9,7 @@ use expert\models\ApplicationStatus;
 use expert\models\ApplicationStatusManagement;
 use expert\models\forms\ExpertFormDecision;
 use expert\models\forms\ExpertFormEnquiry;
+use expert\models\forms\ExpertFormFeedback;
 use expert\models\forms\ExpertFormNotification;
 use expert\models\forms\ExpertFormPayment;
 use Yii;
@@ -38,7 +39,14 @@ class ApplicationStatusService
                 }
             case $formModel instanceof ExpertFormEnquiry :
             case $formModel instanceof ExpertFormNotification :
-                $this->expandWaitingPeriod($formModel->user_application_id,3,true);
+                $this->expandWaitingPeriod($formModel->user_application_id, 3, true);
+            case $formModel instanceof ExpertFormFeedback :
+                if (
+                    !empty($formModel->date_recovery) &&
+                    $this->getApplicationStatusById($formModel->user_application_id) == 'Отозванные'
+                ) {
+                    $this->setApplicationStatusRestored($formModel->user_application_id);
+                }
         }
 
     }
@@ -50,7 +58,13 @@ class ApplicationStatusService
         )->one();
 
         return $status->id;
+    }
 
+    public function getApplicationStatusById($user_application_id)
+    {
+        $userApplication = UserApplications::findOne($user_application_id);
+        $status = $this->status::findOne($userApplication->status_id);
+        return $status->name;
     }
 
     public function setApplicationStatusPending($user_application_id, $valid_month = null)
@@ -133,17 +147,45 @@ class ApplicationStatusService
         $appStatusManagement->save();
     }
 
-    public function expandWaitingPeriod($user_application_id,$month,$answer_required=null)
+    public function expandWaitingPeriod($user_application_id, $month, $answer_required = null)
     {
         $userApplication = UserApplications::findOne($user_application_id);
-        $appStatusManagement =  ApplicationStatusManagement::findOne([
-            'user_application_id'=>$user_application_id,
-            'status_id'=>$userApplication->status_id
+        $appStatusManagement = ApplicationStatusManagement::findOne([
+            'user_application_id' => $user_application_id,
+            'status_id' => $userApplication->status_id
         ]);
         $appStatusManagement->finish = (new DateTime('now'))
             ->modify("+$month months")
             ->format('Y-m-d H:i:s');
-        if($answer_required) $appStatusManagement->is_answer_required = true;
+        if ($answer_required) $appStatusManagement->is_answer_required = true;
         $appStatusManagement->save(false);
     }
+
+    public function cancelRespondRequired($user_application_id, $cancel_finishing_date = false)
+    {
+        $userApplication = UserApplications::findOne($user_application_id);
+        $appStatusManagement = ApplicationStatusManagement::findOne([
+            'user_application_id' => $user_application_id,
+            'status_id' => $userApplication->status_id
+        ]);
+        if ($cancel_finishing_date) {
+            $appStatusManagement->finish = null;
+        }
+        $appStatusManagement->is_answer_required = false;
+        $appStatusManagement->save(false);
+    }
+
+    public function checkIfWaitingForRespond($user_application_id)
+    {
+        $userApplication = UserApplications::findOne($user_application_id);
+        $appStatusManagement = ApplicationStatusManagement::findOne([
+            'user_application_id' => $user_application_id,
+            'status_id' => $userApplication->status_id
+        ]);
+        if ($appStatusManagement->is_answer_required) {
+            return true;
+        }
+        return false;
+    }
+
 }

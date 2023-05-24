@@ -57,12 +57,12 @@ class ApplicationChatService extends Model
         ];
     }
 
-    public function saveInvoiceToForm($form_type_id,$data_id)
+    public function saveInvoiceToForm($form_type_id, $data_id)
     {
         $formModel = $this->expertForms[$form_type_id]::findone($data_id);
-        if($formModel instanceof ExpertFormDecision) {
-            $invoice = $this->createInvoiceForPayment($formModel->user_application_id,1000);
-            $formModel->extra_info = json_encode(['invoice_serial'=>$invoice['serial']]);
+        if ($formModel instanceof ExpertFormDecision) {
+            $invoice = $this->createInvoiceForPayment($formModel->user_application_id, 1000);
+            $formModel->extra_info = json_encode(['invoice_serial' => $invoice['serial']]);
             $formModel->save(false);
         }
 
@@ -82,6 +82,12 @@ class ApplicationChatService extends Model
         if (!$model->save()) {
             throw new \Exception(json_encode($model->errors));
         }
+
+        $statusManagement = Yii::createObject(ApplicationStatusService::class);
+        if ($statusManagement->checkIfWaitingForRespond($data['user_application_id'])) {
+            $statusManagement->cancelRespondRequired($data['user_application_id']);
+        }
+
         return [
             'success' => true,
             'message' => 'Message has been successfully sent!'
@@ -136,7 +142,7 @@ class ApplicationChatService extends Model
             case  1 :
                 return [
                     'is_expert' => $is_expert,
-                    'title' => ExpertFormDecision::decisionTypeTab($formModel->tab_id,$formModel->decision_type),
+                    'title' => ExpertFormDecision::decisionTypeTab($formModel->tab_id, $formModel->decision_type),
                     'type_application' => $formModel->application->name,
                     'generated_number' => sprintf("%s/%d", $formModel->userApplication->generated_id, $orderId),
                     'date_time' => date('d-m-Y', strtotime($formModel->accepted_date)),
