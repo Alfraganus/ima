@@ -47,6 +47,7 @@ class ExpertApplicationCronController extends \yii\console\Controller
         $this->changeApplicationStatus('На экспертизе', 'setApplicationStatusInProgress7Month', 1);
     }
 
+    /*Экспертиза просрочена otkazish uchun*/
     public function actionMoveStatusExpertiseCanceled()
     {
         $this->changeApplicationStatus(
@@ -55,38 +56,6 @@ class ExpertApplicationCronController extends \yii\console\Controller
             null,
             '7-month'
         );
-    }
-
-    private function changeApplicationStatus($currentStatus, $statusChangerAction, $valid_month = null, $description = null)
-    {
-
-        $applications = $this->userApplicaitons
-            ->where([
-                'user_applications.status_id' => $this->applicationStatusManager
-                    ->getApplicationStatus("%$currentStatus%", $description)
-            ])->joinWith('statusManagement')
-            ->asArray()
-            ->all();
-
-        foreach ($applications as $application) {
-            $statusManagement = $application['statusManagement'];
-            print_r($statusManagement);
-            if (!empty($statusManagement['finish'])) {
-
-                $dateTime = new \DateTime($application['statusManagement']['finish']);
-                $now = new \DateTime();
-                if (!is_null($description)) {
-                    if ($dateTime > $now) {
-                        $this->applicationStatusManager->$statusChangerAction($application['id'], $valid_month);
-                    }
-                } else {
-                    if ($statusManagement['description'] == $description && $dateTime < $now) {
-                        $this->applicationStatusManager->$statusChangerAction($application['id'], $valid_month);
-                    }
-                }
-
-            }
-        }
     }
 
     /* 3 oy davomida biror sorovnomaga javob bermagan holatda*/
@@ -128,6 +97,36 @@ class ExpertApplicationCronController extends \yii\console\Controller
                 if ($paymentStatusChecker['success']) {
                     $this->applicationStatusManager->setApplicationStatusExpertPending($application['id'], 6);
                 }
+            }
+        }
+    }
+    private function changeApplicationStatus($currentStatus, $statusChangerAction, $valid_month = null, $description = null)
+    {
+        $applications = $this->userApplicaitons
+            ->where([
+                'user_applications.status_id' => $this->applicationStatusManager
+                    ->getApplicationStatus("%$currentStatus%", $description)
+            ])->joinWith('statusManagement')
+            ->asArray()
+            ->all();
+
+        foreach ($applications as $application) {
+            $statusManagement = $application['statusManagement'];
+            print_r($statusManagement);
+            if (!empty($statusManagement['finish'])) {
+
+                $dateTime = new \DateTime($application['statusManagement']['finish']);
+                $now = new \DateTime();
+                if (!is_null($description)) {
+                    if ($dateTime > $now) {
+                        $this->applicationStatusManager->$statusChangerAction($application['id'], $valid_month);
+                    }
+                } else {
+                    if ($statusManagement['description'] == $description && $dateTime < $now) {
+                        $this->applicationStatusManager->$statusChangerAction($application['id'], $valid_month);
+                    }
+                }
+
             }
         }
     }
