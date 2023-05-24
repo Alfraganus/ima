@@ -91,7 +91,7 @@ class ExpertFormDoverenniyLitso extends \yii\db\ActiveRecord
             'district' => function () {
                 $address = Districts::findOne($this->district);
                 return $address ? [
-                    'id' => $this->region,
+                    'id' => $this->district,
                     'name' => $address->name_uz,
                 ] : [];
             },
