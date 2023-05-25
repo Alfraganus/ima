@@ -114,7 +114,7 @@ class ExpertController extends Controller
         $form = FormRequester::findOne(['user_application_id' => $user_application_id]);
         if ($form) {
             return [
-                'data'=>$form->sms_notification_number
+                'data'=>$form->receiver_name
             ];
         }
         return [
