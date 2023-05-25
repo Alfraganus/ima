@@ -36,7 +36,7 @@ class FormSaveService
 
             if (!empty($postContent['forms'])) $this->saveForms($postContent['forms'], $user_application_id, $postContent['wizard_id'], $user_id);
 
-//            if ($files) $this->saveFiles($files, $postContent, $user_id, $user_application_id);
+            if ($files) $this->saveFiles($files, $postContent, $user_id, $user_application_id);
             $transaction->commit();
             $result = [
                 'success' => true,
@@ -72,7 +72,6 @@ class FormSaveService
     {
         $app = UserApplications::findOne($user_application_id);
         $document = ApplicationFormMedia::find()->where([
-            'user_id' => $user_id,
             'form_id' => ApplicationFormMedia::LEGAL_ENTITY_DOC_FORM_ID,
             'application_id' => $user_application_id
         ])->exists();
