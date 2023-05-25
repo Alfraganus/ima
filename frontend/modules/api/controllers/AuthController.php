@@ -46,15 +46,21 @@ class AuthController extends Controller
         $getUser = ImaUsers::findOne(['email' => $post['email']]);
         if ($getUser) {
             return [
-                'user' => $getUser->username,
+                'user' => $getUser->username??$getUser->email,
                 'token' => $getUser->auth_key
             ];
         } else {
             $model = new ImaUsers();
             $model->setAttributes($post);
             $model->username = $post['user_id'];
-            $model->pport_issue_date = $post['_pport_issue_date'];
-            $model->pport_expr_date = $post['_pport_expr_date'];
+            $model->pport_issue_date = $post['passport_issue_date'];
+            $model->pport_expr_date = $post['passport_expr_date'];
+            $model->pport_issue_place = $post['passport_expr_place'];
+            $model->pport_no =  $post['passport_no'];
+            $model->pin =  $post['pnfl'];
+            $model->birth_place =  $post['rayon'];
+            $model->ctzn =  $post['country'];
+            $model->per_adr =  $post['address'];
             $model->is_active = self::ACTIVE;
             $model->setAuthKey();
             if (!$model->save()) {
