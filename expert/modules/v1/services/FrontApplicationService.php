@@ -23,16 +23,17 @@ class FrontApplicationService extends Model
         $form = ApplicationForm::findOne($form_id);
         $formClass = $form->form_class;
         $model = null;
-        if (Yii::createObject($formClass) instanceof FormRequester) {
-            $model = FormRequester::find();
+        $queryBuilder = (new \yii\db\Query())->select($columns);
+        if ( Yii::createObject($formClass) instanceof FormRequester) {
+            $model =$queryBuilder->from('form_requester');
         } elseif (Yii::createObject($formClass) instanceof FormAuthor) {
-            $model = FormAuthor::find();
+            $model =$queryBuilder->from('form_author');
         } elseif (Yii::createObject($formClass) instanceof FormDocument) {
-            $model = FormDocument::find();
+            $model =$queryBuilder->from('form_document');
         } elseif (Yii::createObject($formClass) instanceof FormPriority) {
-            $model = FormPriority::find();
+            $model =$queryBuilder->from('form_priority');
         } elseif (Yii::createObject($formClass) instanceof FormIndustryExample) {
-            $model = FormIndustryExample::find();
+            $model =$queryBuilder->from('form_industry_example');
         }
         $model = $model->where(['user_application_id' => $user_application_id]);
         if ($data_id) {
