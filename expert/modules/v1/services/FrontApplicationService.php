@@ -47,6 +47,7 @@ class FrontApplicationService extends Model
 
     }
 
+
     public function getUserApplication($user_application_id)
     {
         return UserApplications::findOne($user_application_id);
@@ -95,6 +96,11 @@ class FrontApplicationService extends Model
         return $formModel;
     }
 
+    public function getFromClass($form_id): string
+    {
+        $form = ApplicationForm::findOne($form_id);
+        if ($form) return $form->form_class;
+    }
     public function createForm($data)
     {
         try {
