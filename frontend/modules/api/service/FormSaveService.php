@@ -72,7 +72,7 @@ class FormSaveService
     {
         $app = UserApplications::findOne($user_application_id);
         $document = ApplicationFormMedia::find()->where([
-            'form_id' => ApplicationFormMedia::LEGAL_ENTITY_DOC_FORM_ID,
+            'form_id' => FormReadService::getFormIdByClass('common\models\forms\FormPayment'),
             'application_id' => $user_application_id
         ])->exists();
         if ($app->is_finished && $document) {
