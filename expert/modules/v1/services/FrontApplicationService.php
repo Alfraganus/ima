@@ -4,6 +4,11 @@ namespace expert\modules\v1\services;
 
 use common\models\ApplicationForm;
 use common\models\ApplicationWizard;
+use common\models\forms\FormAuthor;
+use common\models\forms\FormDocument;
+use common\models\forms\FormIndustryExample;
+use common\models\forms\FormPriority;
+use common\models\forms\FormRequester;
 use common\models\UserApplications;
 use common\models\WizardFormField;
 use Yii;
@@ -13,10 +18,32 @@ use yii\base\Model;
 class FrontApplicationService extends Model
 {
 
-    public function getFromClass($form_id): string
+    public function getCustomFromClass($form_id, $user_application_id, array $columns, $isSingle = true, $data_id = null)
     {
         $form = ApplicationForm::findOne($form_id);
-        if ($form) return $form->form_class;
+        $formClass = $form->form_class;
+        $model = null;
+        if (Yii::createObject($formClass) instanceof FormRequester) {
+            $model = FormRequester::find();
+        } elseif (Yii::createObject($formClass) instanceof FormAuthor) {
+            $model = FormAuthor::find();
+        } elseif (Yii::createObject($formClass) instanceof FormDocument) {
+            $model = FormDocument::find();
+        } elseif (Yii::createObject($formClass) instanceof FormPriority) {
+            $model = FormPriority::find();
+        } elseif (Yii::createObject($formClass) instanceof FormIndustryExample) {
+            $model = FormIndustryExample::find();
+        }
+        $model = $model->where(['user_application_id' => $user_application_id]);
+        if ($data_id) {
+            $model = $model->andWhere(['id' => $data_id]);
+        }
+        $model = $model->select($columns);
+        if ($isSingle) {
+            return $model->one();
+        }
+        return $model->all();
+
     }
 
     public function getUserApplication($user_application_id)
@@ -62,9 +89,9 @@ class FrontApplicationService extends Model
     {
         $formModel = $this->getForm($user_application_id, $form_id)->andWhere(['id' => $data_id])->one();
 
-        if (!$formModel) return ['message'=>'Data not found!'];
+        if (!$formModel) return ['message' => 'Data not found!'];
 
-        return  $formModel;
+        return $formModel;
     }
 
     public function createForm($data)

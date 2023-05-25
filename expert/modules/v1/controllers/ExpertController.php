@@ -61,16 +61,16 @@ class ExpertController extends Controller
 
     public function actionCheckedPatent($user_application_id)
     {
-        return $this->getRequesterByRoleId($user_application_id,FormRequester::ROLE_ID_TRUSTED);
+        return $this->getRequesterByRoleId($user_application_id, FormRequester::ROLE_ID_TRUSTED);
     }
 
     public function actionTrustedRepsesentative($user_application_id)
     {
-        return $this->getRequesterByRoleId($user_application_id,FormRequester::ROLE_ID_REPRESENTATIVE);
+        return $this->getRequesterByRoleId($user_application_id, FormRequester::ROLE_ID_REPRESENTATIVE);
     }
 
 
-    public function getRequesterByRoleId($user_application_id,$roleId)
+    public function getRequesterByRoleId($user_application_id, $roleId)
     {
         $formRequester = FormRequester::findOne(['user_application_id' => $user_application_id]);
         if ($formRequester->role_id == $roleId) {
@@ -92,9 +92,21 @@ class ExpertController extends Controller
         return $this->frontApplicationService->getFrontForm($user_application_id, $form_id);
     }
 
-    public function actionGetSingleFrontForm($user_application_id, $form_id,$data_id)
+    public function actionGetSingleFrontForm($user_application_id, $form_id, $data_id)
     {
-        return $this->frontApplicationService->getSingleFrontForm($user_application_id, $form_id,$data_id);
+        return $this->frontApplicationService->getSingleFrontForm($user_application_id, $form_id, $data_id);
+    }
+
+    public function actionCustomFormFields()
+    {
+        $post = Yii::$app->request->post();
+        return $this->frontApplicationService->getCustomFromClass(
+            $post['form_id'],
+            $post['user_application_id'],
+            $post['columns'],
+            $post['isSingle'] ?? true,
+            $post['data_id'] ?? true,
+        );
     }
 
     public function actionDeleteFrontForm($form_type_id, $data_id)
