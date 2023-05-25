@@ -109,6 +109,17 @@ class ExpertController extends Controller
         );
     }
 
+    public function actionGetSmsNotification($user_application_id)
+    {
+        $form = FormRequester::findOne(['user_application_id' => $user_application_id]);
+        if ($form) {
+            return $form->sms_notification_number;
+        }
+        return [
+            'message' => 'data does not exist'
+        ];
+    }
+
     public function actionDeleteFrontForm($form_type_id, $data_id)
     {
         return $this->frontApplicationService->deleteFrontForm($form_type_id, $data_id);
