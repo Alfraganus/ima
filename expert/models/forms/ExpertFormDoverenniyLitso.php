@@ -106,6 +106,7 @@ class ExpertFormDoverenniyLitso extends \yii\db\ActiveRecord
             },
             'jshshir',
             'full_name',
+            'phone_number',
             'country_id' => function () {
                 $submittingCountry = WorldCountries::findOne($this->country_id);
                 return [

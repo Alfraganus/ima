@@ -98,6 +98,7 @@ class ExpertFormVladeles extends \yii\db\ActiveRecord
             'individual_type',
             'jshshir',
             'full_name',
+            'phone_number',
             'district' => function () {
                 $address = Districts::findOne($this->district);
                 return $address ? [
