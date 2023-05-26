@@ -50,7 +50,7 @@ class ApplicationController extends DefaultController
     public function actionApplicationStatus()
     {
         $models = ApplicationStatus::find()
-            ->where(['!=', 'description', '7-month'])
+            ->where(['!=', 'id', 11])
             ->all();
 
         return $models;
