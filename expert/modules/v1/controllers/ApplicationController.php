@@ -7,6 +7,7 @@ use common\models\UserApplications;
 use expert\models\ApplicationStatus;
 use expert\modules\v1\services\ApplicationChatService;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\rest\Controller;
@@ -42,8 +43,18 @@ class ApplicationController extends DefaultController
 
     public function actionApplicationStatus()
     {
+        $queryParams = ['UserApplicationsSearch' => ['description' => '-7-month']];
+        $dataProvider = new ActiveDataProvider([
+            'query' => UserApplications::find()->where(['!=', 'description', '7-month']),
+            'pagination' => [
+                'pageSize' => 10, // Number of records per page
+            ],
+        ]);
 
-        return ApplicationStatus::find()->all();
+        $dataProvider->getSort()->params = $queryParams;
+
+        $models = $dataProvider->getModels();
+        return $models;
     }
 
     public function actionGet20($user_application_id)
