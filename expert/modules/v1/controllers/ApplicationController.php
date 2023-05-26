@@ -42,7 +42,12 @@ class ApplicationController extends DefaultController
 
     public function actionApplicationStatus()
     {
-        return 123;
+     return   $rows = (new \yii\db\Query())
+            ->select('*')
+            ->from('application_status')
+//            ->where(['last_name' => 'Smith'])
+//            ->limit(10)
+            ->all();
         return ApplicationStatus::find()/*->where(['<>','description','7-month'])*/->all();
     }
 
