@@ -42,13 +42,8 @@ class ApplicationController extends DefaultController
 
     public function actionApplicationStatus()
     {
-     return   $rows = (new \yii\db\Query())
-            ->select('*')
-            ->from('application_status')
-            ->where(['NOT LIKE','description','%7-month%'])
-//            ->limit(10)
-            ->all();
-        return ApplicationStatus::find()/*->where(['<>','description','7-month'])*/->all();
+
+        return ApplicationStatus::find()->all();
     }
 
     public function actionGet20($user_application_id)
