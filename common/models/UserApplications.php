@@ -21,7 +21,6 @@ use Yii;
  * @property int|null $year
  * @property int|null $status_id
  * @property string|null $generated_id
- * @property string|null $description
  * @property int|null $application_number
  * @property Application $application
  * @property ApplicationWizard $currentWizard
@@ -43,7 +42,7 @@ class UserApplications extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['generated_id','description'], 'string'],
+            [['generated_id'], 'string'],
             [['user_id', 'year', 'application_id', 'is_finished', 'payment_done', 'current_wizard_id', 'date_submitted', 'status_id'], 'integer'],
             [['application_id'], 'exist', 'skipOnError' => true, 'targetClass' => Application::class, 'targetAttribute' => ['application_id' => 'id']],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplicationStatus::class, 'targetAttribute' => ['status_id' => 'id']],

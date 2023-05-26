@@ -36,25 +36,21 @@ class ApplicationController extends DefaultController
         if ($status_id) {
             $applications->andWhere(['status_id' => $status_id]);
         }
-        $applications = $applications->all();
 
-        return $applications;
+        $dataProvider = new ActiveDataProvider([
+            'query' =>$applications,
+            'pagination' => [
+                'pageSize' => 20, // Number of records per page
+            ],
+        ]);
+
+        return $dataProvider;
     }
 
     public function actionApplicationStatus()
     {
-        $queryParams = ['UserApplicationsSearch' => ['description' => '-7-month']];
-        $dataProvider = new ActiveDataProvider([
-            'query' => UserApplications::find()->where(['!=', 'description', '7-month']),
-            'pagination' => [
-                'pageSize' => 10, // Number of records per page
-            ],
-        ]);
-
-        $dataProvider->getSort()->params = $queryParams;
-
-        $models = $dataProvider->getModels();
-        return $models;
+       $query = ApplicationStatus::find()->where(['!=', 'description', '7-month'])->all();
+        return $query;
     }
 
     public function actionGet20($user_application_id)
