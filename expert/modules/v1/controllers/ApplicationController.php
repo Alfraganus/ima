@@ -38,7 +38,7 @@ class ApplicationController extends DefaultController
         }
 
         $dataProvider = new ActiveDataProvider([
-            'query' =>$applications,
+            'query' => $applications,
             'pagination' => [
                 'pageSize' => 20, // Number of records per page
             ],
@@ -49,8 +49,10 @@ class ApplicationController extends DefaultController
 
     public function actionApplicationStatus()
     {
-        $models = ApplicationStatus::find()
-            ->where(['!=', 'id', 11])
+        $model = ApplicationStatus::find();
+        $excludeId = $model->where(['like', 'description', '7-month'])->one();
+        $models = $model
+            ->where(['!=', 'id', $excludeId->id])
             ->all();
 
         return $models;
