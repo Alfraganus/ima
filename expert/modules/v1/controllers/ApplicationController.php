@@ -42,6 +42,7 @@ class ApplicationController extends DefaultController
 
     public function actionApplicationStatus()
     {
+        return 123;
         return ApplicationStatus::find()/*->where(['<>','description','7-month'])*/->all();
     }
 
