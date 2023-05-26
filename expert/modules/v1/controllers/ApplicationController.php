@@ -45,7 +45,7 @@ class ApplicationController extends DefaultController
      return   $rows = (new \yii\db\Query())
             ->select('*')
             ->from('application_status')
-//            ->where(['last_name' => 'Smith'])
+            ->where(['<>','description','7-month'])
 //            ->limit(10)
             ->all();
         return ApplicationStatus::find()/*->where(['<>','description','7-month'])*/->all();
