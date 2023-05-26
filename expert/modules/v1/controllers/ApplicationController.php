@@ -45,7 +45,7 @@ class ApplicationController extends DefaultController
      return   $rows = (new \yii\db\Query())
             ->select('*')
             ->from('application_status')
-            ->where(['<>','description','7-month'])
+            ->where(['NOT LIKE','description','%7-month%'])
 //            ->limit(10)
             ->all();
         return ApplicationStatus::find()/*->where(['<>','description','7-month'])*/->all();
