@@ -50,7 +50,7 @@ class ApplicationController extends DefaultController
     public function actionApplicationStatus()
     {
         $models = ApplicationStatus::find()
-            ->where(['not like', 'description', '7-month'])
+            ->where(['not like', 'description', '%7-month'])
             ->all();
 
         return $models;
