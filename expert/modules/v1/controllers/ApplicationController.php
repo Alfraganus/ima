@@ -4,6 +4,7 @@ namespace expert\modules\v1\controllers;
 
 use common\models\ApplicationFormMedia;
 use common\models\UserApplications;
+use expert\models\ApplicationStatus;
 use expert\modules\v1\services\ApplicationChatService;
 use Yii;
 use yii\filters\auth\CompositeAuth;
@@ -37,6 +38,11 @@ class ApplicationController extends DefaultController
         $applications = $applications->all();
 
         return $applications;
+    }
+
+    public function actionApplicationStatus()
+    {
+        return ApplicationStatus::find()->where(['<>','description'=>'7-month'])->all();
     }
 
     public function actionGet20($user_application_id)
