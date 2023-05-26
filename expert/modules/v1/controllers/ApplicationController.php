@@ -49,8 +49,11 @@ class ApplicationController extends DefaultController
 
     public function actionApplicationStatus()
     {
-       $query = ApplicationStatus::find()->where(['!=', 'description', '7-month'])->all();
-        return $query;
+        $models = ApplicationStatus::find()
+            ->where(['not like', 'description', '7-month'])
+            ->all();
+
+        return $models;
     }
 
     public function actionGet20($user_application_id)
