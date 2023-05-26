@@ -39,6 +39,11 @@ class ExpertController extends Controller
         ];
     }
 
+    public  function actionGetRester($user_application_id)
+    {
+       return (new ReadFormService())->getRester($user_application_id);
+    }
+
     public function actionAdvancedSearch()
     {
         $post = Yii::$app->request->post();

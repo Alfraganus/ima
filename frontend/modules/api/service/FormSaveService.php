@@ -119,7 +119,7 @@ class FormSaveService
             if ($this->setForm[$form] instanceof FormDocument) {
                 $query = ['user_application_id' => $application_id, 'form_id' => $form, 'user_id' => $user_id];
             }
-            if($this->setForm[$form]::find()->where($query)->exists()) {
+            if ($this->setForm[$form]::find()->where($query)->exists()) {
                 $this->setForm[$form]::deleteAll($query);
 
                 $applicationMedia = ApplicationFormMedia::findAll([
@@ -173,25 +173,30 @@ class FormSaveService
         }
     }
 
+    private function fillIndustryDocumentFile($id, int $wizard_id, int $application_id, $user_id)
+    {
+        $formAttachments = ApplicationFormMedia::findOne($id);
+        $formAttachments->wizard_id = $wizard_id;
+        $formAttachments->application_id = $application_id;
+        if (!$formAttachments->save()) {
+            throw new \Exception(json_encode($formAttachments->errors));
+        }
+        $formModel = new $this->setForm[$formAttachments->form_id];
+        if ($formModel instanceof FormIndustryExample) {
+            $formIndustry = FormIndustryExample::findOne([
+                'user_application_id' => $application_id,
+                'user_id' => $user_id,
+            ]);
+            $formIndustry->file = $formAttachments->file_path;
+            $formIndustry->is_main = true;
+            $formIndustry->save(false);
+        }
+    }
+
     private function setFormAttachmentMissingValues(array $ids, int $wizard_id, int $application_id, $user_id)
     {
         foreach ($ids as $id) {
-            $formAttachments = ApplicationFormMedia::findOne($id);
-            $formAttachments->wizard_id = $wizard_id;
-            $formAttachments->application_id = $application_id;
-            if (!$formAttachments->save()) {
-                throw new \Exception(json_encode($formAttachments->errors));
-            }
-            $formModel = new $this->setForm[$formAttachments->form_id];
-            if ($formModel instanceof FormIndustryExample) {
-                $formIndustry = FormIndustryExample::findOne([
-                    'user_application_id' => $application_id,
-                    'user_id' => $user_id,
-                ]);
-                $formIndustry->file = $formAttachments->file_path;
-                $formIndustry->is_main = true;
-                $formIndustry->save(false);
-            }
+            $this->fillIndustryDocumentFile($id, $wizard_id, $application_id, $user_id);
         }
     }
 
@@ -241,6 +246,13 @@ class FormSaveService
             if (!$mediaContent->save()) {
                 throw new  \Exception(json_encode($mediaContent->errors));
             }
+            /*industryni filega shu yerdan olingan rasmni joylab qoyish uchun*/
+            $this->fillIndustryDocumentFile(
+                $mediaContent->id,
+                $mediaContent->wizard_id,
+                $mediaContent->application_id,
+                $mediaContent->user_id
+            );
             $attachmentIdsForForm[][$fileIndentification] = $mediaContent->id;
         }
         foreach ($attachmentIdsForForm as $item) {

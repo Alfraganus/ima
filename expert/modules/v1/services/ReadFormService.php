@@ -11,6 +11,16 @@ use yii\helpers\ArrayHelper;
 class ReadFormService
 {
 
+    public function getRester($user_application_id)
+    {
+        $formDocumentExample = FormIndustryExample::findOne(['user_application_id'=>$user_application_id,'is_main'=>1]);
+
+        return [
+            'industry_main_picture'=>$formDocumentExample->file,
+            'industry_title'=>$formDocumentExample->title,
+        ];
+    }
+
     public function getForm55($user_application_id)
     {
         $industryDocumentModel = FormIndustryExample::find()->where(['user_application_id' => $user_application_id]);

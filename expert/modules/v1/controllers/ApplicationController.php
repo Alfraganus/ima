@@ -24,13 +24,18 @@ class ApplicationController extends DefaultController
         parent::__construct($id, $module, $config);
     }
 
-    public function actionGetApplications($application_type)
+    public function actionGetApplications($application_type, $status_id = null)
     {
         $applications = UserApplications::find()->where([
             'application_id' => $application_type,
             'is_finished' => 1
-        ])->orderBy('id DESC')
-            ->all();
+        ])->orderBy('id DESC');
+
+        if ($status_id) {
+            $applications->andWhere(['status_id' => $status_id]);
+        }
+        $applications = $applications->all();
+
         return $applications;
     }
 
