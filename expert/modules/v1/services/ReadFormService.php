@@ -4,7 +4,9 @@ namespace expert\modules\v1\services;
 
 use common\models\ApplicationFormMedia;
 use common\models\forms\FormIndustryExample;
+use common\models\UserApplications;
 use expert\models\ExpertFormMedia;
+use expert\models\forms\ExpertForm10;
 use frontend\modules\api\service\FormReadService;
 use yii\helpers\ArrayHelper;
 
@@ -13,11 +15,19 @@ class ReadFormService
 
     public function getRester($user_application_id)
     {
-        $formDocumentExample = FormIndustryExample::findOne(['user_application_id'=>$user_application_id,'is_main'=>1]);
+        $formDocumentExample = FormIndustryExample::findOne(['user_application_id' => $user_application_id, 'is_main' => 1]);
+        $userApplication = UserApplications::findOne($user_application_id);
+        $form10 = ExpertForm10::findOne(['user_application_id' => $user_application_id]);
 
         return [
-            'industry_main_picture'=>$formDocumentExample->file,
-            'industry_title'=>$formDocumentExample->title,
+            'industry_main_picture' => $formDocumentExample->file ?? null,
+            'industry_title' => $formDocumentExample->title ?? null,
+            'application_number' => $userApplication->generated_id,
+            'submitted_date' => date('d-m-Y', $userApplication->date_submitted),
+            '11_number_registration' => $form10->column_11 ?? null,
+            '15_date_registration' => $form10->column_15 ?? null,
+            '18_date_expire_registration' => $form10->column_18 ?? null,
+            '19_code_vedmost' => $form10->column_19 ?? null,
         ];
     }
 
@@ -29,7 +39,7 @@ class ReadFormService
             $industryDocumentModel->asArray()->all(),
             'file'
         );
-        $formMedia =  ArrayHelper::getColumn(
+        $formMedia = ArrayHelper::getColumn(
             ApplicationFormMedia::find()->where([
                 'application_id' => $user_application_id,
                 'form_id' => FormReadService::getFormIdByClass('common\models\forms\FormDocument'),
@@ -42,14 +52,14 @@ class ReadFormService
                 continue;
             }
             $result[] = [
-                'title'=>null,
-                'is_main'=>false,
-                'file'=>$element,
+                'title' => null,
+                'is_main' => false,
+                'file' => $element,
             ];
         }
 
         return array_merge(
-            $industryDocumentModel->select(['id','title','is_main' ,'file'])->asArray()->all(),
+            $industryDocumentModel->select(['id', 'title', 'is_main', 'file'])->asArray()->all(),
             $result
         );
     }
