@@ -16,7 +16,7 @@ class UserProfileController extends Controller
 {
     public function actionGetUserApplications($user_application_id)
     {
-        $userAplicaitons = UserApplications::find()->all();
+        $userAplicaitons = UserApplications::findAll($user_application_id);
         return $userAplicaitons;
     }
 }
