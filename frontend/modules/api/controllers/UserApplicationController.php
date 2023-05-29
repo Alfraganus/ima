@@ -2,6 +2,7 @@
 
 namespace frontend\modules\api\controllers;
 
+use common\models\UserApplications;
 use expert\modules\v1\controllers\DefaultController;
 use expert\modules\v1\services\ApplicationChatService;
 use expert\modules\v1\services\UserRoleService;
@@ -41,6 +42,11 @@ class UserApplicationController extends DefaultController
             htmlspecialchars($user_application_id),
             false
         );
+    }
+    public function actionGetUserApplications($user_application_id)
+    {
+        $userAplicaitons = UserApplications::find()->all();
+        return $userAplicaitons;
     }
 
 
