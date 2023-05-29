@@ -75,10 +75,9 @@ class ApplicationChatService extends Model
         $model->setMaxOrderId();
         if ($attachment != null) {
             $fileName = time() . $attachment->getBaseName() . '.' . $attachment->getExtension();
-            $fileName = Yii::$app->request->hostInfo.'/frontend/web/form_uploads/' . $fileName;
-//            $fileName = 'form_uploads/' . $fileName;
-            $attachment->saveAs($fileName);
-            $model->user_file = $fileName;
+            $filePath = Yii::$app->request->hostInfo.'/frontend/web/form_uploads/' . $fileName;
+            $attachment->saveAs(sprintf('form_uploads/%s',$fileName));
+            $model->user_file = $filePath;
         }
         if (!$model->save()) {
             throw new \Exception(json_encode($model->errors));
