@@ -4,6 +4,7 @@ namespace expert\modules\v1\services;
 
 use common\models\ApplicationFormMedia;
 use common\models\forms\FormIndustryExample;
+use common\models\forms\FormPriority;
 use common\models\UserApplications;
 use expert\models\ExpertFormMedia;
 use expert\models\forms\ExpertForm10;
@@ -18,6 +19,7 @@ class ReadFormService
         $formDocumentExample = FormIndustryExample::findOne(['user_application_id' => $user_application_id, 'is_main' => 1]);
         $userApplication = UserApplications::findOne($user_application_id);
         $form10 = ExpertForm10::findOne(['user_application_id' => $user_application_id]);
+        $formPriority = FormPriority::findOne(['user_application_id' => $user_application_id]);
 
         return [
             'industry_main_picture' => $formDocumentExample->file ?? null,
@@ -28,6 +30,7 @@ class ReadFormService
             '15_date_registration' => $form10->column_15 ?? null,
             '18_date_expire_registration' => $form10->column_18 ?? null,
             '19_code_vedmost' => $form10->column_19 ?? null,
+            'priority'=>$formPriority,
         ];
     }
 
