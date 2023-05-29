@@ -43,11 +43,7 @@ class UserApplicationController extends DefaultController
             false
         );
     }
-    public function actionGetUserApplications($user_application_id)
-    {
-        $userAplicaitons = UserApplications::find()->all();
-        return $userAplicaitons;
-    }
+
 
 
 }
