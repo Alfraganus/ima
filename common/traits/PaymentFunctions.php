@@ -96,10 +96,11 @@ trait PaymentFunctions
         if ($invoice['status'] != 'OPEN') {
             return $invoice;
         }
-        $checkPayment = Payments::find()->where(['user_application_id'=>$application_id]);
+
+       /* $checkPayment = Payments::find()->where(['user_application_id'=>$application_id]);
         if ($checkPayment->exists()) {
             $checkPayment->one()->delete();
-        }
+        }*/
 
         $payment = new Payments();
         $payment->user_application_id = $application_id;
